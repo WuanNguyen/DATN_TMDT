@@ -1,3 +1,4 @@
+import 'package:doan_tmdt/model/menu.dart';
 import 'package:doan_tmdt/screens/cart_screen.dart';
 import 'package:doan_tmdt/screens/categories_screen.dart';
 import 'package:doan_tmdt/screens/home_screen.dart';
@@ -5,7 +6,8 @@ import 'package:doan_tmdt/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({super.key});
+  const BottomNavigation({super.key, required this.index});
+  final int index;
 
   @override
   State<BottomNavigation> createState() => _BottomNavigationState();
@@ -31,8 +33,21 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('MuHviz'),
+          title: const Text(
+            'HUVIZ',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  //sự kiện icon thông báo
+                },
+                icon: const Icon(Icons.notifications))
+          ],
         ),
+        drawer: const Menu(),
         bottomNavigationBar: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -52,10 +67,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
             ),
           ),
           child: NavigationBar(
-            backgroundColor: Color.fromARGB(200, 201, 227, 239),
+            backgroundColor: const Color.fromARGB(200, 201, 227, 239),
             selectedIndex: _selectedIndex,
             onDestinationSelected: _onItemSelected,
-            indicatorColor: Color.fromARGB(255, 179, 184, 188),
+            indicatorColor: const Color.fromARGB(255, 179, 184, 188),
             destinations: const [
               NavigationDestination(icon: Icon(Icons.home), label: ''),
               NavigationDestination(
