@@ -67,7 +67,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
             ),
           ),
           child: NavigationBar(
-            backgroundColor: const Color.fromARGB(200, 201, 227, 239),
+            backgroundColor: const Color.fromARGB(255, 201, 227, 239),
             selectedIndex: _selectedIndex,
             onDestinationSelected: _onItemSelected,
             indicatorColor: const Color.fromARGB(255, 179, 184, 188),
