@@ -1,4 +1,5 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -105,7 +106,11 @@ class _MenuState extends State<Menu> {
               ],
             ),
             onTap: () {
-              //Sử lí sự kiện khi click
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const FirstappScreen()),
+              );
             },
           ),
           const SizedBox(

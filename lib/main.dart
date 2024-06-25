@@ -1,4 +1,6 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
+// import 'package:doan_tmdt/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,7 +19,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const BottomNavigation(index: 0),
+      //home: const BottomNavigation(index: 0),
+      home: const FirstappScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

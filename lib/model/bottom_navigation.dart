@@ -34,7 +34,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            'HUVIZ',
+            'SPORT HUVIZ',
             textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -46,6 +46,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 },
                 icon: const Icon(Icons.notifications))
           ],
+          backgroundColor: Color.fromRGBO(201, 241, 248, 1),
         ),
         drawer: const Menu(),
         bottomNavigationBar: Container(
@@ -67,10 +68,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
             ),
           ),
           child: NavigationBar(
-            backgroundColor: const Color.fromARGB(200, 201, 227, 239),
+            backgroundColor: Color.fromARGB(240, 201, 227, 239),
             selectedIndex: _selectedIndex,
             onDestinationSelected: _onItemSelected,
-            indicatorColor: const Color.fromARGB(255, 179, 184, 188),
+            indicatorColor: Color.fromARGB(255, 179, 184, 188),
             destinations: const [
               NavigationDestination(icon: Icon(Icons.home), label: ''),
               NavigationDestination(
