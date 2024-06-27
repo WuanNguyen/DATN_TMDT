@@ -33,6 +33,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
     return Scaffold(
         appBar: AppBar(
+          scrolledUnderElevation: 0.0,
+          backgroundColor: const Color.fromARGB(255, 201, 241, 248),
           title: const Text(
             'HUVIZ',
             textAlign: TextAlign.center,

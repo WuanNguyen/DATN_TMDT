@@ -1,4 +1,3 @@
-import 'package:doan_tmdt/model/size_button.dart';
 import 'package:doan_tmdt/screens/detail_items/rating.dart';
 import 'package:flutter/material.dart';
 
@@ -12,12 +11,13 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  String selected = "s";
+  int size = 0;
   String desc = "The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax quiz prog. Junk MTV quiz graced by fox whelps. Bawds jog, flick quartz, vex nymphs. Waltz, bad nymph, for quick jigs vex! Fox nymphs grab quick-jived waltz. Brick quiz whangs jumpy veldt fox. Bright vixens jump; dozy fowl quack. Quick wafting zephyrs vex bold Jim. Quick zephyrs blow, vexing daft Jim. Sex-charged fop blew my junk TV quiz. How quickly daft jumping zebras vex. Two driven jocks help fax my big quiz. Quick, Baz, get my woven flax jodhpurs!  my brave ghost pled. Five quacking zephyrs jolt my wax bed. Flummoxed by job, kvetching W. zaps Iraq. Cozy sphinx waves quart jug of bad milk. A very bad quack might jinx zippy fowls. Few quips galvanized the mock jury box. Quick brown dogs jump over the lazy fox. The jay, pig, fox, zebra, and my wolves quack! Blowzy red vixens fight for a quick jump. Joaquin Phoenix was gazed by MTV for luck. A wizard’s job is to vex chumps quickly in fog. Watch , Alex Trebek's fun TV quiz game. Woven silk pyjamas exchanged for blue quartz. Brawny gods just";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor:const Color.fromRGBO(201, 241, 248, 1),
         leading: Container(
           decoration: BoxDecoration(
@@ -28,7 +28,7 @@ class _DetailScreenState extends State<DetailScreen> {
             onTap: (){
               Navigator.pop(context);
             },
-            child:Icon(Icons.arrow_back_ios_new,color:Colors.white)
+            child:Icon(Icons.arrow_back_ios_new,color:Colors.black)
           ),
         )
       ),
@@ -116,30 +116,46 @@ class _DetailScreenState extends State<DetailScreen> {
                         Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0)),
                         Row(// size button
                           children: [
-                            GestureDetector(
-                              onTap:(){
-                                setState(){
-                                  selected = "s";
-                                }
-                              },
-                              child: SizeButton(size:"s",selected:selected),
+                            OutlinedButton(
+                              onPressed: (){
+                                setState(() {
+                                  size = 0;
+                                });
+                              }, 
+                              style: ButtonStyle(
+                                side: WidgetStatePropertyAll(
+                                  BorderSide(width: size==0?2.0:0.5)
+                                  ),
+                              ),
+                              child: Text("S",style:TextStyle(color: Colors.black))
                             ),
-                            GestureDetector(
-                              onTap:(){
-                                setState(){
-                                  selected = "m";
-                                }
-                              },
-                              child: SizeButton(size:"m",selected:selected),
+                            Padding(padding: EdgeInsets.fromLTRB(0, 0, 10, 0),),
+                            OutlinedButton(
+                              onPressed: (){
+                                setState(() {
+                                  size = 1;
+                                });
+                              }, 
+                              style: ButtonStyle(
+                                side: WidgetStatePropertyAll(
+                                  BorderSide(width: size==1?2.0:0.5)
+                                  ),
+                              ),
+                              child: Text("M",style:TextStyle(color: Colors.black))
                             ),
-                            GestureDetector(
-                              onTap:(){
-                                setState(){
-                                  selected = "l";
-                                  print("l selected");
-                                }
-                              },
-                              child: SizeButton(size:"l",selected:selected),
+                            Padding(padding: EdgeInsets.fromLTRB(0, 0, 10, 0),),
+                            OutlinedButton(
+                              onPressed: (){
+                                setState(() {
+                                  size = 2;
+                                });
+                              }, 
+                              style: ButtonStyle(
+                                side: WidgetStatePropertyAll(
+                                  BorderSide(width: size==2?2.0:0.5)
+                                  ),
+                              ),
+                              child: Text("L",style:TextStyle(color: Colors.black))
                             ),
                           ],
                         )
