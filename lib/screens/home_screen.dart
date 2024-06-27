@@ -17,47 +17,56 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(//! tran man hinh, fix searchbar
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(50)
-          ),
-          child:  SearchBar(
-            leading: Icon(Icons.search),
-            padding: const WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.fromLTRB(20, 0, 0, 0)),
-          ),
-        ),
-        Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.1, 0.8, 1],
-              colors: <Color>[
-                Color.fromRGBO(201, 241, 248, 1),
-                Color.fromRGBO(231, 230, 233, 1),
-                Color.fromRGBO(231, 227, 230, 1),
-              ],
-              tileMode: TileMode.mirror,
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(201, 241, 248, 1),
+      ),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(100)
+            ),
+            width: MediaQuery.of(context).size.width-33,
+            height: 50,
+            child: SearchBar(//todo: sua shadow searchbar
+              leading: Icon(Icons.search),
+              padding: const WidgetStatePropertyAll(EdgeInsets.fromLTRB(20, 0, 0, 0)),
             ),
           ),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height - 192,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Collection(name:"ELEMENT COLLECTION"),
-                  ProductList(genre: "MALE"),
-                  ProductList(genre: "FEMALE"),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0.1, 0.8, 1],
+                colors: <Color>[
+                  Color.fromRGBO(201, 241, 248, 1),
+                  Color.fromRGBO(231, 230, 233, 1),
+                  Color.fromRGBO(231, 227, 230, 1),
                 ],
-              ),
+                tileMode: TileMode.mirror,
+              ) ,
+            ),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height - 186,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Collection(name:"ELEMENT COLLECTION"),
+                    ProductList(genre: "MALE"),
+                    ProductList(genre: "FEMALE"),   
+                  ],
+                ),
+              )
             )
           )
-        )
-      ],
+        ],
+      )
     );
   }
 }
