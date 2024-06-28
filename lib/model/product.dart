@@ -15,10 +15,10 @@ class _ProductState extends State<Product> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> new DetailScreen(name: widget.name,price: widget.price,)));
       }, //qua trang san pham
       child: Container(
-        margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+        margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
         width: 167,
         height: 268,
         decoration: BoxDecoration(
