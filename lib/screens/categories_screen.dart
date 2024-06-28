@@ -17,22 +17,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0.1, 0.8, 1],
-          colors: <Color>[
-            Color.fromRGBO(201, 241, 248, 1),
-            Color.fromRGBO(231, 230, 233, 1),
-            Color.fromRGBO(231, 227, 230, 1),
-          ],
-          tileMode: TileMode.mirror,
-        ) ,
-      ),
       child: Column(
         children: [
           Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0.1, 0.8, 1],
+                colors: <Color>[
+                  Color.fromRGBO(201, 241, 248, 1),
+                  Color.fromRGBO(231, 230, 233, 1),
+                  Color.fromRGBO(231, 227, 230, 1),
+                ],
+                tileMode: TileMode.mirror,
+              ) ,
+            ),
+            child: Container(
             margin: EdgeInsets.fromLTRB(20, 5, 0, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,23 +96,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     },
                   ),
                 )
-                // Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
-                // Row(
-                //   children: [
-                //     Product(name: "blue", price: 10000),
-                //     Product(name: "blue", price: 10000),
-                //   ],
-                // ),
-                // Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
-                // Row(
-                //   children: [
-                //     Product(name: "blue", price: 10000),
-                //     Product(name: "blue", price: 10000),
-                //   ],
-                // ),
+                
               ],
             )
           )
+          ),
+          
         ],
       )
     );
