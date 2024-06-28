@@ -1,16 +1,15 @@
-import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class Menu extends StatefulWidget {
-  const Menu({super.key});
+class AdminMenu extends StatefulWidget {
+  const AdminMenu({super.key});
 
   @override
-  State<Menu> createState() => _MenuState();
+  State<AdminMenu> createState() => _AdminMenuState();
 }
 
-class _MenuState extends State<Menu> {
+class _AdminMenuState extends State<AdminMenu> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -65,7 +64,7 @@ class _MenuState extends State<Menu> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const BottomNavigation(index: 0)),
+                    builder: (context) => const AdminBottomnav(index: 0)),
               );
               //Sử lí sự kiện khi click
             },

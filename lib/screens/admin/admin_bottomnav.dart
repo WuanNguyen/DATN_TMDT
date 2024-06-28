@@ -1,20 +1,21 @@
 import 'package:doan_tmdt/model/menu.dart';
-import 'package:doan_tmdt/screens/cart_screen.dart';
-import 'package:doan_tmdt/screens/categories_screen.dart';
+import 'package:doan_tmdt/screens/admin/admin_add.dart';
+import 'package:doan_tmdt/screens/admin/admin_listproduct.dart';
+import 'package:doan_tmdt/screens/admin/admin_menu.dart';
+import 'package:doan_tmdt/screens/admin/admin_profile.dart';
 import 'package:doan_tmdt/screens/home_screen.dart';
-import 'package:doan_tmdt/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
-class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({super.key, required this.index});
+class AdminBottomnav extends StatefulWidget {
   final int index;
+  const AdminBottomnav({super.key, required this.index});
 
   @override
-  State<BottomNavigation> createState() => _BottomNavigationState();
+  State<AdminBottomnav> createState() => _AdminBottomnavState();
 }
 
-class _BottomNavigationState extends State<BottomNavigation> {
-  late int _selectedIndex;
+class _AdminBottomnavState extends State<AdminBottomnav> {
+  int _selectedIndex = 0; // Không cần sử dụng 'late' ở đây
 
   @override
   void initState() {
@@ -32,18 +33,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
   Widget build(BuildContext context) {
     List<Widget> _screens = [
       HomeScreen(),
-      CategoriesScreen(),
-      CartScreen(),
-      ProfileScreen()
+      AdminAdd(),
+      // AdminListproduct(),
+      AdminProfile()
     ];
-
-    // Danh sách màu cho từng màn hình
-    // List<Color> _indicatorColors = [
-    //   Colors.blue, // Màu cho HomeScreen
-    //   Colors.green, // Màu cho CategoriesScreen
-    //   Colors.orange, // Màu cho CartScreen
-    //   Colors.purple, // Màu cho ProfileScreen
-    // ];
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +56,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
         ],
         backgroundColor: const Color.fromRGBO(201, 241, 248, 1),
       ),
-      drawer: const Menu(),
+      drawer: const AdminMenu(),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -89,11 +82,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
           indicatorColor: Color.fromARGB(239, 166, 172, 174),
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home), label: ''),
+            NavigationDestination(icon: Icon(Icons.add), label: ''),
             NavigationDestination(
-                icon: Icon(Icons.format_list_bulleted_sharp), label: ''),
-            NavigationDestination(
-                icon: Icon(Icons.shopping_cart_rounded), label: ''),
-            NavigationDestination(icon: Icon(Icons.person), label: ''),
+                icon: Icon(Icons.admin_panel_settings), label: ''),
           ],
         ),
       ),

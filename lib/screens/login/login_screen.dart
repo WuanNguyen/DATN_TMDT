@@ -14,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          scrolledUnderElevation: 0.0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () {
@@ -72,7 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextField(
                                 //controller: password,
                                 controller: null,
-                                obscureText: true,
+                                obscureText: false,
+
                                 decoration: InputDecoration(
                                     label: Text("Gmail",
                                         style: TextStyle(
@@ -93,9 +95,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 controller: null,
                                 obscureText: true,
                                 decoration: InputDecoration(
-                                    label: Text("Password",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500))),
+                                  label: Text(
+                                    "Password",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                ),
                               ),
                             ],
                           )),

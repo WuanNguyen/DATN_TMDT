@@ -1,3 +1,4 @@
+import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
 import 'package:doan_tmdt/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          scrolledUnderElevation: 0.0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () {
@@ -71,7 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextField(
                                 //controller: password,
                                 controller: null,
-                                obscureText: true,
+                                obscureText: false,
                                 decoration: InputDecoration(
                                     label: Text("Name",
                                         style: TextStyle(
@@ -90,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextField(
                                 //controller: password,
                                 controller: null,
-                                obscureText: true,
+                                obscureText: false,
                                 decoration: InputDecoration(
                                     label: Text("Gmail",
                                         style: TextStyle(
@@ -137,7 +139,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()),
+                                    builder: (context) =>
+                                        const AdminBottomnav(index: 0)),
                               );
                             },
                           ),
