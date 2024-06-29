@@ -41,13 +41,13 @@ class _ProductListState extends State<ProductList> {
           Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0)),
           Container(//todo: sua width
               height: 310,
-              width: MediaQuery.of(context).size.width,
+              width: 393,
               child: ListView.builder(
                 scrollDirection:  Axis.horizontal,
                 itemCount: pro.length,
                 itemBuilder: (context,index){
                   print(MediaQuery.of(context).size.width);
-                  return ProductItem(pro: pro[index*2]);
+                  return ProductItem(pro: pro[index]);
                 }
               )
             )

@@ -16,7 +16,9 @@ class _CartScreenState extends State<CartScreen> {
   String discountValue = "0%";
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      child: Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       decoration: const BoxDecoration(
@@ -45,9 +47,10 @@ class _CartScreenState extends State<CartScreen> {
               },
               )
           ),
-          Container(
+          SingleChildScrollView(
+            child: Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height-631,
+            height: 155,
             decoration: BoxDecoration(
               color: Color.fromRGBO(207, 207, 207, 1),
               borderRadius: BorderRadius.only(
@@ -110,10 +113,12 @@ class _CartScreenState extends State<CartScreen> {
                 
               ]
             ),
+          ),
           )
          
         ],
       )
+    ),
     );
   }
 }

@@ -17,7 +17,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
+      child: Container(
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: Color.fromRGBO(201, 241, 248, 1),
@@ -64,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )))
           ],
-        ));
+        )),
+    );
   }
 }
