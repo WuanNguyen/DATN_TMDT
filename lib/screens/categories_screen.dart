@@ -10,7 +10,6 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  final List<Product> item = List<Product>.generate(10, (index) =>Product(name: 'Product ${index + 1}',price: 10000,));
   int category = 0;
   @override
   Widget build(BuildContext context) {
@@ -74,27 +73,27 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                   ),
-                  child: ListView.builder(
-                    itemCount: (item.length/2).ceil(),
-                    itemBuilder: (context,index){
-                      if(item.length % 2 !=0 && index == ((item.length /2)-1)){
-                        return Row(
-                          children: [
-                            Product(name: item[index*2].name, price: item[index*2].price)
-                          ],
-                        );
-                      }
-                      else
-                      {
-                        return Row(
-                          children: [
-                            Product(name: item[index*2].name, price: item[index*2].price),
-                            Product(name: item[index*2+1].name, price: item[index*2+1].price),
-                          ],
-                        );
-                      }
-                    },
-                  ),
+                  // child: ListView.builder(
+                  //   itemCount: (item.length/2).ceil(),
+                  //   itemBuilder: (context,index){
+                  //     if(item.length % 2 !=0 && index == ((item.length /2)-1)){
+                  //       return Row(
+                  //         children: [
+                  //           Product(name: item[index*2].name, price: item[index*2].price)
+                  //         ],
+                  //       );
+                  //     }
+                  //     else
+                  //     {
+                  //       return Row(
+                  //         children: [
+                  //           Product(name: item[index*2].name, price: item[index*2].price),
+                  //           Product(name: item[index*2+1].name, price: item[index*2+1].price),
+                  //         ],
+                  //       );
+                  //     }
+                  //   },
+                  // ),
                 )
                 
               ],

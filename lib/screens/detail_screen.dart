@@ -1,10 +1,10 @@
+import 'package:doan_tmdt/model/product_class.dart';
 import 'package:doan_tmdt/screens/detail_items/rating.dart';
 import 'package:flutter/material.dart';
 
 class DetailScreen extends StatefulWidget {
-  DetailScreen({super.key,required this.name, required this.price});
-  String name;
-  int price;
+  DetailScreen({super.key,required this.pro});
+  Product pro;
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -59,7 +59,7 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
               width: MediaQuery.of(context).size.height / 3,
               height: MediaQuery.of(context).size.height / 3,
-              child: Image.network("https://i.pinimg.com/736x/e9/3c/2a/e93c2ac0194c53610dfeea86edd1e702.jpg",fit:BoxFit.cover)//image (fit: BoxFit.cover)
+              child: Image.network(widget.pro.img,fit:BoxFit.cover)//image (fit: BoxFit.cover)
             ),
             Container(
               padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
@@ -80,8 +80,8 @@ class _DetailScreenState extends State<DetailScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(widget.name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                              Text("${widget.price} VND"),
+                              Text(widget.pro.name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                              Text("${widget.pro.price} VND"),
                               Rating(rate:3.5)
                               
                               //todo: rating
