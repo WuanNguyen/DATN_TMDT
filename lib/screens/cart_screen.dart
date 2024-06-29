@@ -11,7 +11,7 @@ class CartScreen extends StatefulWidget {
 
 
 class _CartScreenState extends State<CartScreen> {
-  List<CartProduct> items = List<CartProduct>.generate(10, (index) => CartProduct(name: "Product ${index+1}", genre: "Adult", price: index*1000 + 10000));
+  List<CartProductItem> items = List<CartProductItem>.generate(10, (index) => CartProductItem(name: "Product ${index+1}", genre: "Adult", price: index*1000 + 10000));
   List<String> sales = List<String>.generate(11, (index) => "${index*10}%");
   String discountValue = "0%";
   @override
@@ -39,11 +39,11 @@ class _CartScreenState extends State<CartScreen> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
             width: MediaQuery.of(context).size.width/2+166,
-            height: MediaQuery.of(context).size.height-300,
+            height: MediaQuery.of(context).size.height-350,
             child: ListView.builder(
               itemCount: items.length,
               itemBuilder: (context,index){
-                return CartProduct(name: items[index].name, genre: items[index].genre, price: items[index].price);
+                return CartProductItem(name: items[index].name, genre: items[index].genre, price: items[index].price);
               },
               )
           ),

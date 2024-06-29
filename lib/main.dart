@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const BottomNavigation(index: 0),
+      home: const BottomNavigation(index: 2),
       //home: const FirstappScreen(),
       //home: Textdata(),
 
