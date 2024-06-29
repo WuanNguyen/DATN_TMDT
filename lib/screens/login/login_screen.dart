@@ -1,5 +1,11 @@
+import 'package:doan_tmdt/auth/firebase_auth.dart';
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/model/dialog_notification.dart';
+import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
+import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:doan_tmdt/screens/login/register_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -10,6 +16,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  var _fireauth = FirebAuth();
+  final TextEditingController gmail = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  //--------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +28,10 @@ class _LoginScreenState extends State<LoginScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FirstappScreen()),
+              );
             },
           ),
           backgroundColor: Color.fromRGBO(201, 241, 248, 1),
@@ -67,14 +80,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(
                           width: MediaQuery.of(context).size.width / 1.3,
-                          child: const Column(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextField(
-                                //controller: password,
-                                controller: null,
+                                controller: gmail,
                                 obscureText: false,
-
                                 decoration: InputDecoration(
                                     label: Text("Gmail",
                                         style: TextStyle(
@@ -87,12 +98,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(
                           width: MediaQuery.of(context).size.width / 1.3,
-                          child: const Column(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextField(
-                                //controller: password,
-                                controller: null,
+                                controller: password,
                                 obscureText: true,
                                 decoration: InputDecoration(
                                   label: Text(
@@ -121,12 +131,64 @@ class _LoginScreenState extends State<LoginScreen> {
                                   TextStyle(color: Colors.black, fontSize: 20),
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const BottomNavigation(index: 0)),
-                              );
+                              try {
+                                _fireauth.signIn(
+                                  gmail.text,
+                                  password.text,
+                                  () async {
+                                    User? currentUser =
+                                        FirebaseAuth.instance.currentUser;
+                                    if (currentUser != null) {
+                                      // Lấy thông tin người dùng từ Firebase Realtime Database
+                                      DatabaseReference userRef =
+                                          FirebaseDatabase.instance
+                                              .reference()
+                                              .child('Users')
+                                              .child(currentUser.uid);
+                                      DataSnapshot snapshot = await userRef
+                                          .once()
+                                          .then((DatabaseEvent event) {
+                                        return event.snapshot;
+                                      });
+
+                                      if (snapshot.value != null) {
+                                        Map userData = snapshot.value as Map;
+                                        String role = userData['Role'];
+
+                                        if (role == 'admin') {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AdminBottomnav(index: 0)),
+                                          );
+                                        } else if (role == 'user') {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    BottomNavigation(index: 0)),
+                                          );
+                                        }
+                                      }
+                                    }
+                                  },
+                                  (mss) {
+                                    MsgDialog.MSG(context, 'Sign-In', mss);
+                                  },
+                                );
+                              } catch (err) {
+                                print('Error during sign-in: $err');
+                                MsgDialog.ShowDialog(context, 'Sign-In',
+                                    'Login failed. Please try again later');
+                              }
+
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) =>
+                              //           const BottomNavigation(index: 0)),
+                              // );
                             },
                           ),
                         ],
