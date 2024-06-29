@@ -5,10 +5,17 @@ packages:
     dependency: transitive
     description:
       name: _flutterfire_internals
+<<<<<<< HEAD
       sha256: "37a42d06068e2fe3deddb2da079a8c4d105f241225ba27b7122b37e9865fd8f7"
       url: "https://pub.dev"
     source: hosted
     version: "1.3.35"
+=======
+      sha256: a315d1c444402c3fa468de626d33a1c666041c87e9e195e8fb355b7084aefcc1
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.38"
+>>>>>>> vi
   async:
     dependency: transitive
     description:
@@ -41,6 +48,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  cloud_firestore:
+    dependency: "direct main"
+    description:
+      name: cloud_firestore
+      sha256: "1232370ad04c21c699d0e73b2dc2e1c3b49258f89a16f0119036fd3c6e8aa2f5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
+  cloud_firestore_platform_interface:
+    dependency: transitive
+    description:
+      name: cloud_firestore_platform_interface
+      sha256: cfc64ae4a48bbb0ff6730b04f2d4653043c7a9b9008a991b1f2012a534b79e26
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.8"
+  cloud_firestore_web:
+    dependency: transitive
+    description:
+      name: cloud_firestore_web
+      sha256: "3db4e4c10feae18d80da86982781578c8e76cb6a43cf83110d8d6a62af9a952a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
   collection:
     dependency: transitive
     description:
@@ -117,26 +148,47 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_database
+<<<<<<< HEAD
       sha256: "3b9ca306d26ad243ccbc4c717ff6e8563a080ebe11ee77fa7349b419c894b42d"
       url: "https://pub.dev"
     source: hosted
     version: "10.5.7"
+=======
+      sha256: "992e2cbff5f76c55fdef9be77fd4874bb1e7845411cc0bba35a5e9bfdeaa220a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "11.0.2"
+>>>>>>> vi
   firebase_database_platform_interface:
     dependency: transitive
     description:
       name: firebase_database_platform_interface
+<<<<<<< HEAD
       sha256: "5864cc362275465e9bd682b243f19419c9d78b861c2db820241eea596ae3b320"
       url: "https://pub.dev"
     source: hosted
     version: "0.2.5+35"
+=======
+      sha256: "5ecb0cc188bd9e6f00fd748b0d07386dd6581346be15af8b9428e1daf8dfae21"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.5+38"
+>>>>>>> vi
   firebase_database_web:
     dependency: transitive
     description:
       name: firebase_database_web
+<<<<<<< HEAD
       sha256: a6008395dd20e8b8dde0691b441c181a1216c3866f89f48dcb6889d34fd35905
       url: "https://pub.dev"
     source: hosted
     version: "0.2.5+7"
+=======
+      sha256: bacfaeeee7273ca46dcfff83d18b8114763a988147a8b528800c78125fa6b66d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.5+10"
+>>>>>>> vi
   flutter:
     dependency: "direct main"
     description: flutter
