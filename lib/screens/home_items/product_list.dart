@@ -1,5 +1,5 @@
 import 'package:doan_tmdt/model/product.dart';
-import 'package:doan_tmdt/model/product_class.dart';
+import 'package:doan_tmdt/model/classes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -12,17 +12,17 @@ class ProductList extends StatefulWidget {
 }
 
 class _ProductListState extends State<ProductList> {
-  Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
+  Query Products_dbRef = FirebaseDatabase.instance.ref().child('Products');
   List<Product> pro = [];
 
   @override
   void initState(){
-    _dbRef.onValue.listen((event) {
+    Products_dbRef.onValue.listen((event) {
       if(this.mounted){
         setState(() {
           pro = event.snapshot.children.map((snapshot){
-            return Product.fromSnapShop(snapshot);
-          }).toList();
+            return Product.fromSnapshot(snapshot);
+          }).where((element) => element.Status == false).toList();
         });
       }
     });
@@ -46,7 +46,6 @@ class _ProductListState extends State<ProductList> {
                 scrollDirection:  Axis.horizontal,
                 itemCount: pro.length,
                 itemBuilder: (context,index){
-                  print(MediaQuery.of(context).size.width);
                   return ProductItem(pro: pro[index]);
                 }
               )

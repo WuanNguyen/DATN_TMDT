@@ -1,3 +1,5 @@
+import 'package:doan_tmdt/model/classes.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class AddDiscount extends StatefulWidget {
@@ -8,13 +10,21 @@ class AddDiscount extends StatefulWidget {
 }
 
 class _AddDiscountState extends State<AddDiscount> {
-  final List<Map<String, String>> discounts = [
-    {'price': '1000', 'description': 'giảm 1k khi mua đơn từ 50k'},
-    {'price': '2000', 'description': 'giảm 2k khi mua đơn từ 1000k'},
-    {'price': '3000', 'description': 'giảm 3k khi mua đơn từ 150k'},
-    {'price': '4000', 'description': 'giảm 4k khi mua đơn từ 200k'},
-    {'price': '5000', 'description': 'giảm 5k khi mua đơn từ 250k'},
-  ];
+  Query Discount_dbRef = FirebaseDatabase.instance.ref().child('Discounts');
+    List<Discount> discount = [];
+
+    @override
+    void initState(){
+      Discount_dbRef.onValue.listen((event) {
+        if(this.mounted){
+          setState(() {
+            discount = event.snapshot.children.map((snapshot){
+              return Discount.fromSnapshot(snapshot);
+            }).where((element) => element.Price >0).toList();
+          });
+        }
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +46,7 @@ class _AddDiscountState extends State<AddDiscount> {
           children: [
             Expanded(
               child: ListView.builder(
-                itemCount: discounts.length,
+                itemCount: discount.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(
@@ -55,7 +65,7 @@ class _AddDiscountState extends State<AddDiscount> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              discounts[index]['price']!,
+                              discount[index].Price.toString()!,
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,
@@ -63,7 +73,7 @@ class _AddDiscountState extends State<AddDiscount> {
                             ),
                             const SizedBox(height: 5.0),
                             Text(
-                              discounts[index]['description']!,
+                              discount[index].Description!,
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 color: Color.fromARGB(255, 0, 0, 0),

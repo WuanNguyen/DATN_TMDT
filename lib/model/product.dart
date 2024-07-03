@@ -1,6 +1,8 @@
-import 'package:doan_tmdt/model/product_class.dart';
+import 'package:doan_tmdt/model/classes.dart';
+import 'package:doan_tmdt/screens/detail_items/rating.dart';
 import 'package:doan_tmdt/screens/detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ProductItem extends StatefulWidget {
   ProductItem({super.key,required this.pro});
@@ -11,6 +13,29 @@ class ProductItem extends StatefulWidget {
 }
 
 class _ProductItemState extends State<ProductItem> {
+  Query ProductSizes_dbRef = FirebaseDatabase.instance.ref().child('ProductSizes');
+  List<ProductSize> sizes = [];
+  ProductSize size = ProductSize(S: ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false),M:ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false),L:ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false));
+
+  @override
+    void initState(){
+      ProductSizes_dbRef.onValue.listen((event) {
+        if(this.mounted){
+          setState(() {
+            sizes = event.snapshot.children.map((snapshot){
+              return ProductSize.fromSnapshot(snapshot);
+            }).toList();
+            size = sizes.firstWhere((element) =>
+              element.L.ID_Product == widget.pro.ID_Product ||  
+              element.M.ID_Product == widget.pro.ID_Product || 
+              element.S.ID_Product == widget.pro.ID_Product
+            );
+          });
+        }
+      });
+    }
+
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -20,7 +45,7 @@ class _ProductItemState extends State<ProductItem> {
       child: Container(
         margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
         width: 167,
-        height: 268,
+        height: 300,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           color: Colors.white
@@ -39,24 +64,26 @@ class _ProductItemState extends State<ProductItem> {
                 border: Border.all(color:const Color.fromARGB(255, 57, 46, 46),width: 2.0),
                 color:Colors.white
                 ),
-              child: Image.network(widget.pro.img,fit:BoxFit.cover)//image (fit: BoxFit.cover)
+              child: Image.network(widget.pro.Image_Url,fit:BoxFit.cover)//image (fit: BoxFit.cover)
             ),
             Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0)),
 
 
             //name
-            Text(widget.pro.name,style:const  TextStyle(color: Color.fromARGB(255, 48, 50, 52),fontWeight: FontWeight.bold),),
+            Text(widget.pro.Product_Name,style:const  TextStyle(color: Color.fromARGB(255, 48, 50, 52),fontWeight: FontWeight.bold),),
             Padding(padding: EdgeInsets.fromLTRB(0, 15, 0, 0)),
             
             //price
-            Text("${widget.pro.price} VNĐ",style:TextStyle(fontWeight: FontWeight.bold)),
+            Text("${size.S.SellPrice - size.S.Discount} - ${size.L.SellPrice - size.L.Discount} VND",style:TextStyle(fontWeight: FontWeight.bold)),
             Padding(padding: EdgeInsets.fromLTRB(0, 3, 0, 0)),
+
+            Container(margin: EdgeInsets.fromLTRB(20, 0, 0, 0),child: Rating(rate: 3.5),),
 
             //button
             GestureDetector(
               onTap: (){
-                print("Added to cart");
-              },//todo: thêm vào giỏ hàng
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> new DetailScreen(pro: widget.pro,)));
+              },
               child: Container(
                 width: 126,
                 height: 46,
@@ -74,9 +101,8 @@ class _ProductItemState extends State<ProductItem> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add_shopping_cart_rounded),
-                    Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
-                    Text("Add to cart",style: TextStyle(fontWeight: FontWeight.bold),)
+                    //todo: rating
+                    Text("View",style: TextStyle(fontWeight: FontWeight.bold),)
                   ],
                 ),
               ),

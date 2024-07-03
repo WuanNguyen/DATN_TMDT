@@ -1,4 +1,5 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:doan_tmdt/textdata.dart';
 // import 'package:doan_tmdt/screens/login/login_screen.dart';
@@ -27,9 +28,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const BottomNavigation(index: 2),
-      //home: const FirstappScreen(),
+      //home: const BottomNavigation(index: 2),
+      home: const FirstappScreen(),
       //home: Textdata(),
+      //home: AdminBottomnav(index: 0),
 
       debugShowCheckedModeBanner: false,
     );

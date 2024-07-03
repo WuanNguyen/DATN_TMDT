@@ -1,5 +1,5 @@
 import 'package:doan_tmdt/model/product.dart';
-import 'package:doan_tmdt/model/product_class.dart';
+import 'package:doan_tmdt/model/classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -10,10 +10,12 @@ class CategoriesScreen extends StatefulWidget {
   @override
   State<CategoriesScreen> createState() => _CategoriesScreenState();
 }
-
+  
 class _CategoriesScreenState extends State<CategoriesScreen> {
 Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
   List<Product> pro = [];
+  List<Product> filterPro = [];
+  int category = 0;
 
   @override
   void initState(){
@@ -21,14 +23,21 @@ Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
       if(this.mounted){
         setState(() {
           pro = event.snapshot.children.map((snapshot){
-            return Product.fromSnapShop(snapshot);
-          }).toList();
+            return Product.fromSnapshot(snapshot);
+          }).where((element) => element.Status == false).toList();
+          filterPro = pro;
         });
       }
     });
   }
 
-  int category = 0;
+  void ProductsFilter(){
+    if(category == 0 ) filterPro = pro;
+    if(category == 1 ) filterPro = pro.where((product) => product.Category == "Adult").toList();
+    if(category == 2 ) filterPro = pro.where((product) => product.Category == "Child").toList();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -55,15 +64,31 @@ Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
           Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
           Row(
             children: [
+              
               OutlinedButton(
                 onPressed: (){
                   setState(() {
                     category = 0;
+                    ProductsFilter();
                   });
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(category==0?Color.fromRGBO(197, 230, 214, 1):null),
                   side: WidgetStatePropertyAll(BorderSide(width: category==0?2.0:0.5))
+                ),
+                child: Text("All")
+              ),
+              Padding(padding: EdgeInsets.fromLTRB(0, 0, 10, 0)),
+              OutlinedButton(
+                onPressed: (){
+                  setState(() {
+                    category = 1;
+                    ProductsFilter();
+                  });
+                },
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(category==1?Color.fromRGBO(197, 230, 214, 1):null),
+                  side: WidgetStatePropertyAll(BorderSide(width: category==1?2.0:0.5))
                 ),
                 child: Text("Adult")
               ),
@@ -71,12 +96,13 @@ Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
               OutlinedButton(
                 onPressed: (){
                   setState(() {
-                    category = 1;
+                    category = 2;
+                    ProductsFilter();
                   });
                 },
                 style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(category==1?Color.fromRGBO(197, 230, 214, 1):null),
-                  side: WidgetStatePropertyAll(BorderSide(width: category==1?2.0:0.5))
+                  backgroundColor: WidgetStatePropertyAll(category==2?Color.fromRGBO(197, 230, 214, 1):null),
+                  side: WidgetStatePropertyAll(BorderSide(width: category==2?2.0:0.5))
                 ),
                 child: Text("Child")
               )
@@ -89,12 +115,12 @@ Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
             decoration: BoxDecoration(
             ),
             child: ListView.builder(
-              itemCount: (pro.length/2).ceil(),
+              itemCount: (filterPro.length/2).ceil(),
               itemBuilder: (context,index){
-                if(pro.length % 2 !=0 && index == ((pro.length/2).ceil()-1)){
+                if(filterPro.length % 2 !=0 && index == ((filterPro.length/2).ceil()-1)){
                   return Row(
                     children: [
-                      ProductItem(pro: pro[index*2])
+                      ProductItem(pro: filterPro[index*2])
                     ],
                   );
                 }
@@ -102,8 +128,8 @@ Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
                 {
                   return Row(
                     children: [
-                      ProductItem(pro: pro[index*2]),
-                      ProductItem(pro: pro[index*2+1])
+                      ProductItem(pro: filterPro[index*2]),
+                      ProductItem(pro: filterPro[index*2+1])
                     ],
                   );
                 }

@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Collection(name: "ELEMENT COLLECTION"),
                           ProductList(genre: "MALE"),
-                          // ProductList(genre: "FEMALE"),
+                          ProductList(genre: "FEMALE"),
                         ],
                       ),
                     )))

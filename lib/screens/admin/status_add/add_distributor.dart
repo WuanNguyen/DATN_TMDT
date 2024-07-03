@@ -1,3 +1,5 @@
+import 'package:doan_tmdt/model/classes.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class AddDistributor extends StatefulWidget {
@@ -8,32 +10,21 @@ class AddDistributor extends StatefulWidget {
 }
 
 class _AddDistributorState extends State<AddDistributor> {
-  final List<Map<String, String>> distributors = [
-    {
-      'name': 'Ecom',
-      'gmail': 'ecom@gmail.com',
-      'address': 'Q1,HCM',
-      'phone': '0335242444'
-    },
-    {
-      'name': 'Ecom',
-      'gmail': 'ecom@gmail.com',
-      'address': 'Q1,HCM',
-      'phone': '0335242444'
-    },
-    {
-      'name': 'Ecom',
-      'gmail': 'ecom@gmail.com',
-      'address': 'Q1,HCM',
-      'phone': '0335242444'
-    },
-    {
-      'name': 'Ecom',
-      'gmail': 'ecom@gmail.com',
-      'address': 'Q1,HCM',
-      'phone': '0335242444'
-    },
-  ];
+ Query Distributors_dbRef = FirebaseDatabase.instance.ref().child('Distributors');
+  List<Distributors> distributors = [];
+
+    @override
+    void initState(){
+      Distributors_dbRef.onValue.listen((event) {
+        if(this.mounted){
+          setState(() {
+            distributors = event.snapshot.children.map((snapshot){
+              return Distributors.fromSnapshot(snapshot);
+            }).where((element) => element.Status == false,).toList();
+          });
+        }
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -88,28 +79,28 @@ class _AddDistributorState extends State<AddDistributor> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                distributors[index]['name']!,
+                                distributors[index].Distributor_Name!,
                                 style: const TextStyle(
                                   fontSize: 18.0,
                                 ),
                               ),
                               const SizedBox(height: 5.0),
                               Text(
-                                distributors[index]['gmail']!,
+                                distributors[index].Email!,
                                 style: const TextStyle(
                                   fontSize: 18.0,
                                 ),
                               ),
                               const SizedBox(height: 5.0),
                               Text(
-                                distributors[index]['address']!,
+                                distributors[index].Address!,
                                 style: const TextStyle(
                                   fontSize: 18.0,
                                 ),
                               ),
                               const SizedBox(height: 5.0),
                               Text(
-                                distributors[index]['phone']!,
+                                distributors[index].Phone!,
                                 style: const TextStyle(
                                   fontSize: 18.0,
                                 ),

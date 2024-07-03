@@ -1,3 +1,5 @@
+import 'package:doan_tmdt/model/classes.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,14 +11,35 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
+  Query Distributors_dbRef = FirebaseDatabase.instance.ref().child('Distributors');
+
+  List<Distributors> distributors = [];
+
   String? select_category;
   String? select_distributor;
+  int curDisID = 0;
+
+  @override
+  void initState(){
+    Distributors_dbRef.onValue.listen((event) {
+      if(this.mounted){
+        setState(() {
+          distributors = event.snapshot.children.map((snapshot){
+            return Distributors.fromSnapshot(snapshot);
+          }).where((element) => element.Status == false).toList();
+          select_distributor = distributors.isNotEmpty? distributors[0].Distributor_Name : null;
+        });
+      }
+    });
+  }
+
+
 
   List<String> categorys = [
     "Adult",
     "Children",
   ];
-  List<String> Distributors = ["Ecom", "Yong Yong"];
+  //List<String> Distributors = ["Ecom", "Yong Yong"];
 
   @override
   Widget build(BuildContext context) {
@@ -199,12 +222,14 @@ class _AddProductState extends State<AddProduct> {
                           onChanged: (disnew) {
                             setState(() {
                               select_distributor = disnew!;
+                              print("Distrubutos Name: ${(distributors.firstWhere((element) => element.Distributor_Name.toString() == select_distributor).Distributor_Name.toString())}"); 
+                              print("Distrubutos ID: ${int.parse(distributors.firstWhere((element) => element.Distributor_Name.toString() == select_distributor).ID_Distributor.toString())}");                             
                             });
                           },
-                          items: Distributors.map((String distributor) {
+                          items: distributors.map((Distributors distributor) {
                             return DropdownMenuItem<String>(
-                              value: distributor,
-                              child: Text(distributor),
+                              value: distributor.Distributor_Name,
+                              child: Text(distributor.Distributor_Name),
                             );
                           }).toList(),
                           decoration: const InputDecoration(
