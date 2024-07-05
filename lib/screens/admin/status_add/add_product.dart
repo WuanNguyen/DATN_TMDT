@@ -391,10 +391,10 @@ class _AddProductState extends State<AddProduct> {
                         labelText: "Description",
                         labelStyle: TextStyle(fontWeight: FontWeight.w500),
                       ),
-                      // inputFormatters: [
-                      //   LengthLimitingTextInputFormatter(
-                      //       200), // Giới hạn 20 ký tự
-                      // ],
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(
+                            200), // Giới hạn 20 ký tự
+                      ],
                     ),
                   ],
                 ),

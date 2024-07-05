@@ -93,12 +93,16 @@ class _CartScreenState extends State<CartScreen> {
 
     userCartDbRef.onValue.listen((event) {
       final List<CartDetail> fetchedCarts = [];
-      event.snapshot.children.forEach((snapshot) {
-        fetchedCarts.add(CartDetail.fromSnapshot(snapshot));
-      });
-      setState(() {
-        carts = fetchedCarts;
-      });
+      if (this.mounted) {
+        setState(() {
+          carts = event.snapshot.children
+              .map((snapshot) {
+                return CartDetail.fromSnapshot(snapshot);
+              })
+              .where((element) => element.Stt == 0)
+              .toList();
+        });
+      }
     });
 
     productsDbRef.onValue.listen((event) {
@@ -139,22 +143,21 @@ class _CartScreenState extends State<CartScreen> {
     // filteredSizes.clear();
 
     // Filtering products and sizes based on cart data
-    carts.forEach((cart) {
-      products.forEach((product) {
-        if (product.ID_Product.toString() == cart.ID_Product.toString()) {
-          filteredProducts.add(product);
-        }
-      });
-    });
+    // carts.forEach((cart) {
+    //   products.forEach((product) {
+    //     if (product.ID_Product.toString() == cart.ID_Product.toString()) {
+    //       filteredProducts.add(product);
+    //     }
+    //   });
+    // });
 
-    filteredProducts.forEach((product) {
-      productSizes.forEach((size) {
-        if (size.L.ID_Product == product.ID_Product) {
-          filteredSizes.add(size);
-        }
-      });
-    });
-    print(filteredSizes.isEmpty);
+    // filteredProducts.forEach((product) {
+    //   productSizes.forEach((size) {
+    //     if (size.L.ID_Product == product.ID_Product) {
+    //       filteredSizes.add(size);
+    //     }
+    //   });
+    // });
 
     // Calculating valid discounts based on total price
     validDiscounts = discounts
