@@ -1,14 +1,13 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
-import 'package:doan_tmdt/screens/about_us.dart';
-import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
-import 'package:doan_tmdt/screens/categories_screen.dart';
+import 'package:doan_tmdt/screens/admin/admin_add.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:doan_tmdt/screens/search_screen.dart';
 import 'package:doan_tmdt/textdata.dart';
-// import 'package:doan_tmdt/screens/login/login_screen.dart';
+import 'package:doan_tmdt/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:doan_tmdt/screens/about_us.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,11 +32,9 @@ class MyApp extends StatelessWidget {
       ),
       //home: const BottomNavigation(index: 1),
       //home: const FirstappScreen(),
-      //home: Textdata(),
-      //home: AdminBottomnav(index: 0),
-      //home: SearchScreen(),
-      //home: CategoriesScreen(),
-      home: AboutUs(),
+      home:AboutUs(),
+      //home: ShowData(data1: '', data2: '', data3: '', data4: ''),
+      //home: AdminAdd(),
 
       debugShowCheckedModeBanner: false,
     );

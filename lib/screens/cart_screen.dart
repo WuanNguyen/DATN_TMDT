@@ -18,7 +18,8 @@ class _CartScreenState extends State<CartScreen> {
   Query discountDbRef = FirebaseDatabase.instance.ref().child('Discounts');
   Query cartDbRef = FirebaseDatabase.instance.ref().child('Carts');
   Query productsDbRef = FirebaseDatabase.instance.ref().child('Products');
-  Query productSizesDbRef = FirebaseDatabase.instance.ref().child('ProductSizes');
+  Query productSizesDbRef =
+      FirebaseDatabase.instance.ref().child('ProductSizes');
   late final Query userCartDbRef;
 
   String getUserUID() {
@@ -31,7 +32,8 @@ class _CartScreenState extends State<CartScreen> {
     return sellPrice - discountPrice;
   }
 
-  int getTotalPrice(List<CartDetail> cartDetails, List<ProductSize> productSizes) {
+  int getTotalPrice(
+      List<CartDetail> cartDetails, List<ProductSize> productSizes) {
     int total = 0;
     cartDetails.forEach((cartDetail) {
       productSizes.forEach((productSize) {
@@ -40,8 +42,10 @@ class _CartScreenState extends State<CartScreen> {
               (cartDetail.ID_ProductSize == "S"
                   ? getPrice(productSize.S.SellPrice, productSize.S.Discount)
                   : cartDetail.ID_ProductSize == "M"
-                      ? getPrice(productSize.M.SellPrice, productSize.M.Discount)
-                      : getPrice(productSize.L.SellPrice, productSize.L.Discount));
+                      ? getPrice(
+                          productSize.M.SellPrice, productSize.M.Discount)
+                      : getPrice(
+                          productSize.L.SellPrice, productSize.L.Discount));
         }
       });
     });
@@ -70,13 +74,17 @@ class _CartScreenState extends State<CartScreen> {
     discountDbRef.onValue.listen((event) {
       List<Discount> fetchedDiscounts = [];
       setState(() {
-        if(this.mounted){
-          validDiscounts = event.snapshot.children.map((snapshot){
-            return Discount.fromSnapshot(snapshot);
-          }).where((element) => element.Status == 0).toList();
-      }
-        discounts = fetchedDiscounts.where((discount) =>
-            discount.Status == 0 && discount.Uses != 0).toList();
+        if (this.mounted) {
+          validDiscounts = event.snapshot.children
+              .map((snapshot) {
+                return Discount.fromSnapshot(snapshot);
+              })
+              .where((element) => element.Status == 0)
+              .toList();
+        }
+        discounts = fetchedDiscounts
+            .where((discount) => discount.Status == 0 && discount.Uses != 0)
+            .toList();
         if (discounts.isNotEmpty) {
           discountValue = int.parse(discounts[0].Price.toString());
         }
@@ -85,33 +93,45 @@ class _CartScreenState extends State<CartScreen> {
 
     userCartDbRef.onValue.listen((event) {
       final List<CartDetail> fetchedCarts = [];
-      if(this.mounted){
+      if (this.mounted) {
         setState(() {
-          carts = event.snapshot.children.map((snapshot){
-            return CartDetail.fromSnapshot(snapshot);
-          }).where((element) =>element.Stt == 0).toList();
+          carts = event.snapshot.children
+              .map((snapshot) {
+                return CartDetail.fromSnapshot(snapshot);
+              })
+              .where((element) => element.Stt == 0)
+              .toList();
         });
       }
     });
 
     productsDbRef.onValue.listen((event) {
       List<Product> fetchedProducts = [];
-      if(this.mounted){
+      if (this.mounted) {
         setState(() {
-          filteredProducts = event.snapshot.children.map((snapshot){
-            return Product.fromSnapshot(snapshot);
-          }).where((element) => element.Status == 0).toList();
+          filteredProducts = event.snapshot.children
+              .map((snapshot) {
+                return Product.fromSnapshot(snapshot);
+              })
+              .where((element) => element.Status == 0)
+              .toList();
         });
       }
     });
 
     productSizesDbRef.onValue.listen((event) {
       List<ProductSize> fetchedProductSizes = [];
-      if(this.mounted){
+      if (this.mounted) {
         setState(() {
-          filteredSizes = event.snapshot.children.map((snapshot){
-            return ProductSize.fromSnapshot(snapshot);
-          }).where((element) => element.S.Status == 0 || element.M.Status == 0 || element.L.Status == 0).toList();
+          filteredSizes = event.snapshot.children
+              .map((snapshot) {
+                return ProductSize.fromSnapshot(snapshot);
+              })
+              .where((element) =>
+                  element.S.Status == 0 ||
+                  element.M.Status == 0 ||
+                  element.L.Status == 0)
+              .toList();
         });
       }
     });
@@ -140,8 +160,10 @@ class _CartScreenState extends State<CartScreen> {
     // });
 
     // Calculating valid discounts based on total price
-    validDiscounts = discounts.where((discount) =>
-        discount.Required < getTotalPrice(carts, productSizes)).toList();
+    validDiscounts = discounts
+        .where((discount) =>
+            discount.Required < getTotalPrice(carts, productSizes))
+        .toList();
     totalPrice = getTotalPrice(carts, productSizes);
 
     print("is empty?:  ");
@@ -214,11 +236,14 @@ class _CartScreenState extends State<CartScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  filteredProducts[index].Product_Name.toString() +
+                                  filteredProducts[index]
+                                          .Product_Name
+                                          .toString() +
                                       " - " +
                                       carts[index].ID_ProductSize,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 17),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17),
                                 ),
                                 Text(
                                   filteredProducts[index].Category,
@@ -229,18 +254,43 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                                 Text(
                                   carts[index].ID_ProductSize == "S"
-                                  ? (filteredSizes.isNotEmpty && index < filteredSizes.length 
-                                      ? getPrice(filteredSizes[index].S.SellPrice, filteredSizes[index].S.Discount).toString() 
-                                      : "Size not available")
-                                  : carts[index].ID_ProductSize == "M"
-                                      ? (filteredSizes.isNotEmpty && index < filteredSizes.length 
-                                          ? getPrice(filteredSizes[index].M.SellPrice, filteredSizes[index].M.Discount).toString() 
+                                      ? (filteredSizes.isNotEmpty &&
+                                              index < filteredSizes.length
+                                          ? getPrice(
+                                                  filteredSizes[index]
+                                                      .S
+                                                      .SellPrice,
+                                                  filteredSizes[index]
+                                                      .S
+                                                      .Discount)
+                                              .toString()
                                           : "Size not available")
-                                      : (filteredSizes.isNotEmpty && index < filteredSizes.length 
-                                          ? getPrice(filteredSizes[index].L.SellPrice, filteredSizes[index].L.Discount).toString() 
-                                          : "Size not available"),
+                                      : carts[index].ID_ProductSize == "M"
+                                          ? (filteredSizes.isNotEmpty &&
+                                                  index < filteredSizes.length
+                                              ? getPrice(
+                                                      filteredSizes[index]
+                                                          .M
+                                                          .SellPrice,
+                                                      filteredSizes[index]
+                                                          .M
+                                                          .Discount)
+                                                  .toString()
+                                              : "Size not available")
+                                          : (filteredSizes.isNotEmpty &&
+                                                  index < filteredSizes.length
+                                              ? getPrice(
+                                                      filteredSizes[index]
+                                                          .L
+                                                          .SellPrice,
+                                                      filteredSizes[index]
+                                                          .L
+                                                          .Discount)
+                                                  .toString()
+                                              : "Size not available"),
                                   style: TextStyle(
-                                      fontSize: 13, fontWeight: FontWeight.bold),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -250,7 +300,8 @@ class _CartScreenState extends State<CartScreen> {
                                       child: Row(
                                         children: [
                                           Container(
-                                            margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                            margin:
+                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
                                             width: 36,
                                             height: 36,
                                             clipBehavior: Clip.antiAlias,
@@ -262,8 +313,8 @@ class _CartScreenState extends State<CartScreen> {
                                                 onPressed: () {
                                                   setState(() {
                                                     carts[index].Quantity += 1;
-                                                    totalPrice =
-                                                        getTotalPrice(carts, productSizes);
+                                                    totalPrice = getTotalPrice(
+                                                        carts, productSizes);
                                                   });
                                                 },
                                                 icon: Icon(Icons.add,
@@ -272,10 +323,12 @@ class _CartScreenState extends State<CartScreen> {
                                           ),
                                           Container(
                                             width: 20,
-                                            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                            margin: EdgeInsets.fromLTRB(
+                                                10, 0, 10, 0),
                                             child: Text(
                                               carts[index].Quantity.toString(),
-                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
@@ -290,10 +343,12 @@ class _CartScreenState extends State<CartScreen> {
                                             child: IconButton(
                                                 onPressed: () {
                                                   setState(() {
-                                                    if (carts[index].Quantity > 0)
-                                                      carts[index].Quantity -= 1;
-                                                    totalPrice =
-                                                        getTotalPrice(carts, productSizes);
+                                                    if (carts[index].Quantity >
+                                                        0)
+                                                      carts[index].Quantity -=
+                                                          1;
+                                                    totalPrice = getTotalPrice(
+                                                        carts, productSizes);
                                                   });
                                                 },
                                                 icon: Icon(Icons.remove,
@@ -339,7 +394,8 @@ class _CartScreenState extends State<CartScreen> {
                                 child: Text(
                                   "Discount:",
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 17),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17),
                                 ),
                               ),
                               DropdownButton<String>(
@@ -353,7 +409,8 @@ class _CartScreenState extends State<CartScreen> {
                                     .map((Discount validDiscounts) {
                                   return DropdownMenuItem<String>(
                                       value: validDiscounts.Price.toString(),
-                                      child: Text(validDiscounts.Price.toString()));
+                                      child: Text(
+                                          validDiscounts.Price.toString()));
                                 }).toList(),
                               )
                             ],
@@ -368,7 +425,8 @@ class _CartScreenState extends State<CartScreen> {
                                 child: Text(
                                   "Total:",
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 17),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17),
                                 ),
                               ),
                               Text(

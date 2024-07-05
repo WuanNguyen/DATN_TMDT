@@ -26,7 +26,7 @@ class _TextdataState extends State<Textdata> {
           int newUID = currentUID + 1;
 
           // Lưu người dùng mới với UID mới
-          await _databaseReference.child('Users').child(newUID.toString()).set({
+          await _databaseReference.child('text').child(newUID.toString()).set({
             'Username': 'YourName',
             'Password': 'Password',
             'Email': 'your_email',

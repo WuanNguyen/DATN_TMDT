@@ -1,5 +1,7 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -11,6 +13,40 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
+  //--------------------------
+  String image =
+      "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
+  String name = "";
+
+  //------------------
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  //------------------------
+  Future<void> getUserInfo() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      DatabaseReference userRef = FirebaseDatabase.instance
+          .reference()
+          .child('Users')
+          .child(currentUser.uid);
+      DataSnapshot snapshot = await userRef.once().then((DatabaseEvent event) {
+        return event.snapshot;
+      });
+      if (snapshot.value != null) {
+        Map userData = snapshot.value as Map;
+        setState(() {
+          name = userData['Username'] ?? '';
+          image = userData['Image_Url'] ?? '';
+        });
+      }
+    }
+  }
+  //--------------------
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -31,7 +67,7 @@ class _MenuState extends State<Menu> {
                       children: [
                         ClipOval(
                           child: Image.network(
-                            'https://firebasestorage.googleapis.com/v0/b/tmdt-bangiay.appspot.com/o/images%2Fcat.jpg?alt=media&token=ee7848ba-9db3-4dfd-8109-7dff8eebc416',
+                            image,
                             width: 100,
                             height: 100,
                             fit: BoxFit.cover,
@@ -43,8 +79,8 @@ class _MenuState extends State<Menu> {
                   const SizedBox(
                     height: 5,
                   ),
-                  const Text(
-                    'Huan Nguyen',
+                  Text(
+                    name,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],

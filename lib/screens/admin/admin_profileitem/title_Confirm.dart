@@ -1,66 +1,116 @@
 import 'package:doan_tmdt/model/classes.dart';
-import 'package:doan_tmdt/model/dialog_notification.dart';
-import 'package:doan_tmdt/screens/admin/admin_profileitem/title_Confirm.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-class AdminConfirm extends StatefulWidget {
-  const AdminConfirm({super.key});
-
+class TitleConfirm extends StatefulWidget {
+  const TitleConfirm({Key? key, required this.orderId}) : super(key: key);
+  final String orderId;
   @override
-  State<AdminConfirm> createState() => _AdminConfirmState();
+  State<TitleConfirm> createState() => _TitleConfirmState();
 }
 
-class _AdminConfirmState extends State<AdminConfirm> {
-  String imageUser =
+class _TitleConfirmState extends State<TitleConfirm> {
+  String image =
       "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
 
-  final DatabaseReference Orders_dbRef =
-      FirebaseDatabase.instance.ref().child('Order');
+  Map<String, Product> productCache = {};
 
-  List<Order> order = [];
-
-  Map<String, Users> userCache = {};
-
-  Future<Users> getUserInfo(String userId) async {
-    DatabaseReference userRef =
-        FirebaseDatabase.instance.ref().child('Users').child(userId);
-    DataSnapshot snapshot = await userRef.get();
-    return Users.fromSnapshot(snapshot);
+  Future<Product> getProInfo(String proID) async {
+    DatabaseReference proRef =
+        FirebaseDatabase.instance.ref().child('Products').child(proID);
+    DataSnapshot snapshot = await proRef.get();
+    return Product.fromSnapshot(snapshot);
   }
+  // final DatabaseReference _databaseReference = FirebaseDatabase(
+  //   databaseURL: 'https://datn-sporthuviz-bf24e-default-rtdb.firebaseio.com/',
+  // ).ref();
+  // List<Map<dynamic, dynamic>> lst1 = [];
+
+  //List lst2 = [];
+
+  // Future<void> _loadData() async {
+  //   try {
+  //     // Tải dữ liệu từ Firebase Realtime Database
+  //     DatabaseEvent _event = await _databaseReference.once();
+  //     DataSnapshot? _dataSnapshot = _event.snapshot;
+
+  //     if (_dataSnapshot != null) {
+  //       Map<dynamic, dynamic> data =
+  //           (_dataSnapshot.value as Map)['OrderDetail'];
+
+  //       // Tạo chuỗi id để so sánh
+  //       String id = widget.orderId;
+
+  //       // Duyệt qua các cặp key-value trong data
+  //       data.forEach((key, value) {
+  //         // Kiểm tra nếu key của mục hiện tại bằng id
+  //         print(key);
+  //         if (key == id) {
+  //           // Thêm value (order detail) vào lst1
+  //           lst1.add(value);
+  //         }
+  //       });
+  //     }
+
+  //     // Tạo danh sách lst2 từ các giá trị trong lst1
+  //     // lst1.forEach((element) {
+  //     //   lst2.add(element.values);
+  //     // });
+
+  //     // Cập nhật giao diện nếu cần
+  //     setState(() {
+  //       // Các thao tác cập nhật giao diện ở đây (nếu cần)
+  //     });
+  //   } catch (e) {
+  //     // Xử lý lỗi nếu có
+  //     print(e.toString());
+  //   }
+
+  //   // In ra màn hình console để debug
+  //   print(lst1);
+  //   print("------------------0");
+  //   print(lst2);
+  // }
+  ////////////////////////////////////////
+
+  List<OrderDetail> orderDetail = [];
 
   @override
   void initState() {
-    super.initState();
-    Orders_dbRef.onValue.listen((event) {
-      if (this.mounted) {
-        setState(() {
-          order = event.snapshot.children
-              .map((snapshot) {
-                return Order.fromSnapshot(snapshot);
-              })
-              .where(
-                (element) => element.Order_Status == 'xacnhan',
-              )
-              .toList();
-        });
+    final DatabaseReference OrderDetail_dbRef = FirebaseDatabase.instance
+        .reference()
+        .child('OrderDetail')
+        .child(widget.orderId);
 
-        // Lấy thông tin người dùng sau khi cập nhật danh sách đơn hàng
-        for (var orderItem in order) {
-          if (!userCache.containsKey(orderItem.ID_User)) {
-            getUserInfo(orderItem.ID_User!).then((userInfo) {
-              setState(() {
-                userCache[orderItem.ID_User!] = userInfo;
-              });
+    super.initState();
+    OrderDetail_dbRef.onValue.listen((event) {
+      if (mounted) {
+        setState(() {
+          orderDetail = event.snapshot.children.map((snapshot) {
+            return OrderDetail.fromSnapshot(snapshot);
+          }).toList();
+        });
+      }
+      for (var Proitem in orderDetail) {
+        if (!productCache.containsKey(Proitem.idProduct)) {
+          getProInfo(Proitem.idProduct!).then((proInfo) {
+            setState(() {
+              productCache[Proitem.idProduct!] = proInfo;
             });
-          }
+          });
         }
       }
     });
   }
 
+  //---------------------------------------
   @override
   Widget build(BuildContext context) {
+    //print(widget.orderId);
+    print('----------------------------');
+    print(orderDetail.length.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -100,15 +150,19 @@ class _AdminConfirmState extends State<AdminConfirm> {
                 children: [
                   Expanded(
                     child: ListView.builder(
-                      itemCount: order.length,
+                      itemCount: orderDetail.length,
                       itemBuilder: (context, index) {
-                        final item = order[index];
-                        final userName =
-                            userCache[item.ID_User]?.Username ?? 'Loading...';
-                        final picture = userCache[item.ID_User]?.Image_Url ??
+                        final item = orderDetail[index];
+                        final namePro =
+                            productCache[item.idProduct]?.Product_Name ??
+                                'Loading...';
+                        // final userName =
+                        //     userCache[item.ID_User]?.Username ?? 'Loading...';
+                        final picture = productCache[item.idProduct]
+                                ?.Image_Url ??
                             'https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a';
-                        final address =
-                            userCache[item.ID_User]?.Address ?? 'Loading...';
+                        // final address =
+                        //     userCache[item.ID_User]?.Address ?? 'Loading...';
 
                         return Container(
                           margin: EdgeInsets.symmetric(
@@ -128,11 +182,16 @@ class _AdminConfirmState extends State<AdminConfirm> {
                                 children: [
                                   Container(
                                     decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                          8.0), // Độ cong của góc
                                       border: Border.all(
-                                          color: Colors.black, width: 2),
-                                      borderRadius: BorderRadius.circular(100),
+                                          color: Colors.black,
+                                          width:
+                                              2), // Đặt màu và độ rộng của viền
                                     ),
-                                    child: ClipOval(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                          8.0), // Độ cong của góc cho hình ảnh
                                       child: Image.network(
                                         picture,
                                         width: 50,
@@ -140,26 +199,7 @@ class _AdminConfirmState extends State<AdminConfirm> {
                                         fit: BoxFit.cover,
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => TitleConfirm(
-                                              orderId: order[index]
-                                                  .ID_Order), // Sử dụng ID của đơn hàng
-                                        ),
-                                      );
-                                    },
-                                    child: const Text(
-                                      'Detail',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
+                                  )
                                 ],
                               ),
                               const SizedBox(
@@ -173,14 +213,14 @@ class _AdminConfirmState extends State<AdminConfirm> {
                                       style: DefaultTextStyle.of(context).style,
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: 'Name: ',
+                                          text: 'Name Product: ',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18.0,
                                           ),
                                         ),
                                         TextSpan(
-                                          text: userName,
+                                          text: namePro,
                                           style: TextStyle(
                                             fontSize: 18.0,
                                           ),
@@ -194,14 +234,14 @@ class _AdminConfirmState extends State<AdminConfirm> {
                                       style: DefaultTextStyle.of(context).style,
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: 'Address: ',
+                                          text: 'Size: ',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18.0,
                                           ),
                                         ),
                                         TextSpan(
-                                          text: address,
+                                          text: item.idProductSize,
                                           style: TextStyle(
                                             fontSize: 18.0,
                                           ),
@@ -215,16 +255,14 @@ class _AdminConfirmState extends State<AdminConfirm> {
                                       style: DefaultTextStyle.of(context).style,
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: 'Total Price: ',
+                                          text: 'Price: ',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18.0,
                                           ),
                                         ),
                                         TextSpan(
-                                          text: order[index]
-                                              .Total_Price
-                                              .toString(),
+                                          text: item.price.toString(),
                                           style: TextStyle(
                                             fontSize: 18.0,
                                           ),
@@ -238,31 +276,37 @@ class _AdminConfirmState extends State<AdminConfirm> {
                                       style: DefaultTextStyle.of(context).style,
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: 'Payment: ',
+                                          text: 'Quantity: ',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18.0,
                                           ),
                                         ),
                                         TextSpan(
-                                          text: order[index].Payment.toString(),
+                                          text: item.quantity.toString(),
                                           style: TextStyle(
                                             fontSize: 18.0,
                                           ),
                                         ),
+                                        // TextSpan(
+                                        //   text: order[index].Payment.toString(),
+                                        //   style: TextStyle(
+                                        //     fontSize: 18.0,
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ),
                                   const SizedBox(
                                     height: 5.0,
                                   ),
-                                  Text(
-                                    '                                      ' +
-                                        order[index].Order_Date.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 15.0,
-                                    ),
-                                  ),
+                                  // Text(
+                                  //   '                                      ' +
+                                  //       order[index].Order_Date.toString(),
+                                  //   style: const TextStyle(
+                                  //     fontSize: 15.0,
+                                  //   ),
+                                  // ),
                                   const SizedBox(height: 5.0),
                                 ],
                               ),
@@ -270,6 +314,19 @@ class _AdminConfirmState extends State<AdminConfirm> {
                           ),
                         );
                       },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(
+                          'Confirm',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
                     ),
                   ),
                 ],

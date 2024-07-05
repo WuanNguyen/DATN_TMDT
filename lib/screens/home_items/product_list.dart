@@ -3,7 +3,6 @@ import 'package:doan_tmdt/model/classes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-
 class ProductList extends StatefulWidget {
   ProductList({super.key, required this.genre});
   String genre;
@@ -14,15 +13,15 @@ class ProductList extends StatefulWidget {
 class _ProductListState extends State<ProductList> {
   Query Products_dbRef = FirebaseDatabase.instance.ref().child('Products');
   List<Product> pro = [];
-
   @override
-  void initState(){
+  void initState() {
     Products_dbRef.onValue.listen((event) {
-      if(this.mounted){
+      if (this.mounted) {
         setState(() {
-          pro = event.snapshot.children.map((snapshot){
-            return Product.fromSnapshot(snapshot);
-          }).where((element) => element.Status == 0).toList();
+          pro = event.snapshot.children
+              .map((snapshot) => Product.fromSnapshot(snapshot))
+              .where((element) => element.Status == 0)
+              .toList();
         });
       }
     });
@@ -38,20 +37,23 @@ class _ProductListState extends State<ProductList> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(widget.genre,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+          Text(
+            widget.genre,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+          ),
           Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0)),
-          Container(//todo: sua width
-              height: 310,
-              width: 393,
-              child: ListView.builder(
-                scrollDirection:  Axis.horizontal,
-                itemCount: pro.length,
-                itemBuilder: (context,index){
-                  return ProductItem(pro: pro[index]);
-                }
-              )
-            )
-          
+          Container(
+            height: 310,
+            width: 393,
+            child: pro.isNotEmpty
+                ? ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: pro.length,
+                    itemBuilder: (context, index) {
+                      return ProductItem(pro: pro[index]);
+                    })
+                : Center(child: Text('No products found')),
+          )
         ],
       ),
     );

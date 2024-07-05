@@ -1,8 +1,38 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// User ------------------------------------------------------
+
+class Users {
+  String ID_User;
+  String Address;
+  String Image_Url;
+  String Username;
+  String Phone;
+  int Status;
+  Users({
+    required this.ID_User,
+    required this.Address,
+    required this.Image_Url,
+    required this.Username,
+    required this.Phone,
+    required this.Status,
+  });
+  factory Users.fromSnapshot(DataSnapshot snapshot) {
+    return Users(
+      ID_User: snapshot.child("ID_User").value.toString(),
+      Address: snapshot.child("Address").value.toString(),
+      Image_Url: snapshot.child("Image_Url").value.toString(),
+      Username: snapshot.child("Username").value.toString(),
+      Phone: snapshot.child("Phone").value.toString(),
+      Status: int.parse(snapshot.child("Status").value.toString()),
+    );
+  }
+}
 
 //---------------------Product Size-------------------------
-class ProductSize{
+class ProductSize {
   ProductSizeDetail L;
   ProductSizeDetail M;
   ProductSizeDetail S;
@@ -13,18 +43,17 @@ class ProductSize{
     required this.S,
   });
 
-  factory ProductSize.fromSnapshot(DataSnapshot snapshot){
+  factory ProductSize.fromSnapshot(DataSnapshot snapshot) {
     return ProductSize(
-      L: ProductSizeDetail.fromSnapshot(snapshot.child("L")), 
-      M: ProductSizeDetail.fromSnapshot(snapshot.child("M")), 
+      L: ProductSizeDetail.fromSnapshot(snapshot.child("L")),
+      M: ProductSizeDetail.fromSnapshot(snapshot.child("M")),
       S: ProductSizeDetail.fromSnapshot(snapshot.child("S")),
     );
   }
 }
 
-
 //---------------------Product Size Detail-------------------------
-class ProductSizeDetail{
+class ProductSizeDetail {
   String ID_Product;
   int Stock;
   int ImportPrice;
@@ -32,28 +61,24 @@ class ProductSizeDetail{
   int Discount = 0;
   int Status;
 
-  ProductSizeDetail({
-    required this.ID_Product,
-    required this.Stock,
-    required this.ImportPrice,
-    required this.SellPrice,
-    required this.Discount,
-    required this.Status
-  });
+  ProductSizeDetail(
+      {required this.ID_Product,
+      required this.Stock,
+      required this.ImportPrice,
+      required this.SellPrice,
+      required this.Discount,
+      required this.Status});
 
-  factory ProductSizeDetail.fromSnapshot(DataSnapshot snapshot){
+  factory ProductSizeDetail.fromSnapshot(DataSnapshot snapshot) {
     return ProductSizeDetail(
-      ID_Product: snapshot.child("ID_Product").value.toString(), 
-      Stock: int.parse(snapshot.child("Stock").value.toString()), 
-      ImportPrice: int.parse(snapshot.child("ImportPrice").value.toString()), 
-      SellPrice: int.parse(snapshot.child("SellPrice").value.toString()), 
-      Discount: int.parse(snapshot.child("Discount").value.toString()), 
-      Status: int.parse(snapshot.child("Status").value.toString())
-    );
+        ID_Product: snapshot.child("ID_Product").value.toString(),
+        Stock: int.parse(snapshot.child("Stock").value.toString()),
+        ImportPrice: int.parse(snapshot.child("ImportPrice").value.toString()),
+        SellPrice: int.parse(snapshot.child("SellPrice").value.toString()),
+        Discount: int.parse(snapshot.child("Discount").value.toString()),
+        Status: int.parse(snapshot.child("Status").value.toString()));
   }
-
 }
-
 
 //---------------------Products-------------------------
 class Product {
@@ -78,20 +103,17 @@ class Product {
 
   factory Product.fromSnapshot(DataSnapshot snapshot) {
     return Product(
-      ID_Distributor:
-          snapshot.child("ID_Distributor").value.toString(),
-      ID_Product: snapshot.child("ID_Product").value.toString(),
-      Product_Name: snapshot.child("Product_Name").value.toString(),
-      Category: snapshot.child("Category").value.toString(),
-      Description: snapshot.child("Description").value.toString(),
-      Image_Url: snapshot.child("Image_Url").value.toString(),
-      Status: int.parse(snapshot.child("Status").value.toString())
-    );
+        ID_Distributor: snapshot.child("ID_Distributor").value.toString(),
+        ID_Product: snapshot.child("ID_Product").value.toString(),
+        Product_Name: snapshot.child("Product_Name").value.toString(),
+        Category: snapshot.child("Category").value.toString(),
+        Description: snapshot.child("Description").value.toString(),
+        Image_Url: snapshot.child("Image_Url").value.toString(),
+        Status: int.parse(snapshot.child("Status").value.toString()));
   }
 }
 
-
-//---------------------Discount-------------------------
+//---------------------Discount------------------------- đã fix
 class Discount {
   String Description;
   String id;
@@ -99,7 +121,7 @@ class Discount {
   int Uses;
   int Price;
   int Required;
-  int Status;
+  bool Status;
 
   Discount({
     required this.Description,
@@ -118,11 +140,12 @@ class Discount {
       Uses: int.parse(snapshot.child("Uses").value.toString()),
       Price: int.parse(snapshot.child("Price").value.toString()),
       Required: int.parse(snapshot.child("Required").value.toString()),
-      Status: int.parse(snapshot.child("Status").value.toString())
+      Status: int.parse(snapshot.child("Status").value.toString()) == 1
+          ? true
+          : false,
     );
   }
 }
-
 
 //---------------------Distributors------------------------- đã fix
 class Distributors {
@@ -132,7 +155,7 @@ class Distributors {
   String Email;
   String Address;
   String Phone;
-  int Status;
+  bool Status;
 
   Distributors({
     required this.ID_Distributor,
@@ -150,51 +173,82 @@ class Distributors {
       Email: snapshot.child("Email").value.toString(),
       Address: snapshot.child("Address").value.toString(),
       Phone: snapshot.child("Phone").value.toString(),
-      Status: int.parse(snapshot.child("Status").value.toString())
+      Status: int.parse(snapshot.child("Status").value.toString()) == 1
+          ? true
+          : false,
     );
   }
 }
 
-
 //---------------------Order-------------------------
-class Order{
-  String ID_Product;
-  String ID_ProductSize;
-  int Quantity;
+class Order {
+  String ID_Order;
+  String ID_User;
   int Discount;
   int Total_Price;
-  String Shop_Address;
+  String Order_Date;
   String Payment;
-  int Order_Status;
+  String Order_Status;
+
+  ///
 
   Order({
-    required this.ID_Product,
-    required this.ID_ProductSize,
-    required this.Quantity,
+    required this.ID_Order,
+    //required this.ID_Product,
+    required this.ID_User,
+    //required this.ID_ProductSize,
+    // required this.Quantity,
     required this.Discount,
     required this.Total_Price,
-    required this.Shop_Address,
+    required this.Order_Date,
+    //required this.Shop_Address,
     required this.Payment,
     required this.Order_Status,
   });
 
-  factory Order.fromSnapshot(DataSnapshot snapshot){
+  factory Order.fromSnapshot(DataSnapshot snapshot) {
     return Order(
-      ID_Product: snapshot.child("ID_Product").value.toString(),
-      ID_ProductSize: snapshot.child("ID_ProductSize").value.toString(),
-      Quantity: int.parse(snapshot.child("Quantity").value.toString()),
+      ID_Order: snapshot.child("ID_Order").value.toString(),
+      //ID_Product: int.parse(snapshot.child("ID_Product").value.toString()),
+      ID_User: snapshot.child("ID_User").value.toString(),
+      //ID_ProductSize: snapshot.child("ID_ProductSize").value.toString(),
+      //Quantity: int.parse(snapshot.child("Quantity").value.toString()),
       Discount: int.parse(snapshot.child("Discount").value.toString()),
       Total_Price: int.parse(snapshot.child("Total_Price").value.toString()),
-      Shop_Address: snapshot.child("Shop_Address").value.toString(),
-      Payment: snapshot.child("payment").value.toString(),
-      Order_Status: int.parse(snapshot.child("Order_Status").value.toString()),
+      Order_Date: snapshot.child("Order_Date").value.toString(),
+      //Shop_Address: snapshot.child("Shop_Address").value.toString(),
+      Payment: snapshot.child("Payment").value.toString(),
+      Order_Status: snapshot.child("Order_Status").value.toString(),
     );
   }
 }
 
+// class OrderDetail---------------------------------------
+class OrderDetail {
+  final String idProduct;
+  final String idProductSize;
+  final int price;
+  final int quantity;
+
+  OrderDetail({
+    required this.idProduct,
+    required this.idProductSize,
+    required this.price,
+    required this.quantity,
+  });
+
+  factory OrderDetail.fromSnapshot(DataSnapshot snapshot) {
+    return OrderDetail(
+      idProduct: snapshot.child("ID_Product").value.toString(),
+      idProductSize: snapshot.child("ID_ProductSize").value.toString(),
+      price: int.parse(snapshot.child("Price").value.toString()),
+      quantity: int.parse(snapshot.child("Quantity").value.toString()),
+    );
+  }
+}
 
 //---------------------Carts-------------------------
-class Cart{
+class Cart {
   String ID_User;
   List<CartDetail> Detail;
 
@@ -203,9 +257,9 @@ class Cart{
     required this.Detail,
   });
 
-  factory Cart.fromSnapshot(DataSnapshot snapshot){
+  factory Cart.fromSnapshot(DataSnapshot snapshot) {
     String idUser = snapshot.key ?? '';
-    List<CartDetail> tempDetails  = [];
+    List<CartDetail> tempDetails = [];
 
     for (var child in snapshot.children) {
       if (child.value != null) {
@@ -218,8 +272,10 @@ class Cart{
     );
   }
 }
+
+//-----------------------------------------------------------------------------------đã fix
 //---------------------Cart Detail-------------------------
-class CartDetail{
+class CartDetail {
   String ID_Product;
   String ID_ProductSize;
   int Stt;
@@ -232,25 +288,23 @@ class CartDetail{
     required this.Quantity,
   });
 
-  factory CartDetail.fromSnapshot(DataSnapshot snapshot){
+  factory CartDetail.fromSnapshot(DataSnapshot snapshot) {
     return CartDetail(
       ID_Product: snapshot.child("ID_Product").value.toString(),
       ID_ProductSize: snapshot.child("ID_ProductSize").value.toString(),
       Stt: int.parse(snapshot.child("Stt").value.toString()),
       Quantity: int.parse(snapshot.child("Quantity").value.toString()),
-      
     );
   }
 }
 
-//---------------------------Dis--------------
 class Dis {
   String ID_Distributor;
   String Distributor_Name;
   String Email;
   String Address;
   String Phone;
-  int Status;
+  bool Status;
 
   Dis({
     required this.ID_Distributor,
@@ -268,7 +322,9 @@ class Dis {
       Email: snapshot.child("Email").value.toString(),
       Address: snapshot.child("Address").value.toString(),
       Phone: snapshot.child("Phone").value.toString(),
-      Status: int.parse(snapshot.child("Status").value.toString())
+      Status: int.parse(snapshot.child("Status").value.toString()) == 1
+          ? true
+          : false,
     );
   }
 }
