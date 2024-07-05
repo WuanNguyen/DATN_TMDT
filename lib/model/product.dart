@@ -15,7 +15,7 @@ class ProductItem extends StatefulWidget {
 class _ProductItemState extends State<ProductItem> {
   Query ProductSizes_dbRef = FirebaseDatabase.instance.ref().child('ProductSizes');
   List<ProductSize> sizes = [];
-  ProductSize size = ProductSize(S: ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false),M:ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false),L:ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false));
+  ProductSize size = ProductSize(S: ProductSizeDetail(ID_Product: "", Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: 0),M:ProductSizeDetail(ID_Product: "", Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: 0),L:ProductSizeDetail(ID_Product: "", Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: 0));
 
   @override
     void initState(){
@@ -64,7 +64,7 @@ class _ProductItemState extends State<ProductItem> {
                 border: Border.all(color:const Color.fromARGB(255, 57, 46, 46),width: 2.0),
                 color:Colors.white
                 ),
-              child: Image.network(widget.pro.Image_Url,fit:BoxFit.cover)//image (fit: BoxFit.cover)
+              child: Image.network(widget.pro.Image_Url)//image (fit: BoxFit.cover)
             ),
             Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0)),
 

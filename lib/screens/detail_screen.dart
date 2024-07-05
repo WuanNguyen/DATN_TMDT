@@ -15,7 +15,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Query ProductSizes_dbRef = FirebaseDatabase.instance.ref().child('ProductSizes');
   List<ProductSize> sizes = [];
 
-  ProductSize size = ProductSize(S: ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false),M:ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false),L:ProductSizeDetail(ID_Product: 0, Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: false));
+  ProductSize size = ProductSize(S: ProductSizeDetail(ID_Product: "", Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: 0),M:ProductSizeDetail(ID_Product: "", Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: 0),L:ProductSizeDetail(ID_Product: "", Stock: 0, ImportPrice: 0, SellPrice: 0,Discount: 0, Status: 0));
   int price = 0;
   int discount = 0;
   int sizeBtn = 0; // 0 => size S, 1 => size M, 2 => size L
@@ -152,7 +152,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             print("Added to cart");
                           },
                           child: Container(
-                            margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
                             padding: EdgeInsets.fromLTRB(10, 12, 20, 12),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(45),

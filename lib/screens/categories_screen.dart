@@ -24,7 +24,7 @@ Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
         setState(() {
           pro = event.snapshot.children.map((snapshot){
             return Product.fromSnapshot(snapshot);
-          }).where((element) => element.Status == false).toList();
+          }).where((element) => element.Status == 0).toList();
           filterPro = pro;
         });
       }
@@ -64,7 +64,6 @@ Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
           Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
           Row(
             children: [
-              
               OutlinedButton(
                 onPressed: (){
                   setState(() {

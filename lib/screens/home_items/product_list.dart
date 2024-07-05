@@ -22,7 +22,7 @@ class _ProductListState extends State<ProductList> {
         setState(() {
           pro = event.snapshot.children.map((snapshot){
             return Product.fromSnapshot(snapshot);
-          }).where((element) => element.Status == false).toList();
+          }).where((element) => element.Status == 0).toList();
         });
       }
     });
@@ -30,6 +30,7 @@ class _ProductListState extends State<ProductList> {
 
   @override
   Widget build(BuildContext context) {
+    print(pro.length);
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.fromLTRB(20, 15, 0, 0),

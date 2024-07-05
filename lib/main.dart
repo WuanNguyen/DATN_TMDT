@@ -1,6 +1,9 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/screens/about_us.dart';
 import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
+import 'package:doan_tmdt/screens/categories_screen.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
+import 'package:doan_tmdt/screens/search_screen.dart';
 import 'package:doan_tmdt/textdata.dart';
 // import 'package:doan_tmdt/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +31,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      //home: const BottomNavigation(index: 2),
-      home: const FirstappScreen(),
+      //home: const BottomNavigation(index: 1),
+      //home: const FirstappScreen(),
       //home: Textdata(),
       //home: AdminBottomnav(index: 0),
+      //home: SearchScreen(),
+      //home: CategoriesScreen(),
+      home: AboutUs(),
 
       debugShowCheckedModeBanner: false,
     );
