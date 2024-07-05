@@ -2,6 +2,8 @@ import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:doan_tmdt/screens/profile_items/edit_profile.dart';
 import 'package:doan_tmdt/screens/profile_items/favorites_list.dart';
 import 'package:doan_tmdt/screens/profile_items/order_history.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -13,6 +15,42 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  //--------------------------
+  String image =
+      "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
+  String name = "";
+
+  //------------------
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+  //--------------------
+
+  //------------------------
+  Future<void> getUserInfo() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      DatabaseReference userRef = FirebaseDatabase.instance
+          .reference()
+          .child('Users')
+          .child(currentUser.uid);
+      DataSnapshot snapshot = await userRef.once().then((DatabaseEvent event) {
+        return event.snapshot;
+      });
+      if (snapshot.value != null) {
+        Map userData = snapshot.value as Map;
+        setState(() {
+          name = userData['Username'] ?? '';
+          image = userData['Image_Url'] ?? '';
+        });
+      }
+    }
+  }
+  //--------------------
+
+  //--------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     child: ClipOval(
                       child: Image.network(
-                        'https://firebasestorage.googleapis.com/v0/b/tmdt-bangiay.appspot.com/o/images%2Fcat.jpg?alt=media&token=ee7848ba-9db3-4dfd-8109-7dff8eebc416',
+                        image,
                         width: 120,
                         height: 120,
                         fit: BoxFit.cover,
@@ -54,8 +92,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(
                     height: 15,
                   ),
-                  const Text(
-                    'Huan Nguyen',
+                  Text(
+                    name,
                     style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
                   )
                 ],
@@ -173,12 +211,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: const Row(
                           children: [
                             Icon(
-                              Icons.delete,
+                              Icons.lock,
                               color: Colors.black,
                             ),
                             SizedBox(width: 50),
                             Text(
-                              'Delete Account',
+                              'Lock account',
                               style:
                                   TextStyle(color: Colors.black, fontSize: 20),
                             )

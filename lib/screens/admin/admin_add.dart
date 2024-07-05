@@ -24,7 +24,7 @@ class _AdminAddState extends State<AdminAdd> {
                 tabs: [
                   Tab(text: 'Product'),
                   Tab(text: 'Distributor'),
-                  Tab(text: 'Discount'),
+                  Tab(text: 'Voucher'),
                 ],
               ),
             ),

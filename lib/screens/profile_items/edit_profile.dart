@@ -1,7 +1,16 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:doan_tmdt/screens/profile_items/address.dart';
 import 'package:doan_tmdt/screens/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -11,6 +20,80 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  //----------------------------
+  final TextEditingController name = TextEditingController();
+  final TextEditingController address = TextEditingController();
+  final TextEditingController phone = TextEditingController();
+  //--------------------------
+  String image =
+      "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
+
+  //------------------
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  //--------------------
+  //kiểm tra sdt
+  bool isValidPhoneNumber(String input) {
+    final RegExp regex = RegExp(r'^0\d{9}$');
+    return regex.hasMatch(input);
+  }
+
+  //------------------------
+  Future<void> getUserInfo() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      DatabaseReference userRef = FirebaseDatabase.instance
+          .reference()
+          .child('Users')
+          .child(currentUser.uid);
+      DataSnapshot snapshot = await userRef.once().then((DatabaseEvent event) {
+        return event.snapshot;
+      });
+      if (snapshot.value != null) {
+        Map userData = snapshot.value as Map;
+        setState(() {
+          name.text = userData['Username'] ?? '';
+          address.text = userData['Address'] ?? '';
+          phone.text = userData['Phone'] ?? '';
+          // roleController.text = userData['Role'] ?? '';
+          image = userData['Image_Url'] ?? '';
+          //  statusController.text = userData['Status'].toString() ?? '0';
+        });
+      }
+    }
+  }
+
+  //---------------------------------------------------
+  Future<void> updateUserInfo() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      DatabaseReference userRef = FirebaseDatabase.instance
+          .reference()
+          .child('Users')
+          .child(currentUser.uid);
+      await userRef.update({
+        'Username': name.text,
+        'Address': address.text,
+        'Phone': phone.text,
+        // 'Role': roleController.text,
+        'Image_Url': image,
+        // 'Status': int.parse(statusController.text),
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'User info updated',
+          style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
+        ),
+        backgroundColor: Color.fromARGB(255, 125, 125, 125),
+      ));
+    }
+  }
+
+  //--------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +141,7 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       child: ClipOval(
                         child: Image.network(
-                          'https://firebasestorage.googleapis.com/v0/b/tmdt-bangiay.appspot.com/o/images%2Fcat.jpg?alt=media&token=ee7848ba-9db3-4dfd-8109-7dff8eebc416',
+                          image,
                           width: 120,
                           height: 120,
                           fit: BoxFit.cover,
@@ -80,24 +163,40 @@ class _EditProfileState extends State<EditProfile> {
                             size: 24,
                             color: Colors.black,
                           ),
-                          onPressed: () {
-                            // Add your edit action here
+                          onPressed: () async {
+                            String? imageUrl =
+                                await pickAndUploadImageToFirebase();
+                            if (imageUrl != null) {
+                              setState(() {
+                                image = imageUrl;
+                              });
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                  'Photo has been updated',
+                                  style: TextStyle(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255)),
+                                ),
+                                backgroundColor:
+                                    Color.fromARGB(255, 125, 125, 125),
+                              ));
+                            }
                           },
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 20),
                 SizedBox(
                     width: MediaQuery.of(context).size.width / 1.3,
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextField(
-                          //controller: password,
-                          controller: null,
-                          obscureText: true,
+                          controller: name,
+                          obscureText: false,
                           decoration: InputDecoration(
                               label: Text('name',
                                   style:
@@ -105,16 +204,15 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ],
                     )),
-                const SizedBox(height: 15),
+                const SizedBox(height: 20),
                 SizedBox(
                     width: MediaQuery.of(context).size.width / 1.3,
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextField(
-                          //controller: password,
-                          controller: null,
-                          obscureText: true,
+                          controller: address,
+                          obscureText: false,
                           decoration: InputDecoration(
                               label: Text("Address",
                                   style:
@@ -122,16 +220,18 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ],
                     )),
-                const SizedBox(height: 15),
+                const SizedBox(height: 20),
                 SizedBox(
                     width: MediaQuery.of(context).size.width / 1.3,
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextField(
-                          //controller: password,
-                          controller: null,
-                          obscureText: true,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          controller: phone,
+                          obscureText: false,
                           decoration: InputDecoration(
                               label: Text("Phone",
                                   style:
@@ -153,12 +253,23 @@ class _EditProfileState extends State<EditProfile> {
                         style: TextStyle(color: Colors.black, fontSize: 20),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const BottomNavigation(index: 3)),
-                        );
+                        if (name.text.isEmpty ||
+                            address.text.isEmpty ||
+                            phone.text.isEmpty) {
+                          MsgDialog.MSG(context, 'Warning',
+                              'Please enter complete information');
+                        } else if (isValidPhoneNumber(phone.text) == false) {
+                          MsgDialog.MSG(
+                              context, 'Warning', 'invalid phone number');
+                        } else {
+                          updateUserInfo();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const BottomNavigation(index: 3)),
+                          );
+                        }
                       },
                     ),
                   ],
@@ -167,5 +278,32 @@ class _EditProfileState extends State<EditProfile> {
             ),
           ),
         ));
+  }
+
+  // upload ảnh-------------
+  Future<String?> pickAndUploadImageToFirebase() async {
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (file == null) return null;
+
+    Uint8List imageData = await File(file.path!).readAsBytes();
+    String fileName = DateTime.now().microsecondsSinceEpoch.toString();
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference referenceDireImages = referenceRoot.child('image_users');
+    Reference referenceUpLoad = referenceDireImages.child(fileName);
+
+    try {
+      await referenceUpLoad.putData(
+          imageData, SettableMetadata(contentType: 'image/png'));
+
+      // Lấy đường dẫn URL của ảnh sau khi tải lên
+      String downloadUrl = await referenceUpLoad.getDownloadURL();
+      print('Download URL: $downloadUrl');
+
+      return downloadUrl;
+    } catch (error) {
+      print('Error uploading image to Firebase Storage: $error');
+      // Xử lý lỗi nếu cần thiết
+      return null;
+    }
   }
 }

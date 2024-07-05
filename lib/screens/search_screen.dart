@@ -59,26 +59,43 @@ class _SearchScreenState extends State<SearchScreen> {
         .toList();
     return Scaffold(
         appBar: AppBar(
-            scrolledUnderElevation: 0.0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          backgroundColor: const Color.fromRGBO(201, 241, 248, 1),
+          title: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
             ),
-            backgroundColor: Color.fromRGBO(201, 241, 248, 1),
-            title: TextField(
-              //controller: searchController,
-              decoration: InputDecoration(
-                hintText: "Search...",
-                prefixIcon: Icon(Icons.search),
-              ),
-              onSubmitted: (value) {
-                setState(() {
-                  searchValue = value;
-                });
-              },
-            )),
+            child: Row(
+              children: [
+                //const SizedBox(width: 30),
+                const Icon(
+                  Icons.search,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      hintText: "Search...",
+                      border: InputBorder.none,
+                    ),
+                    onSubmitted: (value) {
+                      setState(() {
+                        searchValue = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         body: SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),
           child: Container(

@@ -19,7 +19,36 @@ class _LoginScreenState extends State<LoginScreen> {
   var _fireauth = FirebAuth();
   final TextEditingController gmail = TextEditingController();
   final TextEditingController password = TextEditingController();
+  final TextEditingController gmailForgot = TextEditingController();
   //--------------------------
+
+  //------------------------------------------------
+  //forgot password
+  void _resetPassword(BuildContext context) async {
+    String email = gmailForgot.text.trim();
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Password reset email sent"),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Lỗi: ${e.message}"),
+        ),
+      );
+    }
+  }
+
+  bool isValidGmail(String input) {
+    // Biểu thức chính quy kiểm tra xem chuỗi là địa chỉ email Gmail hợp lệ hay không
+    final RegExp regex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+    return regex.hasMatch(input);
+  }
+
+  //---------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,21 +183,28 @@ class _LoginScreenState extends State<LoginScreen> {
                                       if (snapshot.value != null) {
                                         Map userData = snapshot.value as Map;
                                         String role = userData['Role'];
+                                        int status = userData['Status'];
 
-                                        if (role == 'admin') {
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AdminBottomnav(index: 0)),
-                                          );
-                                        } else if (role == 'user') {
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    BottomNavigation(index: 0)),
-                                          );
+                                        if (status == 0) {
+                                          if (role == 'admin') {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AdminBottomnav(index: 0)),
+                                            );
+                                          } else if (role == 'user') {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      BottomNavigation(
+                                                          index: 0)),
+                                            );
+                                          }
+                                        } else {
+                                          MsgDialog.MSG(context, 'Notification',
+                                              'Account does not exist');
                                         }
                                       }
                                     }
@@ -182,13 +218,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 MsgDialog.ShowDialog(context, 'Sign-In',
                                     'Login failed. Please try again later');
                               }
-
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) =>
-                              //           const BottomNavigation(index: 0)),
-                              // );
                             },
                           ),
                         ],
@@ -201,11 +230,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             const BottomNavigation(index: 1)));
+                                Forgotpassword.show(
+                                    context, 'Forgot password', gmailForgot,
+                                    () {
+                                  if (gmailForgot.text.isEmpty ||
+                                      isValidGmail(gmailForgot.text) == false) {
+                                    MsgDialog.MSG(context, 'Notification',
+                                        'gmail is invalid');
+                                  } else {
+                                    _resetPassword(context);
+                                  }
+                                }, () {});
                               },
                               child: const Text(
                                 "Forgot password ?",

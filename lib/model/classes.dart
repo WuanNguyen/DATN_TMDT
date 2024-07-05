@@ -55,12 +55,11 @@ class ProductSize {
 //---------------------Product Size Detail-------------------------
 class ProductSizeDetail {
   String ID_Product;
-  // int ID_Product;
   int Stock;
   int ImportPrice;
   int SellPrice;
   int Discount = 0;
-  bool Status;
+  int Status;
 
   ProductSizeDetail(
       {required this.ID_Product,
@@ -72,13 +71,12 @@ class ProductSizeDetail {
 
   factory ProductSizeDetail.fromSnapshot(DataSnapshot snapshot) {
     return ProductSizeDetail(
-      ID_Product: snapshot.child("ID_Product").value.toString(),
-      Stock: int.parse(snapshot.child("Stock").value.toString()),
-      ImportPrice: int.parse(snapshot.child("ImportPrice").value.toString()),
-      SellPrice: int.parse(snapshot.child("SellPrice").value.toString()),
-      Discount: int.parse(snapshot.child("Discount").value.toString()),
-      Status: snapshot.child("Status").value.toString() == 1 ? true : false,
-    );
+        ID_Product: snapshot.child("ID_Product").value.toString(),
+        Stock: int.parse(snapshot.child("Stock").value.toString()),
+        ImportPrice: int.parse(snapshot.child("ImportPrice").value.toString()),
+        SellPrice: int.parse(snapshot.child("SellPrice").value.toString()),
+        Discount: int.parse(snapshot.child("Discount").value.toString()),
+        Status: int.parse(snapshot.child("Status").value.toString()));
   }
 }
 

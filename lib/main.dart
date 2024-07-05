@@ -1,4 +1,5 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/screens/admin/admin_add.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:doan_tmdt/textdata.dart';
 // import 'package:doan_tmdt/screens/login/login_screen.dart';
@@ -30,6 +31,8 @@ class MyApp extends StatelessWidget {
       //home: const BottomNavigation(index: 0),
       home: const FirstappScreen(),
       //home: Textdata(),
+      //home: ShowData(data1: '', data2: '', data3: '', data4: ''),
+      //home: AdminAdd(),
 
       debugShowCheckedModeBanner: false,
     );

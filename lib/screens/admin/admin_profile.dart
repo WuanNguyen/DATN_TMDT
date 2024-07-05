@@ -1,5 +1,8 @@
 import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_confirm.dart';
+import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_listproduct.dart';
 import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_statistics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class AdminProfile extends StatefulWidget {
@@ -10,6 +13,40 @@ class AdminProfile extends StatefulWidget {
 }
 
 class _AdminProfileState extends State<AdminProfile> {
+  //--------------------------
+  String image =
+      "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
+  String name = "";
+
+  //------------------
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  //------------------------
+  Future<void> getUserInfo() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      DatabaseReference userRef = FirebaseDatabase.instance
+          .reference()
+          .child('Users')
+          .child(currentUser.uid);
+      DataSnapshot snapshot = await userRef.once().then((DatabaseEvent event) {
+        return event.snapshot;
+      });
+      if (snapshot.value != null) {
+        Map userData = snapshot.value as Map;
+        setState(() {
+          name = userData['Username'] ?? '';
+          image = userData['Image_Url'] ?? '';
+        });
+      }
+    }
+  }
+
+  //--------------------
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,7 +75,7 @@ class _AdminProfileState extends State<AdminProfile> {
             ),
             child: ClipOval(
               child: Image.network(
-                'https://firebasestorage.googleapis.com/v0/b/tmdt-bangiay.appspot.com/o/images%2Fcat.jpg?alt=media&token=ee7848ba-9db3-4dfd-8109-7dff8eebc416',
+                image,
                 width: 120,
                 height: 120,
                 fit: BoxFit.cover,
@@ -48,8 +85,8 @@ class _AdminProfileState extends State<AdminProfile> {
           const SizedBox(
             height: 15,
           ),
-          const Text(
-            'Admin',
+          Text(
+            name,
             style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
           ),
           const Spacer(),
@@ -86,9 +123,9 @@ class _AdminProfileState extends State<AdminProfile> {
                               Icons.hourglass_bottom,
                               color: Colors.black,
                             ),
-                            SizedBox(width: 50),
+                            SizedBox(width: 20),
                             Text(
-                              'Comfirm',
+                              'Order management',
                               style:
                                   TextStyle(color: Colors.black, fontSize: 20),
                             )
@@ -114,9 +151,37 @@ class _AdminProfileState extends State<AdminProfile> {
                               Icons.show_chart,
                               color: Colors.black,
                             ),
-                            SizedBox(width: 50),
+                            SizedBox(width: 20),
                             Text(
-                              'statistics',
+                              'Revenue statistics',
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 20),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AdminListproduct()),
+                        );
+                      },
+                      child: SizedBox(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width / 1.5,
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.list,
+                              color: Colors.black,
+                            ),
+                            SizedBox(width: 20),
+                            Text(
+                              'Product Management',
                               style:
                                   TextStyle(color: Colors.black, fontSize: 20),
                             )

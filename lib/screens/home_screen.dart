@@ -28,26 +28,45 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(100)),
-                  width: MediaQuery.of(context).size.width - 33,
-                  height: 50,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Search...",
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                    onSubmitted: (value) {
-                      setState(() {
-                        print("home " + value);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (builder) => new SearchScreen()));
-                      });
-                    },
-                  )),
+                margin: EdgeInsets.fromLTRB(
+                    16, 8, 16, 8), // Điều chỉnh khoảng cách viền
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.circular(25), // Điều chỉnh độ cong của viền
+                  border: Border.all(
+                    color: Colors.grey
+                        .withOpacity(0.5), // Màu sắc và độ mờ của viền
+                    width: 1.5, // Độ dày của viền
+                  ),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SearchScreen()),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      SizedBox(
+                          width: 10), // Khoảng cách giữa biểu tượng và văn bản
+                      Icon(Icons.search, color: Colors.grey.withOpacity(0.5)),
+                      SizedBox(
+                          width: 10), // Khoảng cách giữa biểu tượng và văn bản
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none, // Xóa viền của TextField
+                            hintText: "Search...",
+                          ),
+                          enabled:
+                              false, // Không cho phép chỉnh sửa trực tiếp trong TextField
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(

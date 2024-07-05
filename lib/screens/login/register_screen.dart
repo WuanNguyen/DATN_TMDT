@@ -27,7 +27,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String phone = "";
   String fullname = "";
   String role = "user";
-  String image_url = "";
+  String image_url =
+      "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
+  String address = "";
+
   int status = 0;
   //-----------------------
   @override
@@ -197,6 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       password.text,
                                       fullname,
                                       phone,
+                                      address,
                                       role,
                                       image_url,
                                       status, () {

@@ -53,21 +53,21 @@ class _SearchItemState extends State<SearchItem> {
                 ImportPrice: 0,
                 SellPrice: 0,
                 Discount: 0,
-                Status: true),
+                Status: 0),
             M: ProductSizeDetail(
                 ID_Product: "",
                 Stock: 0,
                 ImportPrice: 0,
                 SellPrice: 0,
                 Discount: 0,
-                Status: true),
+                Status: 0),
             S: ProductSizeDetail(
                 ID_Product: "",
                 Stock: 0,
                 ImportPrice: 0,
                 SellPrice: 0,
                 Discount: 0,
-                Status: true),
+                Status: 0),
           );
 
     return Container(

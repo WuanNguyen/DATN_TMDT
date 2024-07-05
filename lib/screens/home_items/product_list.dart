@@ -1,8 +1,7 @@
 import 'package:doan_tmdt/model/product.dart';
-import 'package:doan_tmdt/model/product_class.dart';
+import 'package:doan_tmdt/model/classes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 
 class ProductList extends StatefulWidget {
   ProductList({super.key, required this.genre});
@@ -12,17 +11,17 @@ class ProductList extends StatefulWidget {
 }
 
 class _ProductListState extends State<ProductList> {
-  Query _dbRef = FirebaseDatabase.instance.ref().child('Products');
+  Query Products_dbRef = FirebaseDatabase.instance.ref().child('Products');
   List<Product> pro = [];
-
   @override
-  void initState(){
-    _dbRef.onValue.listen((event) {
-      if(this.mounted){
+  void initState() {
+    Products_dbRef.onValue.listen((event) {
+      if (this.mounted) {
         setState(() {
-          pro = event.snapshot.children.map((snapshot){
-            return Product.fromSnapShop(snapshot);
-          }).toList();
+          pro = event.snapshot.children
+              .map((snapshot) => Product.fromSnapshot(snapshot))
+              .where((element) => element.Status == 0)
+              .toList();
         });
       }
     });
@@ -37,21 +36,23 @@ class _ProductListState extends State<ProductList> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(widget.genre,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+          Text(
+            widget.genre,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+          ),
           Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0)),
-          Container(//todo: sua width
-              height: 310,
-              width: MediaQuery.of(context).size.width,
-              child: ListView.builder(
-                scrollDirection:  Axis.horizontal,
-                itemCount: pro.length,
-                itemBuilder: (context,index){
-                  print(MediaQuery.of(context).size.width);
-                  return ProductItem(pro: pro[index*2]);
-                }
-              )
-            )
-          
+          Container(
+            height: 310,
+            width: 393,
+            child: pro.isNotEmpty
+                ? ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: pro.length,
+                    itemBuilder: (context, index) {
+                      return ProductItem(pro: pro[index]);
+                    })
+                : Center(child: Text('No products found')),
+          )
         ],
       ),
     );

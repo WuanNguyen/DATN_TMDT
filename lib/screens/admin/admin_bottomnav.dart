@@ -1,6 +1,5 @@
 import 'package:doan_tmdt/model/menu.dart';
 import 'package:doan_tmdt/screens/admin/admin_add.dart';
-import 'package:doan_tmdt/screens/admin/admin_listproduct.dart';
 import 'package:doan_tmdt/screens/admin/admin_menu.dart';
 import 'package:doan_tmdt/screens/admin/admin_profile.dart';
 import 'package:doan_tmdt/screens/home_screen.dart';
