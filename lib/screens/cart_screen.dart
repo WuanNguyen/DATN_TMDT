@@ -1,3 +1,4 @@
+import 'package:doan_tmdt/model/cart_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -32,25 +33,26 @@ class _CartScreenState extends State<CartScreen> {
     return sellPrice - discountPrice;
   }
 
-  int getTotalPrice(
-      List<CartDetail> cartDetails, List<ProductSize> productSizes) {
-    int total = 0;
-    cartDetails.forEach((cartDetail) {
-      productSizes.forEach((productSize) {
-        if (cartDetail.ID_Product == productSize.S.ID_Product) {
-          total += int.parse(cartDetail.Quantity.toString()) *
-              (cartDetail.ID_ProductSize == "S"
-                  ? getPrice(productSize.S.SellPrice, productSize.S.Discount)
-                  : cartDetail.ID_ProductSize == "M"
-                      ? getPrice(
-                          productSize.M.SellPrice, productSize.M.Discount)
-                      : getPrice(
-                          productSize.L.SellPrice, productSize.L.Discount));
+  int getTotalPrice(List<CartDetail> c, List<ProductSize> s) {
+  int price = 0;
+
+  for (var item in c) {
+    for (var size in s) {
+      if (item.ID_Product == size.S.ID_Product) {
+        if (item.ID_ProductSize.toLowerCase() == "l") {
+          price += getPrice(size.L.SellPrice, size.L.Discount) * item.Quantity;
+        } else if (item.ID_ProductSize.toLowerCase() == "m") {
+          price += getPrice(size.M.SellPrice, size.M.Discount) * item.Quantity;
+        } else {
+          price += getPrice(size.S.SellPrice, size.S.Discount) * item.Quantity;
         }
-      });
-    });
-    return total;
+        break; // Exit the inner loop once the size is found
+      }
+    }
   }
+
+  return price;
+}
 
   int totalPrice = 0;
   int? discountValue = 0;
@@ -75,19 +77,19 @@ class _CartScreenState extends State<CartScreen> {
       List<Discount> fetchedDiscounts = [];
       setState(() {
         if (this.mounted) {
-          validDiscounts = event.snapshot.children
+          discounts = event.snapshot.children
               .map((snapshot) {
                 return Discount.fromSnapshot(snapshot);
               })
-              .where((element) => element.Status == 0)
+              .where((element) => element.Status == 0 && element.Uses != 0)
               .toList();
         }
-        discounts = fetchedDiscounts
-            .where((discount) => discount.Status == 0 && discount.Uses != 0)
-            .toList();
-        if (discounts.isNotEmpty) {
-          discountValue = int.parse(discounts[0].Price.toString());
-        }
+        // discounts = fetchedDiscounts
+        //     .where((discount) => discount.Status == 0 && discount.Uses != 0)
+        //     .toList();
+        // if (discounts.isNotEmpty) {
+        //   discountValue = int.parse(discounts[0].Price.toString());
+        // }
       });
     });
 
@@ -109,7 +111,7 @@ class _CartScreenState extends State<CartScreen> {
       List<Product> fetchedProducts = [];
       if (this.mounted) {
         setState(() {
-          filteredProducts = event.snapshot.children
+          products = event.snapshot.children
               .map((snapshot) {
                 return Product.fromSnapshot(snapshot);
               })
@@ -123,7 +125,7 @@ class _CartScreenState extends State<CartScreen> {
       List<ProductSize> fetchedProductSizes = [];
       if (this.mounted) {
         setState(() {
-          filteredSizes = event.snapshot.children
+          productSizes = event.snapshot.children
               .map((snapshot) {
                 return ProductSize.fromSnapshot(snapshot);
               })
@@ -135,39 +137,42 @@ class _CartScreenState extends State<CartScreen> {
         });
       }
     });
+
+    
   }
 
   @override
   Widget build(BuildContext context) {
-    // filteredProducts.clear();
-    // filteredSizes.clear();
+    filteredProducts.clear();
+    filteredSizes.clear();
 
-    // Filtering products and sizes based on cart data
-    // carts.forEach((cart) {
-    //   products.forEach((product) {
-    //     if (product.ID_Product.toString() == cart.ID_Product.toString()) {
-    //       filteredProducts.add(product);
-    //     }
-    //   });
-    // });
-
-    // filteredProducts.forEach((product) {
-    //   productSizes.forEach((size) {
-    //     if (size.L.ID_Product == product.ID_Product) {
-    //       filteredSizes.add(size);
-    //     }
-    //   });
-    // });
+    carts.forEach((item){
+      products.forEach((pro){
+        if(item.ID_Product == pro.ID_Product){
+          filteredProducts.add(pro);
+        }
+      });
+    });
+    filteredProducts.forEach((pro){
+      productSizes.forEach((size){
+        if(size.S.ID_Product == pro.ID_Product){
+          filteredSizes.add(size);
+        }
+      });
+    });
 
     // Calculating valid discounts based on total price
     validDiscounts = discounts
         .where((discount) =>
             discount.Required < getTotalPrice(carts, productSizes))
         .toList();
-    totalPrice = getTotalPrice(carts, productSizes);
+    
+    totalPrice=0;
+    totalPrice=getTotalPrice(carts, filteredSizes);
+    
+    
+    
 
-    print("is empty?:  ");
-    print(filteredSizes.isEmpty);
     return SingleChildScrollView(
       physics: NeverScrollableScrollPhysics(),
       child: Container(
@@ -253,41 +258,11 @@ class _CartScreenState extends State<CartScreen> {
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
                                 ),
                                 Text(
-                                  carts[index].ID_ProductSize == "S"
-                                      ? (filteredSizes.isNotEmpty &&
-                                              index < filteredSizes.length
-                                          ? getPrice(
-                                                  filteredSizes[index]
-                                                      .S
-                                                      .SellPrice,
-                                                  filteredSizes[index]
-                                                      .S
-                                                      .Discount)
-                                              .toString()
-                                          : "Size not available")
-                                      : carts[index].ID_ProductSize == "M"
-                                          ? (filteredSizes.isNotEmpty &&
-                                                  index < filteredSizes.length
-                                              ? getPrice(
-                                                      filteredSizes[index]
-                                                          .M
-                                                          .SellPrice,
-                                                      filteredSizes[index]
-                                                          .M
-                                                          .Discount)
-                                                  .toString()
-                                              : "Size not available")
-                                          : (filteredSizes.isNotEmpty &&
-                                                  index < filteredSizes.length
-                                              ? getPrice(
-                                                      filteredSizes[index]
-                                                          .L
-                                                          .SellPrice,
-                                                      filteredSizes[index]
-                                                          .L
-                                                          .Discount)
-                                                  .toString()
-                                              : "Size not available"),
+                                  carts[index].ID_ProductSize == "S" 
+                                  ? getPrice(filteredSizes[index].S.SellPrice, filteredSizes[index].S.Discount).toString() + " VND"
+                                  : carts[index].ID_ProductSize == "M"
+                                  ? getPrice(filteredSizes[index].M.SellPrice, filteredSizes[index].M.Discount).toString() + " VND"
+                                  : getPrice(filteredSizes[index].L.SellPrice, filteredSizes[index].L.Discount).toString() + " VND",
                                   style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold),
@@ -299,39 +274,6 @@ class _CartScreenState extends State<CartScreen> {
                                       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                                       child: Row(
                                         children: [
-                                          Container(
-                                            margin:
-                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                            width: 36,
-                                            height: 36,
-                                            clipBehavior: Clip.antiAlias,
-                                            decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                borderRadius:
-                                                    BorderRadius.circular(50)),
-                                            child: IconButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    carts[index].Quantity += 1;
-                                                    totalPrice = getTotalPrice(
-                                                        carts, productSizes);
-                                                  });
-                                                },
-                                                icon: Icon(Icons.add,
-                                                    color: Colors.white,
-                                                    size: 20)),
-                                          ),
-                                          Container(
-                                            width: 20,
-                                            margin: EdgeInsets.fromLTRB(
-                                                10, 0, 10, 0),
-                                            child: Text(
-                                              carts[index].Quantity.toString(),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
                                           Container(
                                             width: 36,
                                             height: 36,
@@ -348,13 +290,62 @@ class _CartScreenState extends State<CartScreen> {
                                                       carts[index].Quantity -=
                                                           1;
                                                     totalPrice = getTotalPrice(
-                                                        carts, productSizes);
+                                                        carts, filteredSizes);
+                                                        discountValue = int.parse(discounts[0].Price.toString());
                                                   });
                                                 },
                                                 icon: Icon(Icons.remove,
                                                     color: Colors.white,
                                                     size: 20)),
                                           ),
+                                          
+                                          Container(
+                                            width: 20,
+                                            margin: EdgeInsets.fromLTRB(
+                                                10, 0, 10, 0),
+                                            child: Text(
+                                              carts[index].Quantity.toString(),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          Container(
+                                            margin:
+                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                            width: 36,
+                                            height: 36,
+                                            clipBehavior: Clip.antiAlias,
+                                            decoration: BoxDecoration(
+                                                color: Colors.black,
+                                                borderRadius:
+                                                    BorderRadius.circular(50)),
+                                            child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    //todo: kiem tra so luong ton
+                                                    if(carts[index].ID_ProductSize == "S"){
+                                                      if(carts[index].Quantity < filteredSizes[index].S.Stock)
+                                                      carts[index].Quantity += 1;
+                                                    }
+                                                    else if(carts[index].ID_ProductSize == "M"){
+                                                      if(carts[index].Quantity < filteredSizes[index].M.Stock)
+                                                      carts[index].Quantity += 1;
+                                                    }
+                                                    else if(carts[index].ID_ProductSize == "L"){
+                                                      if(carts[index].Quantity < filteredSizes[index].L.Stock)
+                                                      carts[index].Quantity += 1;
+                                                    }
+                                                    
+                                                    totalPrice = getTotalPrice(
+                                                        carts, filteredSizes);
+                                                  });
+                                                },
+                                                icon: Icon(Icons.add,
+                                                    color: Colors.white,
+                                                    size: 20)),
+                                          ),
+                                          
                                         ],
                                       ),
                                     )
@@ -402,7 +393,7 @@ class _CartScreenState extends State<CartScreen> {
                                 value: discountValue.toString(),
                                 onChanged: (String? newValue) {
                                   setState(() {
-                                    // discountValue = int.parse(newValue.toString());
+                                     discountValue = int.parse(newValue.toString());
                                   });
                                 },
                                 items: validDiscounts
@@ -443,12 +434,17 @@ class _CartScreenState extends State<CartScreen> {
                       height: 40,
                       child: ElevatedButton(
                           onPressed: () {
-                            print(filteredProducts.isEmpty);
                             if (filteredProducts.isEmpty) {
                               MsgDialog.MSG(context, "Error",
                                   "No products in cart to checkout");
                             } else {
                               // TODO: Implement checkout logic
+                               Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CartDetails(TotalPrice: totalPrice,Discount: discountValue!,),
+                              ),
+                            );
                             }
                           },
                           child: Text("Checkout")),

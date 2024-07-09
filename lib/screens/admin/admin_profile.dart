@@ -139,7 +139,7 @@ class _AdminProfileState extends State<AdminProfile> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const AdminStatistics()),
+                              builder: (context) => const AdminStatisticsScreen()),
                         );
                       },
                       child: SizedBox(

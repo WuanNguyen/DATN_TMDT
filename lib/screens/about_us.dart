@@ -129,7 +129,7 @@ class AboutUs extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RichText(
-                      text: TextSpan(
+                      text:const TextSpan(
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -181,7 +181,7 @@ class AboutUs extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RichText(
-                      text: TextSpan(
+                      text: const TextSpan(
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -206,10 +206,68 @@ class AboutUs extends StatelessWidget {
                           
                         ]
                       ),
+                    ),
+                    
+                  ],
+                ),
+              ),
+              Container(// Join Our Community
+                height: 150,
+                width: MediaQuery.of(context).size.width,
+                child: Image.asset("assets/img/JoinOurCommunity.png",width: MediaQuery.of(context).size.width,),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          height: 1.3
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "Join Our Community\n",
+                            style: TextStyle(fontWeight: FontWeight.bold)
+                          ),
+                          TextSpan(
+                            text: "Become a part of our growing community of fashion-forward individuals who are redefining their shopping experience. Share your favorite looks, get inspired by others, and stay updated with the latest trends through our interactive platform.\n",
+                          ),
+                          TextSpan(
+                            text:"Thank you for choosing ",
+                            
+                          ),
+
+                          TextSpan(
+                            text: "HuViz ",
+                            style: TextStyle(fontWeight: FontWeight.bold)
+                          ),
+                          TextSpan(
+                            text: "as your fashion companion. We are excited to help you express your unique style and make every shopping experience a delightful one.\n\n"
+                          ),
+                          TextSpan(
+                            text: "Happy Shopping!\n\n"
+                          ),
+                          TextSpan(
+                            text:"The "
+                          ),
+                          TextSpan(
+                            text:"HuViz ",
+                            style: TextStyle(fontWeight: FontWeight.bold)
+                          ),
+                          TextSpan(
+                            text:"Team\n"
+                          )
+                          
+                        ]
+                      ),
                     )
                   ],
                 ),
-              )
+              ),
               
             ]
           )

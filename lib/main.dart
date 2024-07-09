@@ -1,4 +1,6 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/model/chart.dart';
+import 'package:doan_tmdt/model/chart_test.dart';
 import 'package:doan_tmdt/screens/admin/admin_add.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:doan_tmdt/screens/search_screen.dart';
@@ -30,11 +32,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      //home: const BottomNavigation(index: 1),
-      //home: const FirstappScreen(),
-      home:AboutUs(),
+      //home: const BottomNavigation(index: 2),
+      home: const FirstappScreen(),
+      //home:AboutUs(),
       //home: ShowData(data1: '', data2: '', data3: '', data4: ''),
       //home: AdminAdd(),
+      //home: ChartTest(),
+      //home: ProductChart(),
+      
 
       debugShowCheckedModeBanner: false,
     );

@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class ProductList extends StatefulWidget {
-  ProductList({super.key, required this.genre});
-  String genre;
+  ProductList({super.key, required this.CategoryName,required this.Category});
+  String CategoryName;
+  String Category;
   @override
   State<ProductList> createState() => _ProductListState();
 }
@@ -20,7 +21,7 @@ class _ProductListState extends State<ProductList> {
         setState(() {
           pro = event.snapshot.children
               .map((snapshot) => Product.fromSnapshot(snapshot))
-              .where((element) => element.Status == 0)
+              .where((element) => element.Status == 0 && element.Category == widget.Category)
               .toList();
         });
       }
@@ -29,7 +30,6 @@ class _ProductListState extends State<ProductList> {
 
   @override
   Widget build(BuildContext context) {
-    print(pro.length);
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.fromLTRB(20, 15, 0, 0),
@@ -38,7 +38,7 @@ class _ProductListState extends State<ProductList> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
-            widget.genre,
+            widget.CategoryName,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
           ),
           Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0)),

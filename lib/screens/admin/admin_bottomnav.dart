@@ -1,4 +1,5 @@
 import 'package:doan_tmdt/model/menu.dart';
+import 'package:doan_tmdt/model/temp.dart';
 import 'package:doan_tmdt/screens/admin/admin_add.dart';
 import 'package:doan_tmdt/screens/admin/admin_menu.dart';
 import 'package:doan_tmdt/screens/admin/admin_profile.dart';
@@ -50,6 +51,7 @@ class _AdminBottomnavState extends State<AdminBottomnav> {
           IconButton(
               onPressed: () {
                 // sự kiện icon thông báo
+                Navigator.push(context, MaterialPageRoute(builder: (context) => TempChart()));
               },
               icon: const Icon(Icons.notifications))
         ],

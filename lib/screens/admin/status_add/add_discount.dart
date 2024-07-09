@@ -25,7 +25,7 @@ class _AddDiscountState extends State<AddDiscount> {
               .map((snapshot) {
                 return Discount.fromSnapshot(snapshot);
               })
-              .where((element) => element.Price > 0 && element.Status == false)
+              .where((element) => element.Price > 0 && element.Status == 0)
               .toList();
         });
       }

@@ -31,7 +31,7 @@ class _AddDistributorState extends State<AddDistributor> {
                 return Distributors.fromSnapshot(snapshot);
               })
               .where(
-                (element) => element.Status == false,
+                (element) => element.Status == 0,
               )
               .toList();
         });

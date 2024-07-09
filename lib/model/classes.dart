@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // User ------------------------------------------------------
@@ -121,7 +122,7 @@ class Discount {
   int Uses;
   int Price;
   int Required;
-  bool Status;
+  int Status;
 
   Discount({
     required this.Description,
@@ -140,9 +141,7 @@ class Discount {
       Uses: int.parse(snapshot.child("Uses").value.toString()),
       Price: int.parse(snapshot.child("Price").value.toString()),
       Required: int.parse(snapshot.child("Required").value.toString()),
-      Status: int.parse(snapshot.child("Status").value.toString()) == 1
-          ? true
-          : false,
+      Status: int.parse(snapshot.child("Status").value.toString()),
     );
   }
 }
@@ -155,7 +154,7 @@ class Distributors {
   String Email;
   String Address;
   String Phone;
-  bool Status;
+  int Status;
 
   Distributors({
     required this.ID_Distributor,
@@ -173,15 +172,16 @@ class Distributors {
       Email: snapshot.child("Email").value.toString(),
       Address: snapshot.child("Address").value.toString(),
       Phone: snapshot.child("Phone").value.toString(),
-      Status: int.parse(snapshot.child("Status").value.toString()) == 1
-          ? true
-          : false,
+      Status: int.parse(snapshot.child("Status").value.toString())
     );
   }
 }
 
 //---------------------Order-------------------------
 class Order {
+  String nameuser;
+  String addressuser;
+  String phoneuser;
   String ID_Order;
   String ID_User;
   int Discount;
@@ -193,6 +193,9 @@ class Order {
   ///
 
   Order({
+    required this.nameuser,
+    required this.addressuser,
+    required this.phoneuser,
     required this.ID_Order,
     //required this.ID_Product,
     required this.ID_User,
@@ -208,6 +211,9 @@ class Order {
 
   factory Order.fromSnapshot(DataSnapshot snapshot) {
     return Order(
+      nameuser: snapshot.child("NameUser").value.toString(),
+      addressuser: snapshot.child("AddressUser").value.toString(),
+      phoneuser: snapshot.child("PhoneUser").value.toString(),
       ID_Order: snapshot.child("ID_Order").value.toString(),
       //ID_Product: int.parse(snapshot.child("ID_Product").value.toString()),
       ID_User: snapshot.child("ID_User").value.toString(),
@@ -304,7 +310,7 @@ class Dis {
   String Email;
   String Address;
   String Phone;
-  bool Status;
+  int Status;
 
   Dis({
     required this.ID_Distributor,
@@ -322,9 +328,58 @@ class Dis {
       Email: snapshot.child("Email").value.toString(),
       Address: snapshot.child("Address").value.toString(),
       Phone: snapshot.child("Phone").value.toString(),
-      Status: int.parse(snapshot.child("Status").value.toString()) == 1
-          ? true
-          : false,
+      Status: int.parse(snapshot.child("Status").value.toString())
+    );
+  }
+}
+
+//--------------------------Favorite---------------------------------
+class Favorite {
+  String ID_Product;
+  int Status;
+  Favorite({required this.ID_Product, required this.Status});
+  factory Favorite.fromSnapshot(DataSnapshot snapshot) {
+    return Favorite(
+      ID_Product: snapshot.child("ID_Product").value.toString(),
+      Status: int.parse(snapshot.child("Status").value.toString()),
+    );
+  }
+}
+
+
+//---------------------Review-------------------------
+class Review {
+  String ID_Product;
+  String ID_Review;
+  String ID_User;
+  String Username;
+  int Rating;
+  String Comment;
+  String Review_Date;
+  int Status;
+
+
+  Review({
+    required this.ID_Product,
+    required this.ID_Review,
+    required this.ID_User,
+    required this.Username,
+    required this.Rating,
+    required this.Comment,
+    required this.Review_Date,
+    required this.Status,
+  });
+
+  factory Review.fromSnapshot(DataSnapshot snapshot) {
+    return Review(
+      ID_Product: snapshot.child("ID_Product").value.toString(),
+      ID_Review: snapshot.child("ID_Review").value.toString(),
+      ID_User: snapshot.child("ID_User").value.toString(),
+      Username: snapshot.child("Username").value.toString(),
+      Rating: int.parse(snapshot.child("Rating").value.toString()),
+      Comment: snapshot.child("Comment").value.toString(),
+      Review_Date: snapshot.child("Review_Date").value.toString(),
+      Status: int.parse(snapshot.child("Status").value.toString()),
     );
   }
 }

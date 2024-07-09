@@ -1,3 +1,4 @@
+import 'package:doan_tmdt/screens/about_us.dart';
 import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -118,6 +119,12 @@ class _AdminMenuState extends State<AdminMenu> {
             ),
             onTap: () {
               //Sử lí sự kiện khi click
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AboutUs()),
+              );
             },
           ),
           const Spacer(),
