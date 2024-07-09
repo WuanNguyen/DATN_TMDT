@@ -21,12 +21,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String name = "";
 
   //------------------
+  bool _isDisposed = false;
+
   @override
   void initState() {
     super.initState();
     getUserInfo();
   }
-  //--------------------
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
 
   //------------------------
   Future<void> getUserInfo() async {
@@ -41,14 +48,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
       if (snapshot.value != null) {
         Map userData = snapshot.value as Map;
-        setState(() {
-          name = userData['Username'] ?? '';
-          image = userData['Image_Url'] ?? '';
-        });
+        if (!_isDisposed) {
+          setState(() {
+            name = userData['Username'] ?? '';
+            image = userData['Image_Url'] ?? '';
+          });
+        }
       }
     }
   }
-  //--------------------
 
   //--------------------
   @override

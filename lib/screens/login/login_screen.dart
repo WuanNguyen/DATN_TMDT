@@ -17,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   var _fireauth = FirebAuth();
+  bool obscureText = true;
   final TextEditingController gmail = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController gmailForgot = TextEditingController();
@@ -132,15 +133,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               TextField(
                                 controller: password,
-                                obscureText: true,
+                                obscureText: obscureText,
                                 decoration: InputDecoration(
-                                  label: Text(
-                                    "Password",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w500),
+                                  labelText: "Password",
+                                  labelStyle:
+                                      TextStyle(fontWeight: FontWeight.w500),
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        obscureText = !obscureText;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      obscureText
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ),
-                              ),
+                              )
                             ],
                           )),
                       const SizedBox(
@@ -254,50 +266,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 13,
                       ),
-                      const Text('____________ Or ontinute with ____________'),
+                      const Text('___________________________________'),
                       const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.all(12.0),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(
-                                    'assets/img/facebook.png',
-                                    height: 40,
-                                    width: 40,
-                                  )
-                                ],
-                              )),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.all(12.0),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(
-                                    'assets/img/google.png',
-                                    height: 40,
-                                    width: 40,
-                                  )
-                                ],
-                              ))
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20,
+                        height: 70,
                       ),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,

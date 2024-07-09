@@ -1,4 +1,5 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/screens/about_us.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -118,6 +119,11 @@ class _MenuState extends State<Menu> {
               ],
             ),
             onTap: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const AboutUs()),
+              );
               //Sử lí sự kiện khi click
             },
           ),
@@ -130,7 +136,8 @@ class _MenuState extends State<Menu> {
                 Text('Log out')
               ],
             ),
-            onTap: () {
+            onTap: () async {
+              //await FirebaseAuth.instance.signOut();
               Navigator.pop(context);
               Navigator.pushReplacement(
                 context,

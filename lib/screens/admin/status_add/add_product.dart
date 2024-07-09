@@ -251,7 +251,7 @@ class _AddProductState extends State<AddProduct> {
               .map((snapshot) {
                 return Dis.fromSnapshot(snapshot);
               })
-              .where((element) => element.Status == false)
+              .where((element) => element.Status == 0)
               .toList();
           select_distributor = dis.isNotEmpty ? dis[0].Distributor_Name : null;
         });
@@ -271,7 +271,7 @@ class _AddProductState extends State<AddProduct> {
 
   List<String> categorys = [
     "Adult",
-    "Children",
+    "Child",
   ];
   //List<String> Distributors = ["Ecom", "Yong Yong"];
 

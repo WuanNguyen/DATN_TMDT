@@ -14,7 +14,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  //final Register _register = Register();
+  bool obscureText = true;
 //------------------------------
   var _fireauth = FirebAuth();
   final TextEditingController gmail = TextEditingController();
@@ -132,14 +132,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextField(
-                                //controller: password,
                                 controller: password,
-                                obscureText: true,
+                                obscureText: obscureText,
                                 decoration: InputDecoration(
-                                    label: Text("Password",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500))),
-                              ),
+                                  labelText: "Password",
+                                  labelStyle:
+                                      TextStyle(fontWeight: FontWeight.w500),
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        obscureText = !obscureText;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      obscureText
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           )),
                       const SizedBox(
@@ -151,14 +164,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextField(
-                                //controller: password,
                                 controller: cpassword,
-                                obscureText: true,
+                                obscureText: obscureText,
                                 decoration: InputDecoration(
-                                    label: Text("Confirm password",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500))),
-                              ),
+                                  labelText: "Confirm password",
+                                  labelStyle:
+                                      TextStyle(fontWeight: FontWeight.w500),
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        obscureText = !obscureText;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      obscureText
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           )),
                       const SizedBox(
@@ -192,9 +218,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     'Password confirmation failed');
                               } else {
                                 // cắt gmail để lấy tên
-                                int atIndex = gmail.text.indexOf('@');
-                                fullname = gmail.text.substring(0, atIndex);
+
                                 try {
+                                  int atIndex = gmail.text.indexOf('@');
+                                  fullname = gmail.text.substring(0, atIndex);
                                   _fireauth.signUp(
                                       gmail.text,
                                       password.text,

@@ -30,9 +30,7 @@ class _AddDistributorState extends State<AddDistributor> {
               .map((snapshot) {
                 return Distributors.fromSnapshot(snapshot);
               })
-              .where(
-                (element) => element.Status == false,
-              )
+              .where((element) => element.Status == 0)
               .toList();
         });
       }
@@ -72,6 +70,7 @@ class _AddDistributorState extends State<AddDistributor> {
 
   @override
   Widget build(BuildContext context) {
+    print(distributors.length);
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -200,7 +199,7 @@ class _AddDistributorState extends State<AddDistributor> {
                           ElevatedButton(
                             onPressed: () {
                               NotiDialog.show(context, 'Notification',
-                                  'Do you want to delete Distributor', () {
+                                  'Do you want to delete Distributor?', () {
                                 _updateStatus(item, 1);
                               }, () {});
                             },

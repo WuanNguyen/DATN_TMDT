@@ -3,6 +3,7 @@ import 'package:doan_tmdt/screens/detail_items/rating.dart';
 import 'package:doan_tmdt/screens/detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
 
 class ProductItem extends StatefulWidget {
   ProductItem({super.key, required this.pro});
@@ -15,7 +16,14 @@ class ProductItem extends StatefulWidget {
 class _ProductItemState extends State<ProductItem> {
   Query ProductSizes_dbRef =
       FirebaseDatabase.instance.ref().child('ProductSizes');
+  late DatabaseReference Review_dbRef;
+  List<Review> reviews = [];
   List<ProductSize> sizes = [];
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   ProductSize size = ProductSize(
       S: ProductSizeDetail(
           ID_Product: "",
@@ -54,6 +62,52 @@ class _ProductItemState extends State<ProductItem> {
         });
       }
     });
+
+    Review_dbRef = FirebaseDatabase.instance
+        .ref()
+        .child('Reviews')
+        .child(widget.pro.ID_Product);
+    fetchReviews();
+  }
+
+  void fetchReviews() async {
+    try {
+      DatabaseEvent event = await Review_dbRef.once();
+      DataSnapshot snapshot = event.snapshot;
+      if (snapshot.exists) {
+        List<Review> tempReviewList = [];
+
+        for (var child in snapshot.children) {
+          tempReviewList.add(Review.fromSnapshot(child));
+        }
+
+        setState(() {
+          reviews = tempReviewList
+              .where(
+                (element) => element.Status == 0,
+              )
+              .toList();
+        });
+      } else {
+        print('No reviews available for this product.');
+      }
+    } catch (e) {
+      print('An error occurred: $e');
+      // Handle the error, e.g., show a message to the user
+    }
+  }
+
+  double calculateAverageRating() {
+    if (reviews.isEmpty) {
+      return 0.0;
+    }
+
+    double sum = 0.0;
+    for (var review in reviews) {
+      sum += double.parse(review.Rating.toString());
+    }
+
+    return sum / reviews.length;
   }
 
   @override
@@ -105,13 +159,13 @@ class _ProductItemState extends State<ProductItem> {
 
             //price
             Text(
-                "${size.S.SellPrice - size.S.Discount} - ${size.L.SellPrice - size.L.Discount} VND",
+                "${formatCurrency(size.S.SellPrice - size.S.Discount)} - ${formatCurrency(size.L.SellPrice - size.L.Discount)} VND",
                 style: TextStyle(fontWeight: FontWeight.bold)),
             Padding(padding: EdgeInsets.fromLTRB(0, 3, 0, 0)),
 
             Container(
               margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-              child: Rating(rate: 3.5),
+              child: Rating(rate: calculateAverageRating()),
             ),
 
             //button
@@ -139,7 +193,6 @@ class _ProductItemState extends State<ProductItem> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //todo: rating
                     Text(
                       "View",
                       style: TextStyle(fontWeight: FontWeight.bold),

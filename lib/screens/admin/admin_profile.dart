@@ -38,10 +38,12 @@ class _AdminProfileState extends State<AdminProfile> {
       });
       if (snapshot.value != null) {
         Map userData = snapshot.value as Map;
-        setState(() {
-          name = userData['Username'] ?? '';
-          image = userData['Image_Url'] ?? '';
-        });
+        if (mounted) {
+          setState(() {
+            name = userData['Username'] ?? '';
+            image = userData['Image_Url'] ?? '';
+          });
+        }
       }
     }
   }
@@ -139,7 +141,8 @@ class _AdminProfileState extends State<AdminProfile> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const AdminStatistics()),
+                              builder: (context) =>
+                                  const AdminStatisticsScreen()),
                         );
                       },
                       child: SizedBox(

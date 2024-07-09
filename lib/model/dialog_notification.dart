@@ -262,7 +262,7 @@ class addDistributor {
     TextEditingController addressText = TextEditingController(text: address);
     TextEditingController phoneText = TextEditingController(text: phone);
 
-    Future<void> UpdateDiscount() async {
+    Future<void> _updateDistributor() async {
       //------------------------------------------------
       //update
       final DatabaseReference _databaseReference =
@@ -289,11 +289,47 @@ class addDistributor {
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-          'added Distributor successfully',
+          'Added Distributor successfully',
           style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
         ),
         backgroundColor: Color.fromARGB(255, 125, 125, 125),
       ));
+    }
+
+    Future<bool> isEmailExists(String email) async {
+      final DatabaseReference _databaseReference =
+          FirebaseDatabase.instance.reference();
+      DatabaseEvent event = await _databaseReference
+          .child('Distributors')
+          .orderByChild('Email')
+          .equalTo(email)
+          .once();
+
+      return event.snapshot.value != null;
+    }
+
+    Future<bool> isPhoneExists(String phone) async {
+      final DatabaseReference _databaseReference =
+          FirebaseDatabase.instance.reference();
+      DatabaseEvent event = await _databaseReference
+          .child('Distributors')
+          .orderByChild('Phone')
+          .equalTo(phone)
+          .once();
+
+      return event.snapshot.value != null;
+    }
+
+    //kiểm tra sdt
+    bool isValidPhoneNumber(String input) {
+      final RegExp regex = RegExp(r'^0\d{9}$');
+      return regex.hasMatch(input);
+    }
+
+    bool isValidGmail(String input) {
+      // Biểu thức chính quy kiểm tra xem chuỗi là địa chỉ email Gmail hợp lệ hay không
+      final RegExp regex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+      return regex.hasMatch(input);
     }
 
     //------------------------------------------------
@@ -400,9 +436,35 @@ class addDistributor {
                   const SizedBox(width: 20),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        UpdateDiscount();
-                        Navigator.of(context).pop();
+                      onPressed: () async {
+                        if (!isValidGmail(emailText.text)) {
+                          MsgDialog.MSG(
+                              context, 'Notification', 'Email invalidate');
+                        } else if (!isValidPhoneNumber(phoneText.text)) {
+                          MsgDialog.MSG(
+                              context, 'Notification', 'Phone invalidate');
+                        } else if (nameText.text.isEmpty ||
+                            emailText.text.isEmpty ||
+                            addressText.text.isEmpty ||
+                            phoneText.text.isEmpty) {
+                          MsgDialog.MSG(context, 'Notification',
+                              'Information cannot be left blank');
+                        } else {
+                          bool emailExists =
+                              await isEmailExists(emailText.text);
+                          bool phoneExists =
+                              await isPhoneExists(phoneText.text);
+                          if (emailExists) {
+                            MsgDialog.MSG(context, 'Notification',
+                                'Email already exists');
+                          } else if (phoneExists) {
+                            MsgDialog.MSG(context, 'Notification',
+                                'Phone already exists');
+                          } else {
+                            await _updateDistributor();
+                            Navigator.of(context).pop();
+                          }
+                        }
                       },
                       child: const Text(
                         'OK',
@@ -590,7 +652,7 @@ class addDiscount {
         'Price': priceText.text,
         'Description': descText.text,
         'Required': requiredText.text,
-        'Uses': usesText.text,
+        'Uses': int.parse(usesText.text),
         'Status': 0
       });
       // Cập nhật UID lớn nhất
@@ -733,8 +795,15 @@ class addDiscount {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        UpdateDiscount();
-                        Navigator.of(context).pop();
+                        if (priceText.text == '0' ||
+                            requiredText.text == '0' ||
+                            usesText.text == '0') {
+                          MsgDialog.MSG(context, 'Notification',
+                              'Information cannot be left blank');
+                        } else {
+                          UpdateDiscount();
+                          Navigator.of(context).pop();
+                        }
                       },
                       child: const Text(
                         'OK',
@@ -1044,6 +1113,75 @@ class admin_addproduct {
 
 // thông báo mới khi edit , thêm
 class NotiDialog {
+  static void showok(BuildContext context, String title, String msg,
+      VoidCallback onOkPressed) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(27),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(27),
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              stops: [0.0, 0.7, 1],
+              transform: GradientRotation(50),
+              colors: [
+                Color.fromRGBO(54, 171, 237, 0.80),
+                Color.fromRGBO(149, 172, 205, 0.75),
+                Color.fromRGBO(244, 173, 173, 0.1),
+              ],
+            ),
+          ),
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 15),
+              Text(
+                msg,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (onOkPressed != null) {
+                        onOkPressed();
+                      }
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   static void show(BuildContext context, String title, String msg,
       VoidCallback onOkPressed, VoidCallback onCancelPressed) {
     showDialog(
@@ -1215,6 +1353,89 @@ class Forgotpassword {
           ),
         ),
       ),
+    );
+  }
+}
+
+// s
+class dialogBottom {
+  static void ShowBottom(BuildContext context, String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        msg,
+        style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
+      ),
+      backgroundColor: Color.fromARGB(255, 125, 125, 125),
+    ));
+  }
+}
+//-------------admin show product detail
+
+class admin_showPro {
+  static Future<ProductSizeDetail?> showEditDialog(
+      BuildContext context, ProductSizeDetail currentDetail) async {
+    TextEditingController sellPriceController =
+        TextEditingController(text: currentDetail.SellPrice.toString());
+    TextEditingController discountController =
+        TextEditingController(text: currentDetail.Discount.toString());
+    TextEditingController stockController =
+        TextEditingController(text: currentDetail.Stock.toString());
+    TextEditingController importPriceController =
+        TextEditingController(text: currentDetail.ImportPrice.toString());
+
+    return await showDialog<ProductSizeDetail>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Edit Size'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: sellPriceController,
+                decoration: InputDecoration(labelText: 'Sell Price'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: discountController,
+                decoration: InputDecoration(labelText: 'Discount'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: stockController,
+                decoration: InputDecoration(labelText: 'Stock'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: importPriceController,
+                decoration: InputDecoration(labelText: 'Import Price'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(ProductSizeDetail(
+                  ID_Product: currentDetail.ID_Product,
+                  SellPrice: int.parse(sellPriceController.text),
+                  Discount: int.parse(discountController.text),
+                  Stock: int.parse(stockController.text),
+                  ImportPrice: int.parse(importPriceController.text),
+                  Status: currentDetail.Status,
+                ));
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

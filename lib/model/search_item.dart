@@ -28,9 +28,9 @@ class _SearchItemState extends State<SearchItem> {
           sizes = event.snapshot.children
               .map((snapshot) => ProductSize.fromSnapshot(snapshot))
               .where((element) =>
-                  element.S.Status == false ||
-                  element.M.Status == false ||
-                  element.L.Status == false)
+                  element.S.Status == 0 ||
+                  element.M.Status == 0 ||
+                  element.L.Status == 0)
               .toList();
         });
       }

@@ -1,19 +1,16 @@
 import 'package:doan_tmdt/model/classes.dart';
-import 'package:doan_tmdt/model/dialog_notification.dart';
-import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_confirm.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class TitleConfirm extends StatefulWidget {
-  const TitleConfirm({Key? key, required this.orderId}) : super(key: key);
+class DetailReceived extends StatefulWidget {
+  const DetailReceived({Key? key, required this.orderId}) : super(key: key);
   final String orderId;
+
   @override
-  State<TitleConfirm> createState() => _TitleConfirmState();
+  State<DetailReceived> createState() => _DetailReceivedState();
 }
 
-class _TitleConfirmState extends State<TitleConfirm> {
+class _DetailReceivedState extends State<DetailReceived> {
   String image =
       "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
 
@@ -26,18 +23,7 @@ class _TitleConfirmState extends State<TitleConfirm> {
     return Product.fromSnapshot(snapshot);
   }
 
-  void _updateStatus(String id) {
-    final DatabaseReference updateSTTOrder =
-        FirebaseDatabase.instance.reference().child('Order');
-    updateSTTOrder.child(id).update({'Order_Status': 'danggiao'}).then((_) {
-      print("Successfully updated status");
-    }).catchError((error) {
-      print("Failed to update status: $error");
-    });
-  }
-
   List<OrderDetail> orderDetail = [];
-
   @override
   void initState() {
     final DatabaseReference OrderDetail_dbRef = FirebaseDatabase.instance
@@ -67,16 +53,12 @@ class _TitleConfirmState extends State<TitleConfirm> {
     });
   }
 
-  //---------------------------------------
   @override
   Widget build(BuildContext context) {
-    //print(widget.orderId);
-    print('----------------------------');
-    print(orderDetail.length.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Confirm Order',
+          'order details',
           textAlign: TextAlign.center,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -258,35 +240,35 @@ class _TitleConfirmState extends State<TitleConfirm> {
                                   ],
                                 ),
                               ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (context) =>
+                                      //         DetailReceived(
+                                      //             orderId: order[index]
+                                      //                 .ID_Order),
+                                      //   ),
+                                      // );
+                                    },
+                                    child: const Text(
+                                      'reviews',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         );
                       },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _updateStatus(widget.orderId);
-                          NotiDialog.showok(context, 'Notification',
-                              'Order has been successfully confirmed', () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AdminConfirm(), // Sử dụng ID của đơn hàng
-                              ),
-                            );
-                          });
-                        },
-                        child: Text(
-                          'Confirm',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
                     ),
                   ),
                 ],
