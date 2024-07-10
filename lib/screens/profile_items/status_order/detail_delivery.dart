@@ -1,6 +1,7 @@
 import 'package:doan_tmdt/model/classes.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DetailDelivery extends StatefulWidget {
   const DetailDelivery({Key? key, required this.orderId}) : super(key: key);
@@ -53,6 +54,11 @@ class _DetailDeliveryState extends State<DetailDelivery> {
     });
   }
 
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +107,7 @@ class _DetailDeliveryState extends State<DetailDelivery> {
                             productCache[item.idProduct]?.Product_Name ??
                                 'Loading...';
                         final picture = productCache[item.idProduct]
-                                ?.Image_Url ??
+                                ?.Image_Url[0] ??
                             'https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a';
 
                         return Container(
@@ -203,7 +209,8 @@ class _DetailDeliveryState extends State<DetailDelivery> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: item.price.toString(),
+                                            text: formatCurrency(item.price)
+                                                .toString(),
                                             style: TextStyle(
                                               fontSize: 18.0,
                                             ),

@@ -1439,3 +1439,144 @@ class admin_showPro {
     );
   }
 }
+
+class CartEdit {
+  static void infoUser(
+      BuildContext context,
+      String name,
+      String address,
+      String phone,
+      ValueChanged<Map<String, String>> onOkPressed,
+      VoidCallback onCancelPressed) {
+    TextEditingController nameUS = TextEditingController(text: name);
+    TextEditingController addressUS = TextEditingController(text: address);
+    TextEditingController phoneUS = TextEditingController(text: phone);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(27),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(27),
+              gradient: const LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                stops: [0.0, 0.7, 1],
+                transform: GradientRotation(50),
+                colors: [
+                  Color.fromRGBO(54, 171, 237, 0.80),
+                  Color.fromRGBO(149, 172, 205, 0.75),
+                  Color.fromRGBO(244, 173, 173, 0.1),
+                ],
+              ),
+            ),
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Edit Info User',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white, // chỉnh màu chữ
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: nameUS,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    labelStyle:
+                        TextStyle(color: Colors.white), // chỉnh màu nhãn
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.white), // chỉnh màu viền
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.white), // chỉnh màu viền khi focus
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white), // chỉnh màu chữ
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: addressUS,
+                  decoration: const InputDecoration(
+                    labelText: 'Delivery Address',
+                    labelStyle: TextStyle(color: Colors.white),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: phoneUS,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone',
+                    labelStyle: TextStyle(color: Colors.white),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        if (onCancelPressed != null) {
+                          onCancelPressed();
+                        }
+                      },
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                            color: Colors.white), // chỉnh màu nút Cancel
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        if (onOkPressed != null) {
+                          onOkPressed({
+                            'name': nameUS.text,
+                            'address': addressUS.text,
+                            'phone': phoneUS.text,
+                          });
+                        }
+                      },
+                      child: const Text(
+                        'Save',
+                        style: TextStyle(
+                            color: Colors.white), // chỉnh màu nút Save
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

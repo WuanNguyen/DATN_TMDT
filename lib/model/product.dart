@@ -19,6 +19,7 @@ class _ProductItemState extends State<ProductItem> {
   late DatabaseReference Review_dbRef;
   List<Review> reviews = [];
   List<ProductSize> sizes = [];
+
   String formatCurrency(int value) {
     final formatter = NumberFormat.decimalPattern('vi');
     return formatter.format(value);
@@ -112,6 +113,7 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.pro.Image_Url.length);
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -143,8 +145,10 @@ class _ProductItemState extends State<ProductItem> {
                         color: const Color.fromARGB(255, 57, 46, 46),
                         width: 2.0),
                     color: Colors.white),
-                child: Image.network(
-                    widget.pro.Image_Url) //image (fit: BoxFit.cover)
+                child: widget.pro.Image_Url.isNotEmpty
+                    ? Image.network(widget.pro.Image_Url[0]!)
+                    : Icon(Icons
+                        .image_not_supported) // hoặc sử dụng hình ảnh mặc định//image (fit: BoxFit.cover)
                 ),
             Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0)),
 

@@ -23,15 +23,21 @@ class _AdminStatisticsScreenState extends State<AdminStatisticsScreen> {
   Future<void> fetchStatistics() async {
     try {
       Map<String, dynamic> statistics = await calculateStatistics();
-      setState(() {
-        stats = statistics;
-        isLoading = false;
-      });
+      if (mounted) {
+        // Kiểm tra widget đã mount
+        setState(() {
+          stats = statistics;
+          isLoading = false;
+        });
+      }
     } catch (e) {
       print('Error fetching statistics: $e');
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        // Kiểm tra widget đã mount
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 

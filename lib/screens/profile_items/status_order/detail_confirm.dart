@@ -1,6 +1,7 @@
 import 'package:doan_tmdt/model/classes.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DetailConfirm extends StatefulWidget {
   const DetailConfirm({Key? key, required this.orderId}) : super(key: key);
@@ -62,6 +63,11 @@ class _DetailConfirmState extends State<DetailConfirm> {
     });
   }
 
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,9 +115,15 @@ class _DetailConfirmState extends State<DetailConfirm> {
                         final namePro =
                             productCache[item.idProduct]?.Product_Name ??
                                 'Loading...';
-                        final picture = productCache[item.idProduct]
-                                ?.Image_Url ??
-                            'https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a';
+                        dynamic picture = productCache[item.idProduct]
+                                    ?.Image_Url
+                                    .isNotEmpty ==
+                                true
+                            ? productCache[item.idProduct]?.Image_Url[0]
+                            : null; // or any default icon/widget
+                        if (picture is! String) {
+                          picture = Icon(Icons.image_not_supported);
+                        }
 
                         return Container(
                           margin: EdgeInsets.symmetric(
@@ -138,12 +150,14 @@ class _DetailConfirmState extends State<DetailConfirm> {
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.network(
-                                        picture,
-                                        width: 100,
-                                        height: 100,
-                                        fit: BoxFit.cover,
-                                      ),
+                                      child: picture is String
+                                          ? Image.network(
+                                              picture,
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : picture, // Assumes 'picture' is already a Widget (Icon)
                                     ),
                                   )
                                 ],
@@ -212,7 +226,8 @@ class _DetailConfirmState extends State<DetailConfirm> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: item.price.toString(),
+                                            text: formatCurrency(item.price)
+                                                .toString(),
                                             style: TextStyle(
                                               fontSize: 18.0,
                                             ),

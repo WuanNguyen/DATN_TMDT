@@ -64,7 +64,8 @@ class _AdminListproductState extends State<AdminListproduct> {
       int index =
           products.indexWhere((product) => product.ID_Product == productId);
       if (index != -1) {
-        products[index].Image_Url = imageUrl;
+        products[index].Image_Url[0] =
+            imageUrl; //---------------------------------------------------------------+++++++++++++++++
       }
     });
   }
@@ -161,9 +162,9 @@ class _AdminListproductState extends State<AdminListproduct> {
                           children: [
                             Row(
                               children: [
-                                if (product.Image_Url != null)
+                                if (product.Image_Url[0] != null)
                                   Image.network(
-                                    product.Image_Url!,
+                                    product.Image_Url[0]!,
                                     height: 100,
                                     width: 100,
                                     fit: BoxFit.cover,

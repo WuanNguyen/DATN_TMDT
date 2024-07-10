@@ -3,6 +3,7 @@ import 'package:doan_tmdt/model/search_item.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class SearchScreen extends StatefulWidget {
   SearchScreen({super.key});

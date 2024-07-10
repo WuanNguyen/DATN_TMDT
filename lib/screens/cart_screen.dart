@@ -7,6 +7,7 @@ import 'package:doan_tmdt/model/classes.dart';
 import 'package:doan_tmdt/model/product.dart';
 import 'package:doan_tmdt/screens/detail_screen.dart';
 import 'package:doan_tmdt/model/dialog_notification.dart';
+import 'package:intl/intl.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -153,6 +154,11 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     filteredProducts.clear();
@@ -249,7 +255,7 @@ class _CartScreenState extends State<CartScreen> {
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(width: 2.0)),
                             child: Image.network(
-                              filteredProducts[index].Image_Url,
+                              filteredProducts[index].Image_Url[0]!,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -278,32 +284,32 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                                 Text(
                                   carts[index].ID_ProductSize == "S"
-                                      ? getPrice(
+                                      ? formatCurrency(getPrice(
                                                   filteredSizes[index]
                                                       .S
                                                       .SellPrice,
                                                   filteredSizes[index]
                                                       .S
-                                                      .Discount)
+                                                      .Discount))
                                               .toString() +
                                           " VND"
                                       : carts[index].ID_ProductSize == "M"
-                                          ? getPrice(
+                                          ? formatCurrency(getPrice(
                                                       filteredSizes[index]
                                                           .M
                                                           .SellPrice,
                                                       filteredSizes[index]
                                                           .M
-                                                          .Discount)
+                                                          .Discount))
                                                   .toString() +
                                               " VND"
-                                          : getPrice(
+                                          : formatCurrency(getPrice(
                                                       filteredSizes[index]
                                                           .L
                                                           .SellPrice,
                                                       filteredSizes[index]
                                                           .L
-                                                          .Discount)
+                                                          .Discount))
                                                   .toString() +
                                               " VND",
                                   style: TextStyle(
@@ -504,7 +510,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               Text(
-                                "${totalPrice - discountValue! < 0 ? 0 : totalPrice - discountValue!}",
+                                "${formatCurrency(totalPrice - discountValue! < 0 ? 0 : totalPrice - discountValue!)}",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               )
                             ],

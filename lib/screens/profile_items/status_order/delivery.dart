@@ -3,6 +3,7 @@ import 'package:doan_tmdt/screens/profile_items/status_order/detail_delivery.dar
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Delivery extends StatefulWidget {
   const Delivery({super.key});
@@ -41,6 +42,11 @@ class _DeliveryState extends State<Delivery> {
     });
   }
 
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +67,7 @@ class _DeliveryState extends State<Delivery> {
                     element.Order_Status == 'danggiao' && element.ID_User == ID,
               )
               .toList();
+          order.sort((a, b) => b.Order_Date!.compareTo(a.Order_Date!));
         });
 
         for (var orderItem in order) {
@@ -238,8 +245,9 @@ class _DeliveryState extends State<Delivery> {
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: order[index]
-                                                      .Total_Price
+                                                  text: formatCurrency(
+                                                          order[index]
+                                                              .Total_Price)
                                                       .toString(),
                                                   style: const TextStyle(
                                                     fontSize: 18.0,

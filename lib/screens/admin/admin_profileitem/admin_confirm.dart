@@ -22,6 +22,7 @@ class _AdminConfirmState extends State<AdminConfirm> {
   List<Order> order = [];
 
   Map<String, Users> userCache = {};
+  String sortBy = 'Order_Date'; // Biến lưu trữ tiêu chí sắp xếp
 
   Future<Users> getUserInfo(String userId) async {
     DatabaseReference userRef =
@@ -48,6 +49,13 @@ class _AdminConfirmState extends State<AdminConfirm> {
           // Kiểm tra kích thước của danh sách
           print('Order list length: ${order.length}');
         });
+        //-------------------------sắp xếp
+        // Sắp xếp danh sách dựa trên tiêu chí hiện tại
+        if (sortBy == 'Order_Date') {
+          order.sort((a, b) => b.Order_Date!.compareTo(a.Order_Date!));
+        } else if (sortBy == 'nameuser') {
+          order.sort((a, b) => a.nameuser!.compareTo(b.nameuser!));
+        }
 
         // Cập nhật thông tin người dùng
         for (var orderItem in order) {
@@ -113,6 +121,35 @@ class _AdminConfirmState extends State<AdminConfirm> {
                     )
                   : Column(
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            OutlinedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    sortBy = 'nameuser';
+                                    order.sort((a, b) =>
+                                        a.nameuser!.compareTo(b.nameuser!));
+                                  });
+                                },
+                                child: const Text('sort by name')),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            OutlinedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    sortBy = 'Order_Date';
+                                    order.sort((a, b) =>
+                                        a.Order_Date!.compareTo(b.Order_Date!));
+                                  });
+                                },
+                                child: const Text('Sort by time of order'))
+                          ],
+                        ),
                         Expanded(
                           child: ListView.builder(
                             itemCount: order.length,

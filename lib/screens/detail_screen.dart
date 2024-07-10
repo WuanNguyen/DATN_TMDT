@@ -453,6 +453,11 @@ class _DetailScreenState extends State<DetailScreen> {
     return sum / reviews.length;
   }
 
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     String idp = getIDProduct();
@@ -515,7 +520,7 @@ class _DetailScreenState extends State<DetailScreen> {
                               ),
                               width: MediaQuery.of(context).size.height / 3,
                               height: MediaQuery.of(context).size.height / 3,
-                              child: Image.network(widget.pro.Image_Url,
+                              child: Image.network(widget.pro.Image_Url[0]!,
                                   fit: BoxFit.cover)),
                           IconButton(
                               onPressed: () {
@@ -561,7 +566,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                                 fontSize: 20),
                                           ),
                                           Text(
-                                            "${price} VND",
+                                            "${formatCurrency(price)} VND",
                                             style: TextStyle(
                                                 decoration: discount > 0
                                                     ? TextDecoration.lineThrough
@@ -569,7 +574,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                           ),
                                           if (discount > 0)
                                             Text(
-                                              "${price - discount} VND",
+                                              "${formatCurrency(price - discount)} VND",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Color.fromRGBO(
@@ -1016,8 +1021,10 @@ class _DetailScreenState extends State<DetailScreen> {
                               ),
                               width: MediaQuery.of(context).size.height / 3,
                               height: MediaQuery.of(context).size.height / 3,
-                              child: Image.network(widget.pro.Image_Url,
-                                  fit: BoxFit.cover)),
+                              child: widget.pro.Image_Url.isNotEmpty
+                                  ? Image.network(widget.pro.Image_Url[0]!,
+                                      fit: BoxFit.cover)
+                                  : Icon(Icons.image_not_supported)),
                           IconButton(
                               onPressed: () {
                                 addFavorite(widget.pro.ID_Product);
@@ -1062,7 +1069,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                                 fontSize: 20),
                                           ),
                                           Text(
-                                            "${price} VND",
+                                            "${formatCurrency(price)} VND",
                                             style: TextStyle(
                                                 decoration: discount > 0
                                                     ? TextDecoration.lineThrough
@@ -1070,7 +1077,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                           ),
                                           if (discount > 0)
                                             Text(
-                                              "${price - discount} VND",
+                                              "${formatCurrency(price - discount)} VND",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Color.fromRGBO(

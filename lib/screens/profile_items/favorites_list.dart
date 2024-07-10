@@ -3,6 +3,7 @@ import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FavoritesList extends StatefulWidget {
   const FavoritesList({Key? key}) : super(key: key);
@@ -112,6 +113,11 @@ class _FavoritesListState extends State<FavoritesList> {
     });
   }
 
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,12 +171,12 @@ class _FavoritesListState extends State<FavoritesList> {
                         final cate = productCache[item.ID_Product]?.Category ??
                             'Loading...';
                         final picture = productCache[item.ID_Product]
-                                ?.Image_Url ??
+                                ?.Image_Url[0] ??
                             'https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a';
 
                         // Check if index is within the range of filteredSizes
                         final priceText = (index < filteredSizes.length)
-                            ? "${getPrice(filteredSizes[index].S.SellPrice, filteredSizes[index].S.Discount)} - ${getPrice(filteredSizes[index].L.SellPrice, filteredSizes[index].L.Discount)} VND"
+                            ? "${formatCurrency(getPrice(filteredSizes[index].S.SellPrice, filteredSizes[index].S.Discount))} - ${formatCurrency(getPrice(filteredSizes[index].L.SellPrice, filteredSizes[index].L.Discount))} VND"
                             : "Loading...";
 
                         return Container(

@@ -17,6 +17,12 @@ class CartDetails extends StatefulWidget {
 }
 
 class _CartDetailState extends State<CartDetails> {
+  final TextEditingController nameUS = TextEditingController();
+  final TextEditingController addressUS = TextEditingController();
+  final TextEditingController phoneUS = TextEditingController();
+  String _nameus = '';
+  String _addressus = '';
+  String _phongus = '';
   int selectedRadio = 1;
   void setSelectedRadio(int value) {
     setState(() {
@@ -190,17 +196,6 @@ class _CartDetailState extends State<CartDetails> {
     });
   }
 
-  //  void _updateStockProductSize(ProductSize item,String idpro,String sizeupdate) {
-  //   final DatabaseReference ProductSz_dbRef =
-  //     FirebaseDatabase.instance.reference().child('ProductSize').child(idpro);
-
-  //   ProductSz_dbRef.child(item.sizeupdate).update({'Stock': 1}).then((_) {
-  //     print("Successfully updated Stock");
-  //   }).catchError((error) {
-  //     print("Failed to update Stock: $error");
-  //   });
-  // }
-
   Future<void> addOrderDetail(
       String idorder, String idproduct, String prosize, int pri, int qu) async {
     final DatabaseReference _databaseReference =
@@ -257,6 +252,23 @@ class _CartDetailState extends State<CartDetails> {
     return 0;
   }
 
+  //kiểm tra sdt
+  bool isValidPhoneNumber(String input) {
+    final RegExp regex = RegExp(r'^0\d{9}$');
+    return regex.hasMatch(input);
+  }
+
+  bool isValidGmail(String input) {
+    // Biểu thức chính quy kiểm tra xem chuỗi là địa chỉ email Gmail hợp lệ hay không
+    final RegExp regex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+    return regex.hasMatch(input);
+  }
+
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -279,6 +291,8 @@ class _CartDetailState extends State<CartDetails> {
       body: Stack(
         children: [
           Container(
+            height: double.infinity,
+            width: double.infinity,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -292,363 +306,437 @@ class _CartDetailState extends State<CartDetails> {
                 tileMode: TileMode.mirror,
               ),
             ),
-            child: Container(
-              width: double.infinity,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ListView.builder(
-                      itemCount: _cartdetail.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final item = _cartdetail[index];
-                        final namePro =
-                            productCache[item.ID_Product]?.Product_Name ??
-                                'Loading...';
-                        final picture =
-                            productCache[item.ID_Product]?.Image_Url ?? image;
-                        final sizePrice = item.ID_ProductSize == "S"
-                            ? sizeCache[item.ID_Product]
-                                    ?.S
-                                    .SellPrice
-                                    .toString() ??
-                                'Loading...'
-                            : item.ID_ProductSize == "M"
-                                ? sizeCache[item.ID_Product]
-                                        ?.M
-                                        .SellPrice
-                                        .toString() ??
-                                    'Loading...'
-                                : sizeCache[item.ID_Product]
-                                        ?.L
-                                        .SellPrice
-                                        .toString() ??
-                                    'Loading...';
-
-                        return Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 5.0),
-                          padding: EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Color.fromARGB(255, 255, 255, 255),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ListView.builder(
+                    itemCount: _cartdetail.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final item = _cartdetail[index];
+                      final namePro =
+                          productCache[item.ID_Product]?.Product_Name ??
+                              'Loading...';
+                      final picture =
+                          productCache[item.ID_Product]?.Image_Url[0] ?? image;
+                      final sizePrice = item.ID_ProductSize == "S"
+                          ? formatCurrency(
+                                      sizeCache[item.ID_Product]!.S.SellPrice)
+                                  .toString() ??
+                              'Loading...'
+                          : item.ID_ProductSize == "M"
+                              ? formatCurrency(sizeCache[item.ID_Product]!
+                                          .M
+                                          .SellPrice)
+                                      .toString() ??
+                                  'Loading...'
+                              : formatCurrency(sizeCache[item.ID_Product]!
+                                          .L
+                                          .SellPrice)
+                                      .toString() ??
+                                  'Loading...';
+                      return Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 5.0, vertical: 5.0),
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Color.fromARGB(255, 255, 255, 255),
+                            ),
+                          ),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    border: Border.all(
+                                        color: Colors.black, width: 2),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.network(
+                                      picture,
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      style: DefaultTextStyle.of(context).style,
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: 'Name Product: ',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: namePro,
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  RichText(
+                                    text: TextSpan(
+                                      style: DefaultTextStyle.of(context).style,
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: 'Size: ',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: item.ID_ProductSize,
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  RichText(
+                                    text: TextSpan(
+                                      style: DefaultTextStyle.of(context).style,
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: 'Price: ',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: sizePrice,
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  RichText(
+                                    text: TextSpan(
+                                      style: DefaultTextStyle.of(context).style,
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: 'Quantity: ',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: item.Quantity.toString(),
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                ],
                               ),
                             ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      border: Border.all(
-                                          color: Colors.black, width: 2),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.network(
-                                        picture,
-                                        width: 100,
-                                        height: 100,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        style:
-                                            DefaultTextStyle.of(context).style,
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                            text: 'Name Product: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: namePro,
-                                            style: TextStyle(
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5.0),
-                                    RichText(
-                                      text: TextSpan(
-                                        style:
-                                            DefaultTextStyle.of(context).style,
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                            text: 'Size: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: item.ID_ProductSize,
-                                            style: TextStyle(
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5.0),
-                                    RichText(
-                                      text: TextSpan(
-                                        style:
-                                            DefaultTextStyle.of(context).style,
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                            text: 'Price: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: sizePrice,
-                                            style: TextStyle(
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5.0),
-                                    RichText(
-                                      text: TextSpan(
-                                        style:
-                                            DefaultTextStyle.of(context).style,
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                            text: 'Quantity: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: item.Quantity.toString(),
-                                            style: TextStyle(
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5.0),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    Align(
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  Align(
                       alignment: Alignment.bottomCenter,
-                      child: Container(
-                        margin: EdgeInsets.all(15),
-                        height: MediaQuery.of(context).size.height / 2.5,
-                        width: double.infinity,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              currentUser?.Username ??
-                                                  'Loading...',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            Text(
-                                              currentUser?.Phone ??
-                                                  'Loading...',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                            SizedBox(height: 5),
-                                          ],
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          currentUser?.Address ?? 'Loading...',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                                child: Column(
+                      child: SingleChildScrollView(
+                        child: Container(
+                          margin: EdgeInsets.all(15),
+                          height: MediaQuery.of(context).size.height / 2.5,
+                          width: double.infinity,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
                                   children: [
-                                    Row(
-                                      children: [
-                                        Text("Total Price: ",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                            )),
-                                        Expanded(child: Container()),
-                                        Text(
-                                            widget.TotalPrice.toString() +
-                                                " VND",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                            )),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text("Discount: ",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                            )),
-                                        Expanded(child: Container()),
-                                        Text(
-                                            widget.Discount.toString() + " VND",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                            )),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text("Pay: ",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold)),
-                                        Expanded(child: Container()),
-                                        Text(
-                                            "${widget.TotalPrice - widget.Discount} VND",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold)),
-                                      ],
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      _nameus == ''
+                                                          ? currentUser
+                                                                  ?.Username ??
+                                                              'Loading...'
+                                                          : _nameus,
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Text(
+                                                      _phongus == ''
+                                                          ? currentUser
+                                                                  ?.Phone ??
+                                                              'Loading...'
+                                                          : _phongus,
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Text(
+                                                      _addressus == ''
+                                                          ? currentUser
+                                                                  ?.Address ??
+                                                              'Loading...'
+                                                          : _addressus,
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    // Các widget khác trong column bên trái
+                                                  ],
+                                                ),
+                                              ),
+                                              Column(
+                                                children: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      CartEdit.infoUser(
+                                                        context,
+                                                        _nameus, // giá trị hiện tại
+                                                        _addressus,
+                                                        _phongus,
+                                                        (update) {
+                                                          if (isValidPhoneNumber(
+                                                                      _phongus) ==
+                                                                  false &&
+                                                              _phongus != '') {
+                                                            MsgDialog.MSG(
+                                                                context,
+                                                                'Notification',
+                                                                'Invalid phone number');
+                                                          } else {
+                                                            setState(() {
+                                                              _nameus = update[
+                                                                  'name']!;
+                                                              _addressus = update[
+                                                                  'address']!;
+                                                              _phongus = update[
+                                                                  'phone']!;
+                                                            });
+                                                          }
+
+                                                          print(_nameus);
+                                                        },
+                                                        () {
+                                                          // handle cancel if needed
+                                                        },
+                                                      );
+                                                    },
+                                                    child: const Text(
+                                                      'Edit',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  // Các widget khác trong column bên phải
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              SizedBox(height: 20),
-                              Row(
-                                children: [
-                                  Text("Payment:",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      )),
-                                  Radio(
-                                    value: 1,
-                                    groupValue: selectedRadio,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedRadio = value as int;
-                                      });
-                                    },
-                                  ),
-                                  Text(
-                                    'Cash',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  Radio(
-                                    value: 2,
-                                    groupValue: selectedRadio,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedRadio = value as int;
-                                      });
-                                    },
-                                  ),
-                                  Text(
-                                    'Momo',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 1.8,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    String payme = '';
-                                    if (selectedRadio == 1)
-                                      payme = 'Cash';
-                                    else if (selectedRadio == 2)
-                                      payme == 'Momo';
-                                    //Thêm add order
-                                    NotiDialog.show(context, 'Notification',
-                                        'order confirmation', () {
-                                      addOrder(
-                                          currentUser!.Username,
-                                          currentUser!.Address,
-                                          currentUser!.Phone,
-                                          widget.Discount,
-                                          payme,
-                                          widget.TotalPrice - widget.Discount);
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const BottomNavigation(
-                                                    index: 2)),
-                                      );
-                                    }, () {});
-                                  },
-                                  child: Text(
-                                    'Buy',
-                                    style: TextStyle(color: Colors.black),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text("Total Price: ",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                              )),
+                                          Expanded(child: Container()),
+                                          Text(
+                                              formatCurrency(widget.TotalPrice)
+                                                      .toString() +
+                                                  " VND",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                              )),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("Discount: ",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                              )),
+                                          Expanded(child: Container()),
+                                          Text(
+                                              formatCurrency(widget.Discount)
+                                                      .toString() +
+                                                  " VND",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                              )),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("Pay: ",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold)),
+                                          Expanded(child: Container()),
+                                          Text(
+                                              "${formatCurrency(widget.TotalPrice - widget.Discount)} VND",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              )
-                            ],
+                                SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Text("Payment:",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        )),
+                                    Radio(
+                                      value: 1,
+                                      groupValue: selectedRadio,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedRadio = value as int;
+                                        });
+                                      },
+                                    ),
+                                    Text(
+                                      'Cash',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    Radio(
+                                      value: 2,
+                                      groupValue: selectedRadio,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedRadio = value as int;
+                                        });
+                                      },
+                                    ),
+                                    Text(
+                                      'Momo',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.8,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      String payme = '';
+                                      if (selectedRadio == 1)
+                                        payme = 'Cash';
+                                      else if (selectedRadio == 2)
+                                        payme == 'Momo';
+                                      //Thêm add order
+                                      NotiDialog.show(context, 'Notification',
+                                          'order confirmation', () {
+                                        addOrder(
+                                            _nameus == ''
+                                                ? currentUser!.Username
+                                                : _nameus,
+                                            //
+                                            _addressus == ''
+                                                ? currentUser!.Address
+                                                : _addressus,
+                                            //
+                                            _phongus == ''
+                                                ? currentUser!.Phone
+                                                : _phongus,
+                                            widget.Discount,
+                                            payme,
+                                            widget.TotalPrice -
+                                                widget.Discount);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const BottomNavigation(
+                                                      index: 2)),
+                                        );
+                                      }, () {});
+                                    },
+                                    child: Text(
+                                      'Buy',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
+                      )),
+                ],
               ),
             ),
           ),

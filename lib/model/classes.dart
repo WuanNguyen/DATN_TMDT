@@ -82,12 +82,11 @@ class ProductSizeDetail {
 
 //---------------------Products-------------------------
 class Product {
-  //int ID_Product;
   String ID_Product;
   String Product_Name;
   String Category;
   String Description;
-  String Image_Url;
+  List<String> Image_Url;
   String ID_Distributor;
   int Status;
 
@@ -102,14 +101,21 @@ class Product {
   });
 
   factory Product.fromSnapshot(DataSnapshot snapshot) {
+    // Kiểm tra null và cung cấp giá trị mặc định
+    List<dynamic> imageUrlList = snapshot.child("Image_Url").value != null
+        ? snapshot.child("Image_Url").value as List<dynamic>
+        : [];
+    List<String> imageUrl = imageUrlList.cast<String>();
+
     return Product(
-        ID_Distributor: snapshot.child("ID_Distributor").value.toString(),
-        ID_Product: snapshot.child("ID_Product").value.toString(),
-        Product_Name: snapshot.child("Product_Name").value.toString(),
-        Category: snapshot.child("Category").value.toString(),
-        Description: snapshot.child("Description").value.toString(),
-        Image_Url: snapshot.child("Image_Url").value.toString(),
-        Status: int.parse(snapshot.child("Status").value.toString()));
+      ID_Product: snapshot.child("ID_Product").value.toString(),
+      Product_Name: snapshot.child("Product_Name").value.toString(),
+      Category: snapshot.child("Category").value.toString(),
+      Description: snapshot.child("Description").value.toString(),
+      Image_Url: imageUrl,
+      ID_Distributor: snapshot.child("ID_Distributor").value.toString(),
+      Status: int.parse(snapshot.child("Status").value.toString()),
+    );
   }
 }
 

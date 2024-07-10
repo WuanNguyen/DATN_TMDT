@@ -3,6 +3,7 @@ import 'package:doan_tmdt/screens/profile_items/status_order/detail_received.dar
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Received extends StatefulWidget {
   const Received({super.key});
@@ -51,6 +52,7 @@ class _ReceivedState extends State<Received> {
                     element.Order_Status == 'dagiao' && element.ID_User == ID,
               )
               .toList();
+          order.sort((a, b) => b.Order_Date!.compareTo(a.Order_Date!));
         });
 
         for (var orderItem in order) {
@@ -64,6 +66,11 @@ class _ReceivedState extends State<Received> {
         }
       }
     });
+  }
+
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
   }
 
   @override
@@ -228,8 +235,9 @@ class _ReceivedState extends State<Received> {
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: order[index]
-                                                      .Total_Price
+                                                  text: formatCurrency(
+                                                          order[index]
+                                                              .Total_Price)
                                                       .toString(),
                                                   style: const TextStyle(
                                                     fontSize: 18.0,

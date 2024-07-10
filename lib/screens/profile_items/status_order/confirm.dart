@@ -70,6 +70,7 @@ class _ConfirmState extends State<Confirm> {
                     element.Order_Status == 'xacnhan' && element.ID_User == ID,
               )
               .toList();
+          order.sort((a, b) => b.Order_Date!.compareTo(a.Order_Date!));
         });
 
         for (var orderItem in order) {
@@ -83,6 +84,11 @@ class _ConfirmState extends State<Confirm> {
         }
       }
     });
+  }
+
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
   }
 
   @override
@@ -246,8 +252,9 @@ class _ConfirmState extends State<Confirm> {
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: order[index]
-                                                      .Total_Price
+                                                  text: formatCurrency(
+                                                          order[index]
+                                                              .Total_Price)
                                                       .toString(),
                                                   style: const TextStyle(
                                                     fontSize: 18.0,

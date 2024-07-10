@@ -36,6 +36,16 @@ class _TitleConfirmState extends State<TitleConfirm> {
     });
   }
 
+  void _updateStatusCancel(String id) {
+    final DatabaseReference updateSTTOrder =
+        FirebaseDatabase.instance.reference().child('Order');
+    updateSTTOrder.child(id).update({'Order_Status': 'dahuy'}).then((_) {
+      print("Successfully updated status");
+    }).catchError((error) {
+      print("Failed to update status: $error");
+    });
+  }
+
   List<OrderDetail> orderDetail = [];
 
   @override
@@ -119,7 +129,7 @@ class _TitleConfirmState extends State<TitleConfirm> {
                             productCache[item.idProduct]?.Product_Name ??
                                 'Loading...';
                         final picture = productCache[item.idProduct]
-                                ?.Image_Url ??
+                                ?.Image_Url[0] ??
                             'https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a';
 
                         return Container(
@@ -265,30 +275,60 @@ class _TitleConfirmState extends State<TitleConfirm> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _updateStatus(widget.orderId);
-                          NotiDialog.showok(context, 'Notification',
-                              'Order has been successfully confirmed', () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AdminConfirm(), // Sử dụng ID của đơn hàng
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _updateStatusCancel(widget.orderId);
+                                NotiDialog.showok(context, 'Notification',
+                                    'Order successfully canceled', () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AdminConfirm(), // Sử dụng ID của đơn hàng
+                                    ),
+                                  );
+                                });
+                              },
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(color: Colors.black),
                               ),
-                            );
-                          });
-                        },
-                        child: Text(
-                          'Confirm',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _updateStatus(widget.orderId);
+                                NotiDialog.showok(context, 'Notification',
+                                    'Order has been successfully confirmed',
+                                    () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AdminConfirm(), // Sử dụng ID của đơn hàng
+                                    ),
+                                  );
+                                });
+                              },
+                              child: Text(
+                                'Confirm',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )),
                 ],
               ),
             ),

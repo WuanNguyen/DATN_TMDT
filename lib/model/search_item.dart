@@ -3,6 +3,7 @@ import 'package:doan_tmdt/screens/detail_items/rating.dart';
 import 'package:doan_tmdt/screens/detail_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class SearchItem extends StatefulWidget {
   SearchItem({Key? key, required this.pro}) : super(key: key);
@@ -39,6 +40,11 @@ class _SearchItemState extends State<SearchItem> {
 
   int getPrice(int sellPrice, int discount) {
     return sellPrice - discount;
+  }
+
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
   }
 
   @override
@@ -108,7 +114,7 @@ class _SearchItemState extends State<SearchItem> {
               width: 100,
               height: 100,
               child: Image.network(
-                widget.pro.Image_Url,
+                widget.pro.Image_Url[0]!,
                 fit: BoxFit.cover,
               ),
             ),
@@ -132,7 +138,7 @@ class _SearchItemState extends State<SearchItem> {
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     Text(
-                      "${getPrice(filteredSize.S.SellPrice, filteredSize.S.Discount)} - ${getPrice(filteredSize.L.SellPrice, filteredSize.L.Discount)} VND",
+                      "${formatCurrency(getPrice(filteredSize.S.SellPrice, filteredSize.S.Discount))} - ${formatCurrency(getPrice(filteredSize.L.SellPrice, filteredSize.L.Discount))} VND",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),

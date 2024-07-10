@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:doan_tmdt/model/classes.dart';
 import 'package:doan_tmdt/model/dialog_notification.dart';
+import 'package:doan_tmdt/model/loading.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -20,12 +21,6 @@ class _AddProductState extends State<AddProduct> {
   final TextEditingController nameproductText = TextEditingController();
   final TextEditingController descText = TextEditingController();
 
-  //
-  // final TextEditingController idnew = TextEditingController();
-  String imagetext =
-      "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
-  String ima =
-      "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
   //------------------
   String idDistributor = '';
   String cate = '';
@@ -47,6 +42,8 @@ class _AddProductState extends State<AddProduct> {
   int SellPriceL = 0;
   int StockL = 0;
   int DiscountL = 0;
+  //----------
+  List<String> imageUrls = [];
   //-----------------------------------------------------------
   Future<void> getSizeS() async {
     DatabaseReference userRef =
@@ -124,8 +121,7 @@ class _AddProductState extends State<AddProduct> {
       'Description': descText.text,
       'ID_Distributor': idDistributor,
       'Category': cate,
-      //Thiếu ID distributor với category==================================================================================
-      'Image_Url': imagetext,
+      'Image_Url': imageUrls,
       'Status': 0
     });
     //////////////////////////////////////////////////////////////////
@@ -273,7 +269,11 @@ class _AddProductState extends State<AddProduct> {
     "Adult",
     "Child",
   ];
-  //List<String> Distributors = ["Ecom", "Yong Yong"];
+  // lấy data tạo load
+  Future<List<String>> _fetchImages() async {
+    await Future.delayed(Duration(seconds: 4));
+    return imageUrls;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -305,37 +305,55 @@ class _AddProductState extends State<AddProduct> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(height: 30),
+              FutureBuilder(
+                  future: _fetchImages(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return LoadingIndicator();
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No images available'));
+                    } else {
+                      return Container(
+                        height: 100,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: imageUrls.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: const Color.fromARGB(
+                                        255, 78, 78, 78), // Màu viền
+                                    width: 1.0, // Độ dày viền
+                                  ),
+                                ),
+                                child: Image.network(
+                                  imageUrls[index],
+                                  width: 100,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
+                  }),
+              const SizedBox(
+                height: 10,
+              ),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black, width: 2),
                 ),
-                child: InkWell(
-                  onTap: () async {
-                    //nhấn
-                    String? imageUrl = await pickAndUploadImageToFirebase();
-                    if (imageUrl != null) {
-                      setState(() {
-                        imagetext = imageUrl;
-                      });
-                      print('đây là ảnh lấy:' + imageUrl);
-                      print('Đây là ảnh gán: ' + imagetext);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(
-                          'Photo has been updated',
-                          style: TextStyle(
-                              color: const Color.fromARGB(255, 255, 255, 255)),
-                        ),
-                        backgroundColor: Color.fromARGB(255, 125, 125, 125),
-                      ));
-                    }
-                  },
-                  child: Image.network(
-                    imagetext,
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: TextButton(
+                    onPressed: () {
+                      pickAndUploadImagesToFirebase();
+                    },
+                    child: Text('Upload Image')),
               ),
               const SizedBox(height: 20),
               const SizedBox(height: 20),
@@ -559,12 +577,12 @@ class _AddProductState extends State<AddProduct> {
                                             const SizedBox(width: 40),
                                             ElevatedButton(
                                               onPressed: () {
-                                                if (imagetext == ima) {
+                                                if (imageUrls.length == 0) {
                                                   Navigator.of(context).pop();
                                                   MsgDialog.MSG(
                                                       context,
                                                       'Notification',
-                                                      'Product photo has not been selected');
+                                                      'Picture has not been filled in');
                                                 } else if (nameproductText
                                                     .text.isEmpty) {
                                                   Navigator.of(context).pop();
@@ -776,29 +794,45 @@ class _AddProductState extends State<AddProduct> {
   }
 
   // upload ảnh-------------
-  Future<String?> pickAndUploadImageToFirebase() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (file == null) return null;
+  Future<void> pickAndUploadImagesToFirebase() async {
+    // lấy id mới nhất của product
+    final DatabaseReference _databaseReferencePro =
+        FirebaseDatabase.instance.reference();
 
-    Uint8List imageData = await File(file.path!).readAsBytes();
-    String fileName = DateTime.now().microsecondsSinceEpoch.toString();
-    Reference referenceRoot = FirebaseStorage.instance.ref();
-    Reference referenceDireImages = referenceRoot.child('image_product');
-    Reference referenceUpLoad = referenceDireImages.child(fileName);
+    DataSnapshot snapshotProduct =
+        await _databaseReferencePro.child('Max').child('MaxProduct').get();
 
-    try {
-      await referenceUpLoad.putData(
-          imageData, SettableMetadata(contentType: 'image/png'));
+    int ID_ProductNow =
+        snapshotProduct.exists ? snapshotProduct.value as int : 0;
+    int ID_ProductNew = ID_ProductNow + 1;
+    String ID_ProductNewString = 'Product$ID_ProductNew';
 
-      // Lấy đường dẫn URL của ảnh sau khi tải lên
-      String downloadUrl = await referenceUpLoad.getDownloadURL();
-      print('Download URL: $downloadUrl');
+// --------------------------------------------------------
+    final List<XFile>? files = await ImagePicker().pickMultiImage();
+    if (files == null || files.isEmpty) return;
 
-      return downloadUrl;
-    } catch (error) {
-      print('Error uploading image to Firebase Storage: $error');
-      // Xử lý lỗi nếu cần thiết
-      return null;
+    for (var file in files) {
+      Uint8List imageData = await File(file.path).readAsBytes();
+      String fileName =
+          '$ID_ProductNewString${DateTime.now().millisecondsSinceEpoch}.png';
+
+      Reference referenceRoot = FirebaseStorage.instance.ref();
+      Reference referenceDireImages =
+          referenceRoot.child('Pictures_Product').child(ID_ProductNewString);
+      Reference referenceUpLoad = referenceDireImages.child(fileName);
+
+      try {
+        await referenceUpLoad.putData(
+            imageData, SettableMetadata(contentType: 'image/png'));
+
+        String downloadUrl = await referenceUpLoad.getDownloadURL();
+        setState(() {
+          imageUrls.add(downloadUrl);
+        });
+        print('Download URL: $downloadUrl');
+      } catch (error) {
+        print('Error uploading image to Firebase Storage: $error');
+      }
     }
   }
 }
