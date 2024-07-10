@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class DetailScreen extends StatefulWidget {
   DetailScreen({super.key, required this.pro});
@@ -463,7 +464,7 @@ class _DetailScreenState extends State<DetailScreen> {
     String idp = getIDProduct();
     String idus = getUserUID();
 
-    print('___________________________________');
+    print('_________________________________');
     print('check da danh gia');
     print(checkrw);
     print('check da mua: ');
@@ -1022,8 +1023,39 @@ class _DetailScreenState extends State<DetailScreen> {
                               width: MediaQuery.of(context).size.height / 3,
                               height: MediaQuery.of(context).size.height / 3,
                               child: widget.pro.Image_Url.isNotEmpty
-                                  ? Image.network(widget.pro.Image_Url[0]!,
-                                      fit: BoxFit.cover)
+                                  ? CarouselSlider(
+                                      options: CarouselOptions(
+                                        height: 400.0,
+                                        enlargeCenterPage: true,
+                                        autoPlay:
+                                            true, //tự động chuyển sang hình khác
+                                        aspectRatio: 16 / 9, // tỉ lệ khung hình
+                                        autoPlayInterval: Duration(
+                                            seconds:
+                                                2), //thời gian trước khi chuyển sang hình khác
+                                        autoPlayAnimationDuration: Duration(
+                                            milliseconds:
+                                                750), //thời gian cần để chuyển sang hình khác
+                                        autoPlayCurve: Curves
+                                            .fastOutSlowIn, // animation cuôn
+                                        enableInfiniteScroll:
+                                            false, //cuộn vĩnh viễn
+                                        viewportFraction:
+                                            1.0, // % hình trong khung hình, 0.8 sẽ hiển thị rìa của hình kế bên
+                                        pauseAutoPlayOnTouch: true, //
+                                        scrollDirection: Axis.horizontal,
+                                      ),
+                                      items: widget.pro.Image_Url
+                                          .map((item) => Container(
+                                                //items là danh sách hình
+                                                child: Center(
+                                                  child: Image.network(item,
+                                                      fit: BoxFit.contain,
+                                                      width: 1000),
+                                                ),
+                                              ))
+                                          .toList(),
+                                    )
                                   : Icon(Icons.image_not_supported)),
                           IconButton(
                               onPressed: () {

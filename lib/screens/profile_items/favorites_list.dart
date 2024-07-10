@@ -1,5 +1,6 @@
 import 'package:doan_tmdt/model/classes.dart';
 import 'package:doan_tmdt/model/dialog_notification.dart';
+import 'package:doan_tmdt/screens/detail_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,10 @@ class FavoritesList extends StatefulWidget {
 class _FavoritesListState extends State<FavoritesList> {
   Query ProductSizes_dbRef =
       FirebaseDatabase.instance.ref().child('ProductSizes');
+  Query Products_dbRef = FirebaseDatabase.instance.ref().child('Products');
+
   List<ProductSize> sizes = [];
+  List<Product> products = [];
   List<ProductSize> filteredSizes = [];
 
   List<Favorite> favo = [];
@@ -109,6 +113,16 @@ class _FavoritesListState extends State<FavoritesList> {
             filteredSizes.add(size);
           }
         }
+      }
+    });
+
+    Products_dbRef.onValue.listen((event) {
+      if (this.mounted) {
+        setState(() {
+          products = event.snapshot.children.map((snapshot) {
+            return Product.fromSnapshot(snapshot);
+          }).toList();
+        });
       }
     });
   }
@@ -259,6 +273,16 @@ class _FavoritesListState extends State<FavoritesList> {
                                   ),
                                   TextButton(
                                       onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => new DetailScreen(
+                                                    pro: products.firstWhere(
+                                                        (element) =>
+                                                            element
+                                                                .ID_Product ==
+                                                            favo[index]
+                                                                .ID_Product)))); // truyen vao product
                                         //Chuyển tới màng hình detail
                                       },
                                       child: Text(

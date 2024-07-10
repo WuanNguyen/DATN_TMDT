@@ -23,6 +23,8 @@ class _CartScreenState extends State<CartScreen> {
   Query productSizesDbRef =
       FirebaseDatabase.instance.ref().child('ProductSizes');
   late final Query userCartDbRef;
+  Discount selectedDiscount = Discount(
+      Description: "", id: "", Uses: 0, Price: 0, Required: 0, Status: 0);
 
   String getUserUID() {
     User? user = FirebaseAuth.instance.currentUser;
@@ -32,6 +34,11 @@ class _CartScreenState extends State<CartScreen> {
 
   int getPrice(int sellPrice, int discountPrice) {
     return sellPrice - discountPrice;
+  }
+
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
   }
 
   int getTotalPrice(List<CartDetail> c, List<ProductSize> s) {
@@ -80,7 +87,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   int totalPrice = 0;
-  int? discountValue = 0;
+  int discountValue = 0;
   List<Discount> discounts = [];
   List<CartDetail> carts = [];
   List<Product> products = [];
@@ -88,6 +95,28 @@ class _CartScreenState extends State<CartScreen> {
   List<Product> filteredProducts = [];
   List<ProductSize> filteredSizes = [];
   List<Discount> validDiscounts = [];
+
+  Future<void> fetchDiscounts() async {
+    final event = await discountDbRef.once();
+    try {
+      if (this.mounted) {
+        setState(() {
+          if (!mounted) return;
+          discounts = event.snapshot.children
+              .map((snapshot) {
+                return Discount.fromSnapshot(snapshot);
+              })
+              .where((element) => element.Status == 0 && element.Uses != 0)
+              .toList();
+          if (discounts.isNotEmpty) {
+            discountValue = int.parse(discounts[0].Price.toString());
+          }
+        });
+      }
+    } catch (e) {
+      print("Error at fetchDiscounts()");
+    }
+  }
 
   @override
   void initState() {
@@ -98,22 +127,12 @@ class _CartScreenState extends State<CartScreen> {
         .child(FirebaseAuth.instance.currentUser!.uid);
 
     // Fetching data from Firebase and updating state
-    discountDbRef.onValue.listen((event) {
-      setState(() {
-        if (this.mounted) {
-          discounts = event.snapshot.children
-              .map((snapshot) {
-                return Discount.fromSnapshot(snapshot);
-              })
-              .where((element) => element.Status == 0 && element.Uses != 0)
-              .toList();
-        }
-      });
-    });
+    fetchDiscounts();
 
     userCartDbRef.onValue.listen((event) {
       if (this.mounted) {
         setState(() {
+          if (!mounted) return;
           carts = event.snapshot.children
               .map((snapshot) {
                 return CartDetail.fromSnapshot(snapshot);
@@ -127,6 +146,7 @@ class _CartScreenState extends State<CartScreen> {
     productsDbRef.onValue.listen((event) {
       if (this.mounted) {
         setState(() {
+          if (!mounted) return;
           products = event.snapshot.children
               .map((snapshot) {
                 return Product.fromSnapshot(snapshot);
@@ -140,6 +160,7 @@ class _CartScreenState extends State<CartScreen> {
     productSizesDbRef.onValue.listen((event) {
       if (this.mounted) {
         setState(() {
+          if (!mounted) return;
           productSizes = event.snapshot.children
               .map((snapshot) {
                 return ProductSize.fromSnapshot(snapshot);
@@ -152,11 +173,6 @@ class _CartScreenState extends State<CartScreen> {
         });
       }
     });
-  }
-
-  String formatCurrency(int value) {
-    final formatter = NumberFormat.decimalPattern('vi');
-    return formatter.format(value);
   }
 
   @override
@@ -184,6 +200,16 @@ class _CartScreenState extends State<CartScreen> {
         .where((discount) =>
             discount.Required < getTotalPrice(carts, productSizes))
         .toList();
+
+    selectedDiscount = discounts.isNotEmpty
+        ? discounts[0]
+        : Discount(
+            Description: "",
+            id: "Discount0",
+            Uses: 0,
+            Price: 0,
+            Required: 0,
+            Status: 0);
 
     // Ensure discountValue is valid
     if (validDiscounts.isNotEmpty &&
@@ -255,7 +281,7 @@ class _CartScreenState extends State<CartScreen> {
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(width: 2.0)),
                             child: Image.network(
-                              filteredProducts[index].Image_Url[0]!,
+                              filteredProducts[index].Image_Url[0],
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -285,32 +311,27 @@ class _CartScreenState extends State<CartScreen> {
                                 Text(
                                   carts[index].ID_ProductSize == "S"
                                       ? formatCurrency(getPrice(
-                                                  filteredSizes[index]
-                                                      .S
-                                                      .SellPrice,
-                                                  filteredSizes[index]
-                                                      .S
-                                                      .Discount))
-                                              .toString() +
+                                              filteredSizes[index].S.SellPrice,
+                                              filteredSizes[index]
+                                                  .S
+                                                  .Discount)) +
                                           " VND"
                                       : carts[index].ID_ProductSize == "M"
                                           ? formatCurrency(getPrice(
-                                                      filteredSizes[index]
-                                                          .M
-                                                          .SellPrice,
-                                                      filteredSizes[index]
-                                                          .M
-                                                          .Discount))
-                                                  .toString() +
+                                                  filteredSizes[index]
+                                                      .M
+                                                      .SellPrice,
+                                                  filteredSizes[index]
+                                                      .M
+                                                      .Discount)) +
                                               " VND"
                                           : formatCurrency(getPrice(
-                                                      filteredSizes[index]
-                                                          .L
-                                                          .SellPrice,
-                                                      filteredSizes[index]
-                                                          .L
-                                                          .Discount))
-                                                  .toString() +
+                                                  filteredSizes[index]
+                                                      .L
+                                                      .SellPrice,
+                                                  filteredSizes[index]
+                                                      .L
+                                                      .Discount)) +
                                               " VND",
                                   style: TextStyle(
                                       fontSize: 13,
@@ -328,29 +349,33 @@ class _CartScreenState extends State<CartScreen> {
                                             height: 36,
                                             clipBehavior: Clip.antiAlias,
                                             decoration: BoxDecoration(
-                                                color: Colors.black,
                                                 borderRadius:
                                                     BorderRadius.circular(50)),
                                             child: IconButton(
                                                 onPressed: () {
-                                                  setState(() {
-                                                    if (carts[index].Quantity >
-                                                        0) {
-                                                      carts[index].Quantity -=
-                                                          1;
-                                                      updateCartQuantity(
-                                                          carts[index].ID_Cart,
-                                                          carts[index]
-                                                              .Quantity);
-                                                      totalPrice =
-                                                          getTotalPrice(carts,
-                                                              filteredSizes);
-                                                    }
-                                                  });
+                                                  if (mounted) {
+                                                    setState(() {
+                                                      if (carts[index]
+                                                              .Quantity >
+                                                          0) {
+                                                        carts[index].Quantity -=
+                                                            1;
+                                                        updateCartQuantity(
+                                                            carts[index]
+                                                                .ID_Cart,
+                                                            carts[index]
+                                                                .Quantity);
+                                                        totalPrice =
+                                                            getTotalPrice(carts,
+                                                                filteredSizes);
+                                                      }
+                                                    });
+                                                  }
                                                 },
                                                 icon: Icon(Icons.remove,
-                                                    color: Colors.white,
-                                                    size: 20)),
+                                                    color: Color.fromRGBO(
+                                                        48, 50, 52, 1),
+                                                    size: 22)),
                                           ),
                                           Container(
                                             width: 20,
@@ -370,70 +395,73 @@ class _CartScreenState extends State<CartScreen> {
                                             height: 36,
                                             clipBehavior: Clip.antiAlias,
                                             decoration: BoxDecoration(
-                                                color: Colors.black,
                                                 borderRadius:
                                                     BorderRadius.circular(50)),
                                             child: IconButton(
                                                 onPressed: () {
-                                                  setState(() {
-                                                    // kiểm tra số lượng tồn
-                                                    if (carts[index]
-                                                            .ID_ProductSize ==
-                                                        "S") {
+                                                  if (mounted) {
+                                                    setState(() {
+                                                      // kiểm tra số lượng tồn
                                                       if (carts[index]
-                                                              .Quantity <
-                                                          filteredSizes[index]
-                                                              .S
-                                                              .Stock) {
-                                                        carts[index].Quantity +=
-                                                            1;
-                                                        updateCartQuantity(
-                                                            carts[index]
-                                                                .ID_Cart,
-                                                            carts[index]
-                                                                .Quantity);
+                                                              .ID_ProductSize ==
+                                                          "S") {
+                                                        if (carts[index]
+                                                                .Quantity <
+                                                            filteredSizes[index]
+                                                                .S
+                                                                .Stock) {
+                                                          carts[index]
+                                                              .Quantity += 1;
+                                                          updateCartQuantity(
+                                                              carts[index]
+                                                                  .ID_Cart,
+                                                              carts[index]
+                                                                  .Quantity);
+                                                        }
+                                                      } else if (carts[index]
+                                                              .ID_ProductSize ==
+                                                          "M") {
+                                                        if (carts[index]
+                                                                .Quantity <
+                                                            filteredSizes[index]
+                                                                .M
+                                                                .Stock) {
+                                                          carts[index]
+                                                              .Quantity += 1;
+                                                          updateCartQuantity(
+                                                              carts[index]
+                                                                  .ID_Cart,
+                                                              carts[index]
+                                                                  .Quantity);
+                                                        }
+                                                      } else if (carts[index]
+                                                              .ID_ProductSize ==
+                                                          "L") {
+                                                        if (carts[index]
+                                                                .Quantity <
+                                                            filteredSizes[index]
+                                                                .L
+                                                                .Stock) {
+                                                          carts[index]
+                                                              .Quantity += 1;
+                                                          updateCartQuantity(
+                                                              carts[index]
+                                                                  .ID_Cart,
+                                                              carts[index]
+                                                                  .Quantity);
+                                                        }
                                                       }
-                                                    } else if (carts[index]
-                                                            .ID_ProductSize ==
-                                                        "M") {
-                                                      if (carts[index]
-                                                              .Quantity <
-                                                          filteredSizes[index]
-                                                              .M
-                                                              .Stock) {
-                                                        carts[index].Quantity +=
-                                                            1;
-                                                        updateCartQuantity(
-                                                            carts[index]
-                                                                .ID_Cart,
-                                                            carts[index]
-                                                                .Quantity);
-                                                      }
-                                                    } else if (carts[index]
-                                                            .ID_ProductSize ==
-                                                        "L") {
-                                                      if (carts[index]
-                                                              .Quantity <
-                                                          filteredSizes[index]
-                                                              .L
-                                                              .Stock) {
-                                                        carts[index].Quantity +=
-                                                            1;
-                                                        updateCartQuantity(
-                                                            carts[index]
-                                                                .ID_Cart,
-                                                            carts[index]
-                                                                .Quantity);
-                                                      }
-                                                    }
 
-                                                    totalPrice = getTotalPrice(
-                                                        carts, filteredSizes);
-                                                  });
+                                                      totalPrice =
+                                                          getTotalPrice(carts,
+                                                              filteredSizes);
+                                                    });
+                                                  }
                                                 },
                                                 icon: Icon(Icons.add,
-                                                    color: Colors.white,
-                                                    size: 20)),
+                                                    color: Color.fromRGBO(
+                                                        48, 50, 52, 1),
+                                                    size: 22)),
                                           ),
                                         ],
                                       ),
@@ -478,19 +506,24 @@ class _CartScreenState extends State<CartScreen> {
                                       fontSize: 17),
                                 ),
                               ),
-                              DropdownButton<String>(
-                                value: discountValue.toString(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    discountValue = int.parse(newValue!);
-                                  });
+                              DropdownButton<int>(
+                                value: discountValue,
+                                onChanged: (int? newValue) {
+                                  if (mounted) {
+                                    setState(() {
+                                      discountValue = newValue!;
+                                      selectedDiscount =
+                                          validDiscounts.firstWhere((element) =>
+                                              element.Price == discountValue);
+                                    });
+                                  }
                                 },
                                 items: validDiscounts
                                     .map((Discount validDiscounts) {
-                                  return DropdownMenuItem<String>(
-                                      value: validDiscounts.Price.toString(),
-                                      child: Text(
-                                          validDiscounts.Price.toString()));
+                                  return DropdownMenuItem<int>(
+                                      value: validDiscounts.Price,
+                                      child: Text(formatCurrency(
+                                          validDiscounts.Price)));
                                 }).toList(),
                               )
                             ],
@@ -501,7 +534,7 @@ class _CartScreenState extends State<CartScreen> {
                           Row(
                             children: [
                               Container(
-                                width: MediaQuery.of(context).size.width - 124,
+                                width: MediaQuery.of(context).size.width - 140,
                                 child: Text(
                                   "Total:",
                                   style: TextStyle(
@@ -510,7 +543,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               Text(
-                                "${formatCurrency(totalPrice - discountValue! < 0 ? 0 : totalPrice - discountValue!)}",
+                                "${totalPrice - discountValue! < 0 ? 0 : formatCurrency(totalPrice - discountValue!)} VND",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               )
                             ],
@@ -532,6 +565,7 @@ class _CartScreenState extends State<CartScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => CartDetails(
+                                    idDiscount: selectedDiscount.id,
                                     TotalPrice: totalPrice,
                                     Discount: discountValue!,
                                   ),

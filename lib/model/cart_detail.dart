@@ -7,10 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CartDetails extends StatefulWidget {
-  CartDetails({Key? key, required this.TotalPrice, required this.Discount})
+  CartDetails(
+      {Key? key,
+      required this.TotalPrice,
+      required this.Discount,
+      required this.idDiscount})
       : super(key: key);
   int TotalPrice; // tong tien
   int Discount; // ap dung giam gia
+  String idDiscount;
 
   @override
   State<CartDetails> createState() => _CartDetailState();
@@ -118,7 +123,7 @@ class _CartDetailState extends State<CartDetails> {
   }
 
   Future<void> addOrder(String nameuser, String addressuser, String phoneuser,
-      dis, String paym, int ttprice) async {
+      dis, String paym, int ttprice, String iddiscount) async {
     String id_user = getUserUID();
 
     final DatabaseReference _databaseReference =
@@ -177,10 +182,13 @@ class _CartDetailState extends State<CartDetails> {
           _updateStockProductSize(productId, 'L', newStock);
         }
       }
+
       //và xóa giỏ hàng
       // Xóa sản phẩm khỏi giỏ hàng---------------------------------------------Lệnh đang thử nghiệm
       await _databaseReference.child('Carts').child(id_user).remove();
     }
+    _updateUsesDiscount(iddiscount);
+    addNotification(id_user, UIDC);
   }
 
   void _updateStockProductSize(String productId, String size, int newStock) {
@@ -194,6 +202,30 @@ class _CartDetailState extends State<CartDetails> {
     }).catchError((error) {
       print("Failed to update Stock: $error");
     });
+  }
+
+  //--------------------------------------------
+  Future<Discount> getDiscount(String idDiss) async {
+    DatabaseReference userRef =
+        FirebaseDatabase.instance.ref().child('Discounts').child(idDiss);
+    DataSnapshot snapshot = await userRef.get();
+    return Discount.fromSnapshot(snapshot);
+  }
+
+  void _updateUsesDiscount(String idDis) async {
+    try {
+      Discount discount = await getDiscount(idDis);
+
+      final DatabaseReference updateDiscount_dbRef =
+          FirebaseDatabase.instance.reference().child('Discounts').child(idDis);
+
+      int updatedUses = discount.Uses - 1;
+
+      await updateDiscount_dbRef.update({'Uses': updatedUses});
+      print("Successfully updated Uses");
+    } catch (error) {
+      print("Failed to update Uses: $error");
+    }
   }
 
   Future<void> addOrderDetail(
@@ -269,6 +301,45 @@ class _CartDetailState extends State<CartDetails> {
     return formatter.format(value);
   }
 
+  // add notification
+  Future<void> addNotification(String ID_user, String idorder) async {
+    final DatabaseReference _databaseReference =
+        FirebaseDatabase.instance.reference();
+
+    //them orderDetail
+    final DatabaseEvent snapshot = await _databaseReference
+        .child('Max')
+        .child('MaxNotification')
+        .child(ID_user)
+        .child('MaxID')
+        .once();
+
+    final currentValue = snapshot.snapshot.value;
+    int currentID =
+        currentValue != null ? int.parse(currentValue.toString()) : 0;
+    final newID = currentID + 1;
+    String UIDC = 'Notification$newID';
+
+    await _databaseReference
+        .child('Notifications')
+        .child(ID_user)
+        .child(UIDC)
+        .set({
+      'ID_Notification': UIDC,
+      'Message': 'You have placed your order successfully', // Add null check
+      'ID_Order': idorder,
+      'Date_time': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+      'Status': 0
+    });
+    //cập nhật danh sách
+    await _databaseReference
+        .child('Max')
+        .child('MaxNotification')
+        .child(ID_user)
+        .child('MaxID')
+        .set(newID);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -321,21 +392,25 @@ class _CartDetailState extends State<CartDetails> {
                       final picture =
                           productCache[item.ID_Product]?.Image_Url[0] ?? image;
                       final sizePrice = item.ID_ProductSize == "S"
-                          ? formatCurrency(
+                          ? sizeCache[item.ID_Product]?.S != null
+                              ? formatCurrency(
                                       sizeCache[item.ID_Product]!.S.SellPrice)
-                                  .toString() ??
-                              'Loading...'
+                                  .toString()
+                              : 'Loading...'
                           : item.ID_ProductSize == "M"
-                              ? formatCurrency(sizeCache[item.ID_Product]!
+                              ? sizeCache[item.ID_Product]?.M != null
+                                  ? formatCurrency(sizeCache[item.ID_Product]!
                                           .M
                                           .SellPrice)
-                                      .toString() ??
-                                  'Loading...'
-                              : formatCurrency(sizeCache[item.ID_Product]!
+                                      .toString()
+                                  : 'Loading...'
+                              : sizeCache[item.ID_Product]?.L != null
+                                  ? formatCurrency(sizeCache[item.ID_Product]!
                                           .L
                                           .SellPrice)
-                                      .toString() ??
-                                  'Loading...';
+                                      .toString()
+                                  : 'Loading...';
+
                       return Container(
                         margin: EdgeInsets.symmetric(
                             horizontal: 5.0, vertical: 5.0),
@@ -714,8 +789,8 @@ class _CartDetailState extends State<CartDetails> {
                                                 : _phongus,
                                             widget.Discount,
                                             payme,
-                                            widget.TotalPrice -
-                                                widget.Discount);
+                                            widget.TotalPrice - widget.Discount,
+                                            widget.idDiscount);
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(

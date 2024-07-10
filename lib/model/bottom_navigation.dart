@@ -1,6 +1,7 @@
 import 'package:doan_tmdt/model/menu.dart';
 import 'package:doan_tmdt/screens/cart_screen.dart';
 import 'package:doan_tmdt/screens/categories_screen.dart';
+import 'package:doan_tmdt/screens/home_items/notification_screen.dart';
 import 'package:doan_tmdt/screens/home_screen.dart';
 import 'package:doan_tmdt/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +58,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
         actions: [
           IconButton(
               onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NotificationScreen()),
+                );
                 // sự kiện icon thông báo
               },
               icon: const Icon(Icons.notifications))
