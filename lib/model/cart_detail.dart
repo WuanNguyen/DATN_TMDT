@@ -329,6 +329,7 @@ class _CartDetailState extends State<CartDetails> {
       'Message': 'You have placed your order successfully', // Add null check
       'ID_Order': idorder,
       'Date_time': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+      'KeyNotification': 'Order',
       'Status': 0
     });
     //cập nhật danh sách

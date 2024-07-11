@@ -88,8 +88,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           children: [
                             Collection(name: "ELEMENT COLLECTION"),
-                            ProductList(genre: "MALE"),
-                            ProductList(genre: "FEMALE"),
+                            ProductList(
+                              CategoryName: "For Adult",
+                              Category: "Adult",
+                            ),
+                            ProductList(
+                              CategoryName: "For Child",
+                              Category: "Child",
+                            ),
                           ],
                         ),
                       )))

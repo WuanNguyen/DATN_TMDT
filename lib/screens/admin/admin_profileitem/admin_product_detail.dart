@@ -94,41 +94,45 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: [0.1, 0.8, 1],
-                    colors: <Color>[
-                      Color.fromRGBO(201, 241, 248, 1),
-                      Color.fromRGBO(231, 230, 233, 1),
-                      Color.fromRGBO(231, 227, 230, 1),
-                    ],
-                    tileMode: TileMode.mirror,
-                  ),
-                ),
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Product Name: ${widget.product.Product_Name}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18)),
-                    Text('Category: ${widget.product.Category}'),
-                    Text('Description: ${widget.product.Description}'),
-                    SizedBox(height: 20),
-                    Text('Sizes:',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    if (productSize.S.Status == 0)
-                      buildSizeDetail('S', productSize.S),
-                    if (productSize.M.Status == 0)
-                      buildSizeDetail('M', productSize.M),
-                    if (productSize.L.Status == 0)
-                      buildSizeDetail('L', productSize.L),
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.1, 0.8, 1],
+                  colors: <Color>[
+                    Color.fromRGBO(201, 241, 248, 1),
+                    Color.fromRGBO(231, 230, 233, 1),
+                    Color.fromRGBO(231, 227, 230, 1),
                   ],
+                  tileMode: TileMode.mirror,
                 ),
+              ),
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Product Name: ${widget.product.Product_Name}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  Text('Category: ${widget.product.Category}'),
+                  Text('Description: ${widget.product.Description}'),
+                  SizedBox(height: 20),
+                  Text('Sizes:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        if (productSize.S.Status == 0)
+                          buildSizeDetail('S', productSize.S),
+                        if (productSize.M.Status == 0)
+                          buildSizeDetail('M', productSize.M),
+                        if (productSize.L.Status == 0)
+                          buildSizeDetail('L', productSize.L),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
     );

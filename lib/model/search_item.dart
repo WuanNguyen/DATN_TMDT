@@ -14,11 +14,18 @@ class SearchItem extends StatefulWidget {
   State<SearchItem> createState() => _SearchItemState();
 }
 
+String formatCurrency(int value) {
+  final formatter = NumberFormat.decimalPattern('vi');
+  return formatter.format(value);
+}
+
 class _SearchItemState extends State<SearchItem> {
   final Query productSizesDbRef =
       FirebaseDatabase.instance.ref().child('ProductSizes');
 
   List<ProductSize> sizes = [];
+  late DatabaseReference Review_dbRef;
+  List<Review> reviews = [];
 
   @override
   void initState() {
@@ -36,15 +43,55 @@ class _SearchItemState extends State<SearchItem> {
         });
       }
     });
+    Review_dbRef = FirebaseDatabase.instance
+        .ref()
+        .child('Reviews')
+        .child(widget.pro.ID_Product);
+    fetchReviews();
+  }
+
+  void fetchReviews() async {
+    try {
+      DatabaseEvent event = await Review_dbRef.once();
+      DataSnapshot snapshot = event.snapshot;
+      if (snapshot.exists) {
+        List<Review> tempReviewList = [];
+
+        for (var child in snapshot.children) {
+          tempReviewList.add(Review.fromSnapshot(child));
+        }
+
+        setState(() {
+          reviews = tempReviewList
+              .where(
+                (element) => element.Status == 0,
+              )
+              .toList();
+        });
+      } else {
+        print('No reviews available for this product.');
+      }
+    } catch (e) {
+      print('An error occurred: $e');
+      // Handle the error, e.g., show a message to the user
+    }
+  }
+
+  double calculateAverageRating() {
+    if (reviews.isEmpty) {
+      return 0.0;
+    }
+
+    double sum = 0.0;
+    for (var review in reviews) {
+      sum += double.parse(review.Rating.toString());
+    }
+
+    return sum / reviews.length;
   }
 
   int getPrice(int sellPrice, int discount) {
     return sellPrice - discount;
-  }
-
-  String formatCurrency(int value) {
-    final formatter = NumberFormat.decimalPattern('vi');
-    return formatter.format(value);
   }
 
   @override
@@ -114,7 +161,7 @@ class _SearchItemState extends State<SearchItem> {
               width: 100,
               height: 100,
               child: Image.network(
-                widget.pro.Image_Url[0]!,
+                widget.pro.Image_Url[0],
                 fit: BoxFit.cover,
               ),
             ),
@@ -150,7 +197,7 @@ class _SearchItemState extends State<SearchItem> {
                           color: Colors.yellow,
                         ),
                         Text(
-                          "2.5",
+                          calculateAverageRating().toString(),
                         ),
                         SizedBox(width: 40),
                         GestureDetector(

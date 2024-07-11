@@ -26,6 +26,8 @@ class _CartScreenState extends State<CartScreen> {
   Discount selectedDiscount = Discount(
       Description: "", id: "", Uses: 0, Price: 0, Required: 0, Status: 0);
 
+  String selectedDiscountID = "Discount0";
+
   String getUserUID() {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) return user.uid.toString();
@@ -198,18 +200,8 @@ class _CartScreenState extends State<CartScreen> {
     // Calculating valid discounts based on total price
     validDiscounts = discounts
         .where((discount) =>
-            discount.Required < getTotalPrice(carts, productSizes))
+            discount.Required <= getTotalPrice(carts, productSizes))
         .toList();
-
-    selectedDiscount = discounts.isNotEmpty
-        ? discounts[0]
-        : Discount(
-            Description: "",
-            id: "Discount0",
-            Uses: 0,
-            Price: 0,
-            Required: 0,
-            Status: 0);
 
     // Ensure discountValue is valid
     if (validDiscounts.isNotEmpty &&
@@ -219,6 +211,10 @@ class _CartScreenState extends State<CartScreen> {
 
     totalPrice = 0;
     totalPrice = getTotalPrice(carts, filteredSizes);
+    setState(() {
+      if (totalPrice < selectedDiscount.Required)
+        selectedDiscount = validDiscounts[0];
+    });
 
     return SingleChildScrollView(
       physics: NeverScrollableScrollPhysics(),
@@ -358,6 +354,11 @@ class _CartScreenState extends State<CartScreen> {
                                                       if (carts[index]
                                                               .Quantity >
                                                           0) {
+                                                        if (totalPrice <
+                                                            selectedDiscount
+                                                                .Required)
+                                                          selectedDiscount =
+                                                              validDiscounts[0];
                                                         carts[index].Quantity -=
                                                             1;
                                                         updateCartQuantity(
@@ -494,11 +495,10 @@ class _CartScreenState extends State<CartScreen> {
                       margin: EdgeInsets.fromLTRB(30, 5, 0, 10),
                       child: Column(
                         children: [
+                          Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 0)),
                           Row(
                             children: [
-                              Container(
-                                margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                                width: MediaQuery.of(context).size.width - 124,
+                              Expanded(
                                 child: Text(
                                   "Discount:",
                                   style: TextStyle(
@@ -506,26 +506,37 @@ class _CartScreenState extends State<CartScreen> {
                                       fontSize: 17),
                                 ),
                               ),
-                              DropdownButton<int>(
-                                value: discountValue,
-                                onChanged: (int? newValue) {
+                              Container(
+                                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                child: Text(
+                                    "${formatCurrency(selectedDiscount.Price)} VND"),
+                              ),
+                              GestureDetector(
+                                onTap: () async {
                                   if (mounted) {
+                                    selectedDiscountID =
+                                        (await showDiscountDialog(
+                                            context, validDiscounts))!;
                                     setState(() {
-                                      discountValue = newValue!;
                                       selectedDiscount =
-                                          validDiscounts.firstWhere((element) =>
-                                              element.Price == discountValue);
+                                          validDiscounts.firstWhere(
+                                        (element) =>
+                                            element.id == selectedDiscountID,
+                                      );
+                                      print(selectedDiscount.Price);
                                     });
                                   }
                                 },
-                                items: validDiscounts
-                                    .map((Discount validDiscounts) {
-                                  return DropdownMenuItem<int>(
-                                      value: validDiscounts.Price,
-                                      child: Text(formatCurrency(
-                                          validDiscounts.Price)));
-                                }).toList(),
-                              )
+                                child: Container(
+                                  margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                  child: Text(
+                                    "More",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                           Padding(
@@ -533,8 +544,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           Row(
                             children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width - 140,
+                              Expanded(
                                 child: Text(
                                   "Total:",
                                   style: TextStyle(
@@ -542,9 +552,12 @@ class _CartScreenState extends State<CartScreen> {
                                       fontSize: 17),
                                 ),
                               ),
-                              Text(
-                                "${totalPrice - discountValue! < 0 ? 0 : formatCurrency(totalPrice - discountValue!)} VND",
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                              Container(
+                                margin: EdgeInsets.fromLTRB(0, 0, 30, 0),
+                                child: Text(
+                                  "${totalPrice - selectedDiscount.Price! < 0 ? 0 : formatCurrency(totalPrice - selectedDiscount.Price!)} VND",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               )
                             ],
                           ),
@@ -565,9 +578,9 @@ class _CartScreenState extends State<CartScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => CartDetails(
-                                    idDiscount: selectedDiscount.id,
+                                    idDiscount: selectedDiscountID,
                                     TotalPrice: totalPrice,
-                                    Discount: discountValue!,
+                                    Discount: selectedDiscount.Price!,
                                   ),
                                 ),
                               );
@@ -577,7 +590,7 @@ class _CartScreenState extends State<CartScreen> {
                             "Checkout",
                             style: TextStyle(color: Colors.black),
                           )),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -586,5 +599,96 @@ class _CartScreenState extends State<CartScreen> {
         ),
       ),
     );
+  }
+
+  Future<String?> showDiscountDialog(
+      BuildContext context, List<Discount> discount) async {
+    final String? selectedId = await showDialog<String>(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(17.0),
+          ),
+          child: Container(
+            height: 700,
+            width: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(17),
+              gradient: const LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                stops: [0.0, 0.7, 1],
+                transform: GradientRotation(50),
+                colors: [
+                  Color.fromRGBO(54, 171, 237, 0.80),
+                  Color.fromRGBO(149, 172, 205, 0.75),
+                  Color.fromRGBO(244, 173, 173, 0.1),
+                ],
+              ),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 30, 0, 10),
+                  child: const Text(
+                    "Select Discount",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: validDiscounts.length,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        width: 200,
+                        height: 75,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context, validDiscounts[index].id);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(width: 1.0),
+                            ),
+                            margin: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                            width: 100,
+                            height: 40,
+                            child: Text(validDiscounts[index].Description),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context, selectedDiscountID);
+                  },
+                  child: Container(
+                      height: 40,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      margin: EdgeInsets.fromLTRB(0, 30, 0, 30),
+                      child: Center(
+                        child: Text("Cancel"),
+                      )),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    return selectedId;
   }
 }

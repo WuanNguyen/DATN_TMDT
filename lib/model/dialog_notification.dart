@@ -14,23 +14,27 @@ class MsgDialog {
       builder: (BuildContext context) => Dialog(
         child: Container(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(27),
-              gradient: LinearGradient(
-                  begin: Alignment.bottomLeft,
-                  end: Alignment.topRight,
-                  stops: [0.0, 0.7, 1],
-                  transform: GradientRotation(50),
-                  colors: [
-                    Color.fromRGBO(54, 171, 237, 0.80),
-                    Color.fromRGBO(149, 172, 205, 0.75),
-                    Color.fromRGBO(244, 173, 173, 0.1),
-                  ])),
+            borderRadius: BorderRadius.circular(27),
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              stops: [0.0, 0.7, 1],
+              transform: GradientRotation(50),
+              colors: [
+                Color.fromRGBO(54, 171, 237, 0.80),
+                Color.fromRGBO(149, 172, 205, 0.75),
+                Color.fromRGBO(244, 173, 173, 0.1),
+              ],
+            ),
+          ),
           padding: const EdgeInsets.all(20.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
                 title,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -40,6 +44,7 @@ class MsgDialog {
               const SizedBox(height: 15),
               Text(
                 msg,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -51,7 +56,7 @@ class MsgDialog {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop(MsgDialog);
+                      Navigator.of(context).pop();
                     },
                     child: const Text(
                       'ok',
@@ -620,8 +625,6 @@ class addDistributor {
 class addDiscount {
   static void add(
     BuildContext context,
-    // String title,
-    //String msg,
     int price,
     int required,
     String desc,
@@ -634,38 +637,52 @@ class addDiscount {
     TextEditingController descText = TextEditingController(text: desc);
     TextEditingController usesText =
         TextEditingController(text: uses.toString());
-    Future<void> UpdateDiscount() async {
-      //------------------------------------------------
-      //update
+
+    Future<bool> checkDiscountExists(int price, int required) async {
       final DatabaseReference _databaseReference =
           FirebaseDatabase.instance.reference();
-      //
+      DataSnapshot snapshot = await _databaseReference.child('Discounts').get();
+
+      if (snapshot.exists) {
+        Map<dynamic, dynamic> discounts =
+            snapshot.value as Map<dynamic, dynamic>;
+        for (var discount in discounts.values) {
+          if (discount['Price'] == price.toString() &&
+              discount['Required'] == required.toString()) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    Future<void> updateDiscount() async {
+      final DatabaseReference _databaseReference =
+          FirebaseDatabase.instance.reference();
       DataSnapshot snapshot =
           await _databaseReference.child('Max').child('MaxDiscount').get();
 
       int currentUID = snapshot.exists ? snapshot.value as int : 0;
       int newUID = currentUID + 1;
-      String UIDC = 'Discount$newUID';
-      //
-      await _databaseReference.child('Discounts').child(UIDC).set({
-        'ID_Discount': UIDC,
+      String uidc = 'Discount$newUID';
+
+      await _databaseReference.child('Discounts').child(uidc).set({
+        'ID_Discount': uidc,
         'Price': priceText.text,
         'Description': descText.text,
         'Required': requiredText.text,
         'Uses': int.parse(usesText.text),
         'Status': 0
       });
-      // Cập nhật UID lớn nhất
-      await _databaseReference.child('Max').child('MaxDiscount').set(newUID);
 
-      //
+      await _databaseReference.child('Max').child('MaxDiscount').set(newUID);
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-          'added discount successfully',
-          style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
+          'Added discount successfully',
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Color.fromARGB(255, 125, 125, 125),
+        backgroundColor: Colors.grey,
       ));
     }
 
@@ -794,15 +811,23 @@ class addDiscount {
                   const SizedBox(width: 20),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (priceText.text == '0' ||
                             requiredText.text == '0' ||
                             usesText.text == '0') {
                           MsgDialog.MSG(context, 'Notification',
                               'Information cannot be left blank');
                         } else {
-                          UpdateDiscount();
-                          Navigator.of(context).pop();
+                          bool exists = await checkDiscountExists(
+                              int.parse(priceText.text),
+                              int.parse(requiredText.text));
+                          if (exists) {
+                            MsgDialog.MSG(context, 'Notification',
+                                'Discount already exists in the system');
+                          } else {
+                            await updateDiscount();
+                            Navigator.of(context).pop();
+                          }
                         }
                       },
                       child: const Text(

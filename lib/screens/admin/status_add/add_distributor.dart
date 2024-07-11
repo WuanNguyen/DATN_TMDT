@@ -30,7 +30,9 @@ class _AddDistributorState extends State<AddDistributor> {
               .map((snapshot) {
                 return Distributors.fromSnapshot(snapshot);
               })
-              .where((element) => element.Status == 0)
+              .where((element) =>
+                  element.Status == 0 &&
+                  element.ID_Distributor != 'Distributor0')
               .toList();
         });
       }
@@ -66,6 +68,20 @@ class _AddDistributorState extends State<AddDistributor> {
     emailText.clear();
     addressText.clear();
     phoneText.clear();
+  }
+
+  Future<bool> checkDistributorUsed(String distributorId) async {
+    final DatabaseReference productsDbRef =
+        FirebaseDatabase.instance.reference();
+    DataSnapshot snapshot = await productsDbRef.child('Products').get();
+
+    for (var product in snapshot.children) {
+      if (product.child('ID_Distributor').value == distributorId &&
+          product.child('Status').value == 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -197,11 +213,18 @@ class _AddDistributorState extends State<AddDistributor> {
                       Column(
                         children: [
                           ElevatedButton(
-                            onPressed: () {
-                              NotiDialog.show(context, 'Notification',
-                                  'Do you want to delete Distributor?', () {
-                                _updateStatus(item, 1);
-                              }, () {});
+                            onPressed: () async {
+                              bool isUsed = await checkDistributorUsed(
+                                  item.ID_Distributor);
+                              if (isUsed == true) {
+                                MsgDialog.MSG(context, 'Notification',
+                                    'Cannot delete, distributor is in use by some products.');
+                              } else {
+                                NotiDialog.show(context, 'Notification',
+                                    'Do you want to delete Distributor?', () {
+                                  _updateStatus(item, 1);
+                                }, () {});
+                              }
                             },
                             child: const Text(
                               'Delete',

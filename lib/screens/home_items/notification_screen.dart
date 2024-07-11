@@ -128,51 +128,67 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             itemCount: notifications.length,
                             itemBuilder: (context, index) {
                               final notification = notifications[index];
-                              return Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 5.0),
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 233, 249, 255),
-                                  border: Border.all(
-                                      color: const Color.fromARGB(
-                                          255, 203, 202, 202)),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                              return InkWell(
+                                onTap: () {
+                                  if (notification['KeyNotification'] ==
+                                      'Order') {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailConfirm(
+                                            orderId: notification['ID_Order']),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 5.0),
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(
+                                        255, 233, 249, 255),
+                                    border: Border.all(
+                                        color: const Color.fromARGB(
+                                            255, 203, 202, 202)),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Column(
                                         children: [
-                                          const SizedBox(height: 5.0),
-                                          Text(
-                                            notification['Message'] ?? 'Null',
-                                            style: const TextStyle(
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 5.0),
-                                          Text(
-                                            notification['Date_time'] ?? 'N/A',
+                                          const SizedBox(
+                                            height: 20,
                                           ),
                                         ],
                                       ),
-                                    )
-                                  ],
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 5.0),
+                                            Text(
+                                              notification['Message'] ?? 'Null',
+                                              style: const TextStyle(
+                                                fontSize: 18.0,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5.0),
+                                            Text(
+                                              notification['Date_time'] ??
+                                                  'N/A',
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               );
                             },

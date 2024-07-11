@@ -104,19 +104,21 @@ class _DetailScreenState extends State<DetailScreen> {
   // Hàm kiểm tra đã mua sản phẩm
   Future<void> checkPurchaseStatus(String id, String idpro) async {
     bool hasPurchased = await _hasUserPurchasedProduct(id, idpro);
-    setState(() {
-      check = hasPurchased;
-    });
-    //print('Đã mua sản phẩm: $hasPurchased');
+    if (mounted) {
+      setState(() {
+        check = hasPurchased;
+      });
+    }
   }
 
   // Hàm kiểm tra đã đánh giá sản phẩm
   Future<void> checkReviewStatus(String id, String idpro) async {
     bool hasReviewed = await _hasUserReviewedProduct(id, idpro);
-    setState(() {
-      checkrw = hasReviewed;
-    });
-    //print('Đã đánh giá: $hasReviewed');
+    if (mounted) {
+      setState(() {
+        checkrw = hasReviewed;
+      });
+    }
   }
 
   // Hàm kiểm tra người dùng đã mua sản phẩm hay chưa

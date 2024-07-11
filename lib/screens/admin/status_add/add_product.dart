@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:doan_tmdt/model/classes.dart';
 import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:doan_tmdt/model/loading.dart';
+import 'package:doan_tmdt/screens/admin/admin_add.dart';
+import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -53,13 +55,15 @@ class _AddProductState extends State<AddProduct> {
     });
     if (snapshot.value != null) {
       Map userData = snapshot.value as Map;
-      setState(() {
-        stts = userData['stt'] ?? 0;
-        ImportPriceS = userData['ImportPrice'] ?? 0;
-        SellPriceS = userData['SellPrice'] ?? 0;
-        StockS = userData['Stock'] ?? 0;
-        DiscountS = userData['Discount'] ?? 0;
-      });
+      if (mounted) {
+        setState(() {
+          stts = userData['stt'] ?? 0;
+          ImportPriceS = userData['ImportPrice'] ?? 0;
+          SellPriceS = userData['SellPrice'] ?? 0;
+          StockS = userData['Stock'] ?? 0;
+          DiscountS = userData['Discount'] ?? 0;
+        });
+      }
     }
   }
 
@@ -71,13 +75,15 @@ class _AddProductState extends State<AddProduct> {
     });
     if (snapshot.value != null) {
       Map userData = snapshot.value as Map;
-      setState(() {
-        sttm = userData['stt'] ?? 0;
-        ImportPriceM = userData['ImportPrice'] ?? 0;
-        SellPriceM = userData['SellPrice'] ?? 0;
-        StockM = userData['Stock'] ?? 0;
-        DiscountM = userData['Discount'] ?? 0;
-      });
+      if (mounted) {
+        setState(() {
+          sttm = userData['stt'] ?? 0;
+          ImportPriceM = userData['ImportPrice'] ?? 0;
+          SellPriceM = userData['SellPrice'] ?? 0;
+          StockM = userData['Stock'] ?? 0;
+          DiscountM = userData['Discount'] ?? 0;
+        });
+      }
     }
   }
 
@@ -89,13 +95,15 @@ class _AddProductState extends State<AddProduct> {
     });
     if (snapshot.value != null) {
       Map userData = snapshot.value as Map;
-      setState(() {
-        sttl = userData['stt'] ?? 0;
-        ImportPriceL = userData['ImportPrice'] ?? 0;
-        SellPriceL = userData['SellPrice'] ?? 0;
-        StockL = userData['Stock'] ?? 0;
-        DiscountL = userData['Discount'] ?? 0;
-      });
+      if (mounted) {
+        setState(() {
+          sttl = userData['stt'] ?? 0;
+          ImportPriceL = userData['ImportPrice'] ?? 0;
+          SellPriceL = userData['SellPrice'] ?? 0;
+          StockL = userData['Stock'] ?? 0;
+          DiscountL = userData['Discount'] ?? 0;
+        });
+      }
     }
   }
 
@@ -249,7 +257,6 @@ class _AddProductState extends State<AddProduct> {
               })
               .where((element) => element.Status == 0)
               .toList();
-          select_distributor = dis.isNotEmpty ? dis[0].Distributor_Name : null;
         });
       }
     });
@@ -263,7 +270,7 @@ class _AddProductState extends State<AddProduct> {
 
   //------------------------------------------------------------------------------------------
   String? select_category;
-  String? select_distributor;
+  Dis? select_distributor;
 
   List<String> categorys = [
     "Adult",
@@ -277,6 +284,18 @@ class _AddProductState extends State<AddProduct> {
 
   @override
   Widget build(BuildContext context) {
+    //gán giá trị mặc định ban đầu
+    select_category = categorys[0];
+    select_distributor = dis.isNotEmpty
+        ? dis[0]
+        : Dis(
+            ID_Distributor: "Distributor0",
+            Distributor_Name: "Empty",
+            Email: "",
+            Address: "",
+            Phone: "",
+            Status: 0);
+
     print('SIze S: ' + ImportPriceS.toString());
     print('SIze M: ' + ImportPriceM.toString());
     print('SIze L: ' + ImportPriceL.toString());
@@ -429,9 +448,12 @@ class _AddProductState extends State<AddProduct> {
                         DropdownButtonFormField<String>(
                           value: select_category,
                           onChanged: (catenew) {
-                            setState(() {
-                              select_category = catenew!;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                select_category = catenew!;
+                                cate = select_category.toString();
+                              });
+                            }
                           },
                           items: categorys.map((String category) {
                             return DropdownMenuItem<String>(
@@ -454,10 +476,12 @@ class _AddProductState extends State<AddProduct> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         DropdownButtonFormField<Dis>(
-                          value: selected,
+                          value: select_distributor,
                           onChanged: (disnew) {
                             setState(() {
-                              selected = disnew!;
+                              select_distributor = disnew!;
+                              idDistributor =
+                                  select_distributor!.ID_Distributor;
                             });
                           },
                           items: dis.map((Dis dis) {
@@ -491,6 +515,9 @@ class _AddProductState extends State<AddProduct> {
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                     onPressed: () {
+                      if (mounted) {
+                        imageUrls = []; ////////////
+                      }
                       nameproductText.clear();
                       descText.clear();
                     },
@@ -508,10 +535,16 @@ class _AddProductState extends State<AddProduct> {
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                     onPressed: () {
-                      if (selected != null) {
-                        idDistributor = selected!.ID_Distributor;
+                      if (idDistributor == '') {
+                        idDistributor = dis[0]!.ID_Distributor;
                       }
-                      cate = select_category.toString();
+                      if (cate == '') {
+                        cate = select_category.toString();
+                      }
+                      print("+++++==");
+                      print(idDistributor);
+                      print(cate);
+                      // cate = select_category.toString();
                       loadstt();
                       showDialog(
                         context: context,
@@ -604,7 +637,8 @@ class _AddProductState extends State<AddProduct> {
                                                       'Notification',
                                                       'Category has not been selected yet');
                                                 } else if (idDistributor ==
-                                                    '') {
+                                                        dis[0].ID_Distributor ||
+                                                    idDistributor == '') {
                                                   Navigator.of(context).pop();
                                                   MsgDialog.MSG(
                                                       context,
@@ -746,7 +780,14 @@ class _AddProductState extends State<AddProduct> {
                                                   );
                                                 } else {
                                                   addProduct();
-
+                                                  Navigator.of(context).pop();
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            AdminBottomnav(
+                                                                index: 1)),
+                                                  );
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(
                                                     const SnackBar(
@@ -761,7 +802,6 @@ class _AddProductState extends State<AddProduct> {
                                                               125, 125, 125),
                                                     ),
                                                   );
-                                                  Navigator.of(context).pop();
                                                 }
                                               },
                                               child: const Text(
@@ -826,9 +866,11 @@ class _AddProductState extends State<AddProduct> {
             imageData, SettableMetadata(contentType: 'image/png'));
 
         String downloadUrl = await referenceUpLoad.getDownloadURL();
-        setState(() {
-          imageUrls.add(downloadUrl);
-        });
+        if (mounted) {
+          setState(() {
+            imageUrls.add(downloadUrl);
+          });
+        }
         print('Download URL: $downloadUrl');
       } catch (error) {
         print('Error uploading image to Firebase Storage: $error');
