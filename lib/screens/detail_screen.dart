@@ -545,7 +545,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(50),
                                 topRight: Radius.circular(50)),
-                            color: Colors.white,
+                            color: Color.fromARGB(59, 179, 177, 177),
                           ),
                           child: SingleChildScrollView(
                             child: Column(
@@ -663,7 +663,8 @@ class _DetailScreenState extends State<DetailScreen> {
                                               Text(
                                                 "Add to cart",
                                                 style: TextStyle(
-                                                    color: Colors.black),
+                                                    color: Color.fromARGB(
+                                                        255, 104, 104, 104)),
                                               ),
                                             ],
                                           ),
@@ -766,7 +767,12 @@ class _DetailScreenState extends State<DetailScreen> {
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15),
                                       ),
-                                      Text(widget.pro.Description),
+                                      Text(
+                                        widget.pro.Description,
+                                        style: TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 5, 5, 5)),
+                                      ),
                                       Padding(
                                           padding:
                                               EdgeInsets.fromLTRB(0, 0, 0, 10))
@@ -790,7 +796,11 @@ class _DetailScreenState extends State<DetailScreen> {
                                       Container(
                                         child: Row(
                                           children: [
-                                            Text("Rate Product Quality: "),
+                                            Text(
+                                              "Rate Product Quality: ",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
                                             Container(
                                               child: Row(
                                                 children: [
@@ -1079,7 +1089,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(50),
                                 topRight: Radius.circular(50)),
-                            color: Colors.white,
+                            color: Color.fromARGB(59, 179, 177, 177),
                           ),
                           child: SingleChildScrollView(
                             child: Column(
@@ -1099,6 +1109,8 @@ class _DetailScreenState extends State<DetailScreen> {
                                           Text(
                                             widget.pro.Product_Name,
                                             style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 0, 0, 0),
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 20),
                                           ),
@@ -1185,7 +1197,8 @@ class _DetailScreenState extends State<DetailScreen> {
                                               Text(
                                                 "Add to cart",
                                                 style: TextStyle(
-                                                    color: Colors.black),
+                                                    color: Color.fromARGB(
+                                                        255, 104, 104, 104)),
                                               ),
                                             ],
                                           ),
@@ -1200,6 +1213,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                     Text(
                                       "Size",
                                       style: TextStyle(
+                                          color: Color.fromARGB(255, 5, 5, 5),
                                           fontWeight: FontWeight.bold,
                                           fontSize: 17),
                                     ),
@@ -1285,10 +1299,16 @@ class _DetailScreenState extends State<DetailScreen> {
                                       Text(
                                         "Description",
                                         style: TextStyle(
+                                            color: Color.fromARGB(255, 0, 0, 0),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15),
                                       ),
-                                      Text(widget.pro.Description),
+                                      Text(
+                                        widget.pro.Description,
+                                        style: TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 5, 5, 5)),
+                                      ),
                                       Padding(
                                           padding:
                                               EdgeInsets.fromLTRB(0, 0, 0, 10))
@@ -1301,6 +1321,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                   child: Text(
                                     "Rating",
                                     style: TextStyle(
+                                        color: Color.fromARGB(255, 5, 5, 5),
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20),
                                   ),

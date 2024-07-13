@@ -61,10 +61,17 @@ class FirebAuth {
   void signIn(String email, String password, Function onSuccess,
       Function(String) ErrSignIn) async {
     try {
+      // Chuẩn hóa email
+      String normalizedEmail = email;
+      if (email.endsWith('@googlemail.com')) {
+        normalizedEmail = email.replaceAll('@googlemail.com', '@gmail.com');
+      }
+
       await _firebaseAuth
-          .signInWithEmailAndPassword(email: email, password: password)
+          .signInWithEmailAndPassword(
+              email: normalizedEmail, password: password)
           .then((user) {
-        //thanh cong
+        // Đăng nhập thành công
         onSuccess();
       });
     } on FirebaseAuthException catch (e) {
@@ -73,7 +80,7 @@ class FirebAuth {
       }
     } catch (e) {
       // Xử lý các lỗi khác không phải từ FirebaseAuthException
-      print('Error during sign-up: $e');
+      print('Error during sign-in: $e');
       ErrSignIn('Login failed. Please try again later');
     }
   }

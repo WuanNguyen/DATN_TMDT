@@ -290,6 +290,12 @@ class _CartDetailState extends State<CartDetails> {
     return regex.hasMatch(input);
   }
 
+  // kiểm tra số âm
+  bool isNonNegativeNumber(String input) {
+    final number = double.tryParse(input);
+    return number != null && number >= 0;
+  }
+
   bool isValidGmail(String input) {
     // Biểu thức chính quy kiểm tra xem chuỗi là địa chỉ email Gmail hợp lệ hay không
     final RegExp regex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
@@ -348,12 +354,17 @@ class _CartDetailState extends State<CartDetails> {
         title: const Text(
           'order details',
           textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 104, 104, 104)),
         ),
         centerTitle: true,
         scrolledUnderElevation: 0.0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color.fromARGB(255, 104, 104, 104),
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -433,7 +444,9 @@ class _CartDetailState extends State<CartDetails> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8.0),
                                     border: Border.all(
-                                        color: Colors.black, width: 2),
+                                        color:
+                                            Color.fromARGB(255, 106, 106, 106),
+                                        width: 1),
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
@@ -459,6 +472,8 @@ class _CartDetailState extends State<CartDetails> {
                                         TextSpan(
                                           text: 'Name Product: ',
                                           style: TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 93, 93, 93),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18.0,
                                           ),
@@ -466,6 +481,8 @@ class _CartDetailState extends State<CartDetails> {
                                         TextSpan(
                                           text: namePro,
                                           style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 104, 104, 104),
                                             fontSize: 18.0,
                                           ),
                                         ),
@@ -480,13 +497,14 @@ class _CartDetailState extends State<CartDetails> {
                                         TextSpan(
                                           text: 'Size: ',
                                           style: TextStyle(
-                                            fontWeight: FontWeight.bold,
                                             fontSize: 18.0,
                                           ),
                                         ),
                                         TextSpan(
                                           text: item.ID_ProductSize,
                                           style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 104, 104, 104),
                                             fontSize: 18.0,
                                           ),
                                         ),
@@ -501,13 +519,14 @@ class _CartDetailState extends State<CartDetails> {
                                         TextSpan(
                                           text: 'Price: ',
                                           style: TextStyle(
-                                            fontWeight: FontWeight.bold,
                                             fontSize: 18.0,
                                           ),
                                         ),
                                         TextSpan(
                                           text: sizePrice,
                                           style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 104, 104, 104),
                                             fontSize: 18.0,
                                           ),
                                         ),
@@ -522,13 +541,14 @@ class _CartDetailState extends State<CartDetails> {
                                         TextSpan(
                                           text: 'Quantity: ',
                                           style: TextStyle(
-                                            fontWeight: FontWeight.bold,
                                             fontSize: 18.0,
                                           ),
                                         ),
                                         TextSpan(
                                           text: item.Quantity.toString(),
                                           style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 104, 104, 104),
                                             fontSize: 18.0,
                                           ),
                                         ),
@@ -575,11 +595,15 @@ class _CartDetailState extends State<CartDetails> {
                                                       _nameus == ''
                                                           ? currentUser
                                                                   ?.Username ??
-                                                              'Loading...'
+                                                              '' //loading...
                                                           : _nameus,
                                                       style: const TextStyle(
-                                                        fontSize: 18,
-                                                      ),
+                                                          fontSize: 18,
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              104,
+                                                              104,
+                                                              104)),
                                                     ),
                                                     const SizedBox(
                                                       height: 5,
@@ -588,9 +612,11 @@ class _CartDetailState extends State<CartDetails> {
                                                       _phongus == ''
                                                           ? currentUser
                                                                   ?.Phone ??
-                                                              'Loading...'
+                                                              ''
                                                           : _phongus,
                                                       style: const TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 104, 104, 104),
                                                         fontSize: 18,
                                                       ),
                                                     ),
@@ -599,9 +625,11 @@ class _CartDetailState extends State<CartDetails> {
                                                       _addressus == ''
                                                           ? currentUser
                                                                   ?.Address ??
-                                                              'Loading...'
+                                                              ''
                                                           : _addressus,
                                                       style: const TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 104, 104, 104),
                                                         fontSize: 18,
                                                       ),
                                                       maxLines: 1,
@@ -622,10 +650,25 @@ class _CartDetailState extends State<CartDetails> {
                                                         _addressus,
                                                         _phongus,
                                                         (update) {
-                                                          if (isValidPhoneNumber(
+                                                          if (_nameus == '' ||
+                                                              _addressus ==
+                                                                  '' ||
+                                                              _phongus == '') {
+                                                            MsgDialog.MSG(
+                                                                context,
+                                                                'Notification',
+                                                                'information order is invalid');
+                                                          } else if (isValidPhoneNumber(
                                                                       _phongus) ==
                                                                   false &&
                                                               _phongus != '') {
+                                                            MsgDialog.MSG(
+                                                                context,
+                                                                'Notification',
+                                                                'Invalid phone number');
+                                                          } else if (isNonNegativeNumber(
+                                                                  _phongus) ==
+                                                              false) {
                                                             MsgDialog.MSG(
                                                                 context,
                                                                 'Notification',
@@ -682,6 +725,8 @@ class _CartDetailState extends State<CartDetails> {
                                                       .toString() +
                                                   " VND",
                                               style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 104, 104, 104),
                                                 fontSize: 18,
                                               )),
                                         ],
@@ -701,6 +746,8 @@ class _CartDetailState extends State<CartDetails> {
                                                       .toString() +
                                                   " VND",
                                               style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 104, 104, 104),
                                                 fontSize: 18,
                                               )),
                                         ],
@@ -803,7 +850,9 @@ class _CartDetailState extends State<CartDetails> {
                                     },
                                     child: Text(
                                       'Buy',
-                                      style: TextStyle(color: Colors.black),
+                                      style: TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 104, 104, 104)),
                                     ),
                                   ),
                                 )

@@ -5,6 +5,7 @@ import 'package:doan_tmdt/screens/login/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:validators/validators.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -207,36 +208,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (gmail.text.isEmpty) {
                                 MsgDialog.MSG(
                                     context, 'Warning', 'Please enter gmail');
-                              } else if (password.text.isEmpty) {
+                              } else if (!isEmail(gmail.text)) {
                                 MsgDialog.MSG(context, 'Warning',
-                                    'Please enter password');
-                              } else if (cpassword.text.isEmpty) {
-                                MsgDialog.MSG(context, 'Warning',
-                                    'Please enter confirm password');
-                              } else if (password.text != cpassword.text) {
-                                MsgDialog.MSG(context, 'Warning',
-                                    'Password confirmation failed');
+                                    'Please enter a valid email');
                               } else {
-                                // cắt gmail để lấy tên
+                                // Chuẩn hóa email
+                                String normalizedEmail = gmail.text;
+                                if (gmail.text.endsWith('@googlemail.com')) {
+                                  normalizedEmail = gmail.text.replaceAll(
+                                      '@googlemail.com', '@gmail.com');
+                                }
 
-                                try {
-                                  int atIndex = gmail.text.indexOf('@');
-                                  fullname = gmail.text.substring(0, atIndex);
-                                  _fireauth.signUp(
-                                      gmail.text,
-                                      password.text,
-                                      fullname,
-                                      phone,
-                                      address,
-                                      role,
-                                      image_url,
-                                      status, () {
-                                    MsgDialog.notilogin(context, 'Notification',
-                                        'Registered successfully');
-                                  }, (MSG) {});
-                                } catch (e) {
-                                  MsgDialog.MSG(context, 'Sign-In',
-                                      'An error occurred during sign-up: $e');
+                                if (!normalizedEmail.endsWith('gmail.com')) {
+                                  MsgDialog.MSG(context, 'Warning',
+                                      'Email must end with "gmail.com"');
+                                } else if (password.text.isEmpty) {
+                                  MsgDialog.MSG(context, 'Warning',
+                                      'Please enter password');
+                                } else if (password.text.length < 6) {
+                                  MsgDialog.MSG(context, 'Warning',
+                                      'Password must be at least 6 characters long');
+                                } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                                    .hasMatch(password.text)) {
+                                  MsgDialog.MSG(context, 'Warning',
+                                      'Password must contain at least one special character');
+                                } else if (cpassword.text.isEmpty) {
+                                  MsgDialog.MSG(context, 'Warning',
+                                      'Please enter confirm password');
+                                } else if (password.text != cpassword.text) {
+                                  MsgDialog.MSG(context, 'Warning',
+                                      'Password confirmation failed');
+                                } else {
+                                  try {
+                                    int atIndex = normalizedEmail.indexOf('@');
+                                    fullname =
+                                        normalizedEmail.substring(0, atIndex);
+
+                                    // Kiểm tra email đã tồn tại trước khi gọi signUp
+                                    List<String> signInMethods =
+                                        await FirebaseAuth.instance
+                                            .fetchSignInMethodsForEmail(
+                                                normalizedEmail);
+                                    if (signInMethods.isNotEmpty) {
+                                      MsgDialog.MSG(context, 'Warning',
+                                          'Email is already in use. Please use another email.');
+                                    } else {
+                                      _fireauth.signUp(
+                                          normalizedEmail,
+                                          password.text,
+                                          fullname,
+                                          phone,
+                                          address,
+                                          role,
+                                          image_url,
+                                          status, () {
+                                        MsgDialog.notilogin(
+                                            context,
+                                            'Notification',
+                                            'Registered successfully');
+                                      }, (String errorMsg) {
+                                        MsgDialog.MSG(
+                                            context, 'Sign-In', errorMsg);
+                                      });
+                                    }
+                                  } catch (e) {
+                                    MsgDialog.MSG(context, 'Sign-In',
+                                        'An error occurred during sign-up: $e');
+                                  }
                                 }
                               }
                             },

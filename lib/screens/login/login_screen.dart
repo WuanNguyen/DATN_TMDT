@@ -4,6 +4,7 @@ import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:doan_tmdt/screens/login/register_screen.dart';
+import 'package:doan_tmdt/screens/shipper/ui_shipper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -212,6 +213,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   builder: (context) =>
                                                       BottomNavigation(
                                                           index: 0)),
+                                            );
+                                          } else if (role == 'shipper') {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      UiShipper()),
                                             );
                                           }
                                         } else {

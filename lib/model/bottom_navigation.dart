@@ -52,7 +52,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
         title: const Text(
           'SPORT HUVIZ',
           textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 104, 104, 104)),
         ),
         centerTitle: true,
         actions: [
@@ -64,7 +66,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 );
                 // sự kiện icon thông báo
               },
-              icon: const Icon(Icons.notifications))
+              icon: const Icon(
+                Icons.notifications,
+                color: Color.fromARGB(255, 104, 104, 104),
+              ))
         ],
         backgroundColor: const Color.fromRGBO(201, 241, 248, 1),
       ),
@@ -91,7 +96,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           backgroundColor: const Color.fromARGB(240, 201, 227, 239),
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onItemSelected,
-          indicatorColor: Color.fromARGB(239, 166, 172, 174),
+          indicatorColor: Color.fromARGB(141, 136, 135, 135),
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home), label: ''),
             NavigationDestination(

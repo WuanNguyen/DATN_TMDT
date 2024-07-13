@@ -128,7 +128,9 @@ class _ProductItemState extends State<ProductItem> {
         width: 167,
         height: 300,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15), color: Colors.white),
+            border: Border.all(color: Color.fromARGB(255, 172, 170, 170)),
+            borderRadius: BorderRadius.circular(15),
+            color: Color.fromARGB(59, 179, 177, 177)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -142,9 +144,8 @@ class _ProductItemState extends State<ProductItem> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
-                        color: const Color.fromARGB(255, 57, 46, 46),
-                        width: 2.0),
-                    color: Colors.white),
+                        color: Color.fromARGB(255, 166, 166, 166), width: 2.0),
+                    color: Color.fromARGB(126, 235, 226, 226)),
                 child: widget.pro.Image_Url.isNotEmpty
                     ? Image.network(widget.pro.Image_Url[0]!)
                     : Icon(Icons
@@ -164,7 +165,9 @@ class _ProductItemState extends State<ProductItem> {
             //price
             Text(
                 "${formatCurrency(size.S.SellPrice - size.S.Discount)} - ${formatCurrency(size.L.SellPrice - size.L.Discount)} VND",
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 104, 104, 104))),
             Padding(padding: EdgeInsets.fromLTRB(0, 3, 0, 0)),
 
             Container(
@@ -186,7 +189,7 @@ class _ProductItemState extends State<ProductItem> {
                 width: 126,
                 height: 46,
                 decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 215, 215, 215),
+                    color: Color.fromARGB(175, 255, 255, 255),
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: const [
                       BoxShadow(
@@ -199,7 +202,9 @@ class _ProductItemState extends State<ProductItem> {
                   children: [
                     Text(
                       "View",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 104, 104, 104)),
                     )
                   ],
                 ),

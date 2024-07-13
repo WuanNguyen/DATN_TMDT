@@ -76,13 +76,15 @@ class _AddProductState extends State<AddProduct> {
     if (snapshot.value != null) {
       Map userData = snapshot.value as Map;
       if (mounted) {
-        setState(() {
-          sttm = userData['stt'] ?? 0;
-          ImportPriceM = userData['ImportPrice'] ?? 0;
-          SellPriceM = userData['SellPrice'] ?? 0;
-          StockM = userData['Stock'] ?? 0;
-          DiscountM = userData['Discount'] ?? 0;
-        });
+        setState(
+          () {
+            sttm = userData['stt'] ?? 0;
+            ImportPriceM = userData['ImportPrice'] ?? 0;
+            SellPriceM = userData['SellPrice'] ?? 0;
+            StockM = userData['Stock'] ?? 0;
+            DiscountM = userData['Discount'] ?? 0;
+          },
+        );
       }
     }
   }
@@ -96,13 +98,15 @@ class _AddProductState extends State<AddProduct> {
     if (snapshot.value != null) {
       Map userData = snapshot.value as Map;
       if (mounted) {
-        setState(() {
-          sttl = userData['stt'] ?? 0;
-          ImportPriceL = userData['ImportPrice'] ?? 0;
-          SellPriceL = userData['SellPrice'] ?? 0;
-          StockL = userData['Stock'] ?? 0;
-          DiscountL = userData['Discount'] ?? 0;
-        });
+        setState(
+          () {
+            sttl = userData['stt'] ?? 0;
+            ImportPriceL = userData['ImportPrice'] ?? 0;
+            SellPriceL = userData['SellPrice'] ?? 0;
+            StockL = userData['Stock'] ?? 0;
+            DiscountL = userData['Discount'] ?? 0;
+          },
+        );
       }
     }
   }
@@ -123,101 +127,91 @@ class _AddProductState extends State<AddProduct> {
     int currentUID = snapshot.exists ? snapshot.value as int : 0;
     int newUID = currentUID + 1;
     String UIDC = 'Product$newUID';
-    await _databaseReference.child('Products').child(UIDC).set({
-      'ID_Product': UIDC,
-      'Product_Name': nameproductText.text,
-      'Description': descText.text,
-      'ID_Distributor': idDistributor,
-      'Category': cate,
-      'Image_Url': imageUrls,
-      'Status': 0
-    });
+    await _databaseReference.child('Products').child(UIDC).set(
+      {
+        'ID_Product': UIDC,
+        'Product_Name': nameproductText.text,
+        'Description': descText.text,
+        'ID_Distributor': idDistributor,
+        'Category': cate,
+        'Image_Url': imageUrls,
+        'Status': 0
+      },
+    );
     //////////////////////////////////////////////////////////////////
 
     if (ImportPriceS == 0) {
-      await _databaseReference
-          .child('ProductSizes')
-          .child(UIDC)
-          .child('S')
-          .set({
-        'Discount': DiscountS,
-        'ID_Product': UIDC,
-        'ImportPrice': ImportPriceS,
-        'SellPrice': SellPriceS,
-        'Status': 1,
-        'Stock': StockS,
-      });
+      await _databaseReference.child('ProductSizes').child(UIDC).child('S').set(
+        {
+          'Discount': DiscountS,
+          'ID_Product': UIDC,
+          'ImportPrice': ImportPriceS,
+          'SellPrice': SellPriceS,
+          'Status': 1,
+          'Stock': StockS,
+        },
+      );
     } else {
-      await _databaseReference
-          .child('ProductSizes')
-          .child(UIDC)
-          .child('S')
-          .set({
-        'Discount': DiscountS,
-        'ID_Product': UIDC,
-        'ImportPrice': ImportPriceS,
-        'SellPrice': SellPriceS,
-        'Status': 0,
-        'Stock': StockS,
-      });
+      await _databaseReference.child('ProductSizes').child(UIDC).child('S').set(
+        {
+          'Discount': DiscountS,
+          'ID_Product': UIDC,
+          'ImportPrice': ImportPriceS,
+          'SellPrice': SellPriceS,
+          'Status': 0,
+          'Stock': StockS,
+        },
+      );
     }
 
     ////////////////////////////////////////////////////////////////////
     if (ImportPriceM == 0) {
-      await _databaseReference
-          .child('ProductSizes')
-          .child(UIDC)
-          .child('M')
-          .set({
-        'Discount': DiscountM,
-        'ID_Product': UIDC,
-        'ImportPrice': ImportPriceM,
-        'SellPrice': SellPriceM,
-        'Status': 1,
-        'Stock': StockM,
-      });
+      await _databaseReference.child('ProductSizes').child(UIDC).child('M').set(
+        {
+          'Discount': DiscountM,
+          'ID_Product': UIDC,
+          'ImportPrice': ImportPriceM,
+          'SellPrice': SellPriceM,
+          'Status': 1,
+          'Stock': StockM,
+        },
+      );
     } else {
-      await _databaseReference
-          .child('ProductSizes')
-          .child(UIDC)
-          .child('M')
-          .set({
-        'Discount': DiscountM,
-        'ID_Product': UIDC,
-        'ImportPrice': ImportPriceM,
-        'SellPrice': SellPriceM,
-        'Status': 0,
-        'Stock': StockM,
-      });
+      await _databaseReference.child('ProductSizes').child(UIDC).child('M').set(
+        {
+          'Discount': DiscountM,
+          'ID_Product': UIDC,
+          'ImportPrice': ImportPriceM,
+          'SellPrice': SellPriceM,
+          'Status': 0,
+          'Stock': StockM,
+        },
+      );
     }
 
     ///////////////////////////////////////////////////////////////////
     if (ImportPriceL == 0) {
-      await _databaseReference
-          .child('ProductSizes')
-          .child(UIDC)
-          .child('L')
-          .set({
-        'Discount': DiscountL,
-        'ID_Product': UIDC,
-        'ImportPrice': ImportPriceL,
-        'SellPrice': SellPriceL,
-        'Status': 1,
-        'Stock': StockL,
-      });
+      await _databaseReference.child('ProductSizes').child(UIDC).child('L').set(
+        {
+          'Discount': DiscountL,
+          'ID_Product': UIDC,
+          'ImportPrice': ImportPriceL,
+          'SellPrice': SellPriceL,
+          'Status': 1,
+          'Stock': StockL,
+        },
+      );
     } else {
-      await _databaseReference
-          .child('ProductSizes')
-          .child(UIDC)
-          .child('L')
-          .set({
-        'Discount': DiscountL,
-        'ID_Product': UIDC,
-        'ImportPrice': ImportPriceL,
-        'SellPrice': SellPriceL,
-        'Status': 0,
-        'Stock': StockL,
-      });
+      await _databaseReference.child('ProductSizes').child(UIDC).child('L').set(
+        {
+          'Discount': DiscountL,
+          'ID_Product': UIDC,
+          'ImportPrice': ImportPriceL,
+          'SellPrice': SellPriceL,
+          'Status': 0,
+          'Stock': StockL,
+        },
+      );
     }
 
     //--------------------------------------------------------------------------
@@ -248,18 +242,24 @@ class _AddProductState extends State<AddProduct> {
 
   @override
   void initState() {
-    Distributors_dbRef.onValue.listen((event) {
-      if (this.mounted) {
-        setState(() {
-          dis = event.snapshot.children
-              .map((snapshot) {
-                return Dis.fromSnapshot(snapshot);
-              })
-              .where((element) => element.Status == 0)
-              .toList();
-        });
-      }
-    });
+    Distributors_dbRef.onValue.listen(
+      (event) {
+        if (this.mounted) {
+          setState(
+            () {
+              dis = event.snapshot.children
+                  .map(
+                    (snapshot) {
+                      return Dis.fromSnapshot(snapshot);
+                    },
+                  )
+                  .where((element) => element.Status == 0)
+                  .toList();
+            },
+          );
+        }
+      },
+    );
   }
 
   void loadstt() {
@@ -295,7 +295,6 @@ class _AddProductState extends State<AddProduct> {
             Address: "",
             Phone: "",
             Status: 0);
-
     print('SIze S: ' + ImportPriceS.toString());
     print('SIze M: ' + ImportPriceM.toString());
     print('SIze L: ' + ImportPriceL.toString());
@@ -325,42 +324,45 @@ class _AddProductState extends State<AddProduct> {
             children: [
               const SizedBox(height: 30),
               FutureBuilder(
-                  future: _fetchImages(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return LoadingIndicator();
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No images available'));
-                    } else {
-                      return Container(
-                        height: 100,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: imageUrls.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: const Color.fromARGB(
-                                        255, 78, 78, 78), // Màu viền
-                                    width: 1.0, // Độ dày viền
-                                  ),
-                                ),
-                                child: Image.network(
-                                  imageUrls[index],
-                                  width: 100,
+                future: _fetchImages(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return LoadingIndicator();
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No images available'));
+                  } else {
+                    return Container(
+                      height: 100,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: imageUrls.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color.fromARGB(
+                                      255, 78, 78, 78), // Màu viền
+                                  width: 1.0, // Độ dày viền
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      );
-                    }
-                  }),
+                              child: Image.network(
+                                imageUrls[index],
+                                width: 100,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                },
+              ),
               const SizedBox(
                 height: 10,
               ),

@@ -66,7 +66,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 children: [
                   Text(
                     "Category",
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                    style: TextStyle(
+                        color: Color.fromARGB(255, 104, 104, 104),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20),
                   ),
                   Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
                   Row(

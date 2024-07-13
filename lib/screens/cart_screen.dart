@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:doan_tmdt/model/cart_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -260,7 +262,9 @@ class _CartScreenState extends State<CartScreen> {
                       width: MediaQuery.of(context).size.width / 2 + 153,
                       height: 130,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          border: Border.all(
+                              color: Color.fromARGB(255, 172, 170, 170)),
+                          color: Color.fromARGB(59, 179, 177, 177),
                           borderRadius: BorderRadius.circular(15)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -273,9 +277,12 @@ class _CartScreenState extends State<CartScreen> {
                             height: 100,
                             clipBehavior: Clip.antiAlias,
                             decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Color.fromARGB(105, 255, 255, 255),
                                 borderRadius: BorderRadius.circular(15),
-                                border: Border.all(width: 2.0)),
+                                border: Border.all(
+                                    color: const Color.fromARGB(
+                                        255, 143, 143, 143),
+                                    width: 1)),
                             child: Image.network(
                               filteredProducts[index].Image_Url[0],
                               fit: BoxFit.cover,
@@ -330,6 +337,7 @@ class _CartScreenState extends State<CartScreen> {
                                                       .Discount)) +
                                               " VND",
                                   style: TextStyle(
+                                      color: Color.fromARGB(255, 104, 104, 104),
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -484,7 +492,7 @@ class _CartScreenState extends State<CartScreen> {
                 width: MediaQuery.of(context).size.width,
                 height: 155,
                 decoration: BoxDecoration(
-                    color: Color.fromRGBO(207, 207, 207, 1),
+                    color: Color.fromARGB(59, 179, 177, 177),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
@@ -532,7 +540,7 @@ class _CartScreenState extends State<CartScreen> {
                                   child: Text(
                                     "More",
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: Color.fromARGB(255, 84, 38, 77),
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -588,7 +596,8 @@ class _CartScreenState extends State<CartScreen> {
                           },
                           child: Text(
                             "Checkout",
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 104, 104, 104)),
                           )),
                     ),
                   ],

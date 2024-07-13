@@ -139,11 +139,16 @@ class _FavoritesListState extends State<FavoritesList> {
         title: const Text(
           'Favorites list',
           textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 104, 104, 104)),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color.fromARGB(255, 104, 104, 104),
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -170,7 +175,9 @@ class _FavoritesListState extends State<FavoritesList> {
                 ? Center(
                     child: Text(
                       'No favorites found',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Color.fromARGB(255, 104, 104, 104)),
                     ),
                   )
                 : Container(
@@ -198,18 +205,18 @@ class _FavoritesListState extends State<FavoritesList> {
                               EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 233, 249, 255),
+                            color: Color.fromARGB(59, 179, 177, 177),
                             border: Border.all(
-                                color:
-                                    const Color.fromARGB(255, 203, 202, 202)),
+                                color: Color.fromARGB(255, 172, 170, 170)),
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: Row(
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.black, width: 2),
+                                  border: Border.all(
+                                      color: Color.fromARGB(255, 104, 104, 104),
+                                      width: 1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Image.network(
@@ -228,6 +235,8 @@ class _FavoritesListState extends State<FavoritesList> {
                                       Text(
                                         namePro,
                                         style: const TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 104, 104, 104),
                                           fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -235,12 +244,16 @@ class _FavoritesListState extends State<FavoritesList> {
                                       Text(
                                         cate,
                                         style: const TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 104, 104, 104),
                                           fontSize: 15.0,
                                         ),
                                       ),
                                       Text(
                                         priceText,
                                         style: const TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 104, 104, 104),
                                           fontSize: 16.0,
                                         ),
                                       ),
@@ -265,7 +278,8 @@ class _FavoritesListState extends State<FavoritesList> {
                                       child: Text(
                                         'Delete',
                                         style: TextStyle(
-                                            color: Colors.black,
+                                            color:
+                                                Color.fromARGB(255, 84, 38, 77),
                                             fontWeight: FontWeight.bold),
                                       )),
                                   const SizedBox(
@@ -286,9 +300,10 @@ class _FavoritesListState extends State<FavoritesList> {
                                         //Chuyển tới màng hình detail
                                       },
                                       child: Text(
-                                        'Title',
+                                        'Detail',
                                         style: TextStyle(
-                                            color: Colors.black,
+                                            color:
+                                                Color.fromARGB(255, 84, 38, 77),
                                             fontWeight: FontWeight.bold),
                                       )),
                                 ],

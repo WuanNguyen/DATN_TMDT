@@ -102,7 +102,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Text(
                     name,
-                    style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 104, 104, 104)),
                   )
                 ],
               ),
@@ -114,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: MediaQuery.of(context).size.height / 2,
               width: double.infinity,
               decoration: const BoxDecoration(
-                color: Color.fromARGB(195, 199, 197, 197),
+                color: Color.fromARGB(39, 101, 101, 101),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(50),
                   topRight: Radius.circular(50),
@@ -139,13 +142,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Icon(
                               Icons.edit,
-                              color: Colors.black,
+                              color: Color.fromARGB(255, 104, 104, 104),
                             ),
                             SizedBox(width: 50),
                             Text(
                               'Edit Profile',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 20),
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 104, 104, 104),
+                                  fontSize: 20),
                             )
                           ],
                         ),
@@ -167,13 +171,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Icon(
                               Icons.favorite,
-                              color: Colors.black,
+                              color: Color.fromARGB(255, 104, 104, 104),
                             ),
                             SizedBox(width: 50),
                             Text(
                               'Favorites List',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 20),
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 104, 104, 104),
+                                  fontSize: 20),
                             )
                           ],
                         ),
@@ -195,13 +200,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Icon(
                               Icons.history_rounded,
-                              color: Colors.black,
+                              color: Color.fromARGB(255, 104, 104, 104),
                             ),
                             SizedBox(width: 50),
                             Text(
                               'Order history',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 20),
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 104, 104, 104),
+                                  fontSize: 20),
                             )
                           ],
                         ),
@@ -220,13 +226,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Icon(
                               Icons.lock,
-                              color: Colors.black,
+                              color: Color.fromARGB(255, 104, 104, 104),
                             ),
                             SizedBox(width: 50),
                             Text(
                               'Lock account',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 20),
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 104, 104, 104),
+                                  fontSize: 20),
                             )
                           ],
                         ),

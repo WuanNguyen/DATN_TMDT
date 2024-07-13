@@ -55,14 +55,16 @@ class _EditProfileState extends State<EditProfile> {
       });
       if (snapshot.value != null) {
         Map userData = snapshot.value as Map;
-        setState(() {
-          name.text = userData['Username'] ?? '';
-          address.text = userData['Address'] ?? '';
-          phone.text = userData['Phone'] ?? '';
-          // roleController.text = userData['Role'] ?? '';
-          image = userData['Image_Url'] ?? '';
-          //  statusController.text = userData['Status'].toString() ?? '0';
-        });
+        if (mounted) {
+          setState(() {
+            name.text = userData['Username'] ?? '';
+            address.text = userData['Address'] ?? '';
+            phone.text = userData['Phone'] ?? '';
+            // roleController.text = userData['Role'] ?? '';
+            image = userData['Image_Url'] ?? '';
+            //  statusController.text = userData['Status'].toString() ?? '0';
+          });
+        }
       }
     }
   }
@@ -93,85 +95,100 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  // kiểm tra số âm
+  bool isNonNegativeNumber(String input) {
+    final number = double.tryParse(input);
+    return number != null && number >= 0;
+  }
+
   //--------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Edit profile',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          backgroundColor: const Color.fromRGBO(201, 241, 248, 1),
+      appBar: AppBar(
+        scrolledUnderElevation: 0,
+        title: const Text(
+          'Edit profile',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: Color.fromARGB(255, 104, 104, 104),
+              fontWeight: FontWeight.bold),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0.1, 0.8, 1],
-                colors: <Color>[
-                  Color.fromRGBO(201, 241, 248, 1),
-                  Color.fromRGBO(231, 230, 233, 1),
-                  Color.fromRGBO(231, 227, 230, 1),
-                ],
-                tileMode: TileMode.mirror,
-              ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color.fromARGB(255, 104, 104, 104),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: const Color.fromRGBO(201, 241, 248, 1),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.1, 0.8, 1],
+              colors: <Color>[
+                Color.fromRGBO(201, 241, 248, 1),
+                Color.fromRGBO(231, 230, 233, 1),
+                Color.fromRGBO(231, 227, 230, 1),
+              ],
+              tileMode: TileMode.mirror,
             ),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: ClipOval(
-                        child: Image.network(
-                          image,
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                        ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Color.fromARGB(255, 104, 104, 104), width: 2),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: ClipOval(
+                      child: Image.network(
+                        image,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 1),
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.black, width: 1),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.edit,
+                          size: 24,
+                          color: Color.fromARGB(255, 104, 104, 104),
                         ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.edit,
-                            size: 24,
-                            color: Colors.black,
-                          ),
-                          onPressed: () async {
-                            String? imageUrl =
-                                await pickAndUploadImageToFirebase();
-                            if (imageUrl != null) {
+                        onPressed: () async {
+                          String? imageUrl =
+                              await pickAndUploadImageToFirebase();
+                          if (imageUrl != null) {
+                            if (mounted) {
                               setState(() {
                                 image = imageUrl;
                               });
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
                                 content: Text(
                                   'Photo has been updated',
                                   style: TextStyle(
@@ -180,105 +197,127 @@ class _EditProfileState extends State<EditProfile> {
                                 ),
                                 backgroundColor:
                                     Color.fromARGB(255, 125, 125, 125),
-                              ));
-                            }
-                          },
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 1.3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: name,
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 85, 85, 85),
+                        fontSize: 20,
+                      ),
+                      obscureText: false,
+                      decoration: InputDecoration(
+                          hintText: 'Name',
+                          hintStyle: TextStyle(
+                              color: Color.fromARGB(255, 104, 104, 104))),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 1.3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: address,
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 104, 104, 104),
+                          fontSize: 20),
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        hintText: 'Address',
+                        hintStyle: TextStyle(
+                          color: Color.fromARGB(255, 104, 104, 104),
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextField(
-                          controller: name,
-                          obscureText: false,
-                          decoration: InputDecoration(
-                              label: Text('name',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.w500))),
-                        ),
-                      ],
-                    )),
-                const SizedBox(height: 20),
-                SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextField(
-                          controller: address,
-                          obscureText: false,
-                          decoration: InputDecoration(
-                              label: Text("Address",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.w500))),
-                        ),
-                      ],
-                    )),
-                const SizedBox(height: 20),
-                SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextField(
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          controller: phone,
-                          obscureText: false,
-                          decoration: InputDecoration(
-                              label: Text("Phone",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.w500))),
-                        ),
-                      ],
-                    )),
-                const SizedBox(height: 50),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 1.3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(150, 50),
-                          elevation: 8,
-                          shadowColor: Colors.white),
-                      child: const Text(
-                        'Confirm',
-                        style: TextStyle(color: Colors.black, fontSize: 20),
-                      ),
-                      onPressed: () {
-                        if (name.text.isEmpty ||
-                            address.text.isEmpty ||
-                            phone.text.isEmpty) {
-                          MsgDialog.MSG(context, 'Warning',
-                              'Please enter complete information');
-                        } else if (isValidPhoneNumber(phone.text) == false) {
-                          MsgDialog.MSG(
-                              context, 'Warning', 'invalid phone number');
-                        } else {
-                          updateUserInfo();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const BottomNavigation(index: 3)),
-                          );
-                        }
-                      },
+                    TextField(
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      controller: phone,
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 104, 104, 104),
+                          fontSize: 20),
+                      obscureText: false,
+                      decoration: InputDecoration(
+                          hintText: 'Phone',
+                          hintStyle: TextStyle(
+                              color: Color.fromARGB(255, 104, 104, 104))),
                     ),
                   ],
-                )
-              ],
-            ),
+                ),
+              ),
+              const SizedBox(height: 50),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(150, 50),
+                        elevation: 8,
+                        shadowColor: Color.fromARGB(255, 0, 0, 0)),
+                    child: const Text(
+                      'Confirm',
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 104, 104, 104),
+                          fontSize: 20),
+                    ),
+                    onPressed: () {
+                      if (name.text.isEmpty ||
+                          address.text.isEmpty ||
+                          phone.text.isEmpty) {
+                        MsgDialog.MSG(context, 'Warning',
+                            'Please enter complete information');
+                      } else if (isValidPhoneNumber(phone.text) == false) {
+                        MsgDialog.MSG(
+                            context, 'Warning', 'Invalid phone number');
+                      }
+                      if (isNonNegativeNumber(phone.text) == false) {
+                        MsgDialog.MSG(
+                            context, 'Warning', 'Invalid phone number');
+                      } else {
+                        updateUserInfo();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const BottomNavigation(index: 3),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              )
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   // upload ảnh-------------

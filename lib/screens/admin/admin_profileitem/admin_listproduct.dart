@@ -21,6 +21,7 @@ class _AdminListproductState extends State<AdminListproduct> {
   Map<String, String> distributors = {};
   bool isLoading = true;
   String sortBy = 'Product_Name';
+  List<String> imageUrls = [];
 
   @override
   void initState() {
@@ -86,7 +87,8 @@ class _AdminListproductState extends State<AdminListproduct> {
     });
   }
 
-  Future<void> updateProductImage(String productId, String imageUrl) async {
+  Future<void> updateProductImage(
+      String productId, List<String> imageUrl) async {
     DatabaseReference productRef =
         FirebaseDatabase.instance.ref().child('Products').child(productId);
 
@@ -96,40 +98,55 @@ class _AdminListproductState extends State<AdminListproduct> {
       int index =
           products.indexWhere((product) => product.ID_Product == productId);
       if (index != -1) {
-        products[index].Image_Url[0] = imageUrl;
+        products[index].Image_Url = imageUrl;
       }
     });
   }
 
   Future<void> pickAndUploadImage(String productId) async {
-    final imageUrl = await pickAndUploadImageToFirebase();
-    if (imageUrl != null) {
+    List<String> imageUrl = await pickAndUploadImagesToFirebase(productId);
+    if (imageUrl.isNotEmpty) {
       await updateProductImage(productId, imageUrl);
     }
   }
 
-  Future<String?> pickAndUploadImageToFirebase() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (file == null) return null;
+  // upload ảnh-------------
+  Future<List<String>> pickAndUploadImagesToFirebase(String idproduct) async {
+    final List<XFile>? files = await ImagePicker().pickMultiImage();
+    if (files == null || files.isEmpty) return [];
 
-    Uint8List imageData = await File(file.path!).readAsBytes();
-    String fileName = DateTime.now().microsecondsSinceEpoch.toString();
-    Reference referenceRoot = FirebaseStorage.instance.ref();
-    Reference referenceDireImages = referenceRoot.child('image_product');
-    Reference referenceUpLoad = referenceDireImages.child(fileName);
+    List<String> newImageUrls = [];
 
-    try {
-      await referenceUpLoad.putData(
-          imageData, SettableMetadata(contentType: 'image/png'));
+    for (var file in files) {
+      Uint8List imageData = await File(file.path).readAsBytes();
+      String fileName =
+          '$idproduct${DateTime.now().millisecondsSinceEpoch}.png';
 
-      String downloadUrl = await referenceUpLoad.getDownloadURL();
-      print('Download URL: $downloadUrl');
+      Reference referenceRoot = FirebaseStorage.instance.ref();
+      Reference referenceDireImages =
+          referenceRoot.child('Pictures_Product').child(idproduct);
+      Reference referenceUpLoad = referenceDireImages.child(fileName);
 
-      return downloadUrl;
-    } catch (error) {
-      print('Error uploading image to Firebase Storage: $error');
-      return null;
+      try {
+        await referenceUpLoad.putData(
+            imageData, SettableMetadata(contentType: 'image/png'));
+
+        String downloadUrl = await referenceUpLoad.getDownloadURL();
+        newImageUrls.add(downloadUrl);
+
+        // Cập nhật trạng thái của widget chỉ khi widget vẫn còn tồn tại
+        if (mounted) {
+          setState(() {
+            imageUrls.add(downloadUrl);
+          });
+        }
+        print('Download URL: $downloadUrl');
+      } catch (error) {
+        print('Error uploading image to Firebase Storage: $error');
+      }
     }
+
+    return newImageUrls;
   }
 
   @override
