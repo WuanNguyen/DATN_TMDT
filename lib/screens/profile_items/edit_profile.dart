@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:doan_tmdt/model/bottom_navigation.dart';
+import 'package:doan_tmdt/model/dialog_address.dart';
 import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:doan_tmdt/screens/profile_items/address.dart';
 import 'package:doan_tmdt/screens/profile_screen.dart';
@@ -25,10 +26,39 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController address = TextEditingController();
   final TextEditingController phone = TextEditingController();
   //--------------------------
+  String addressUS = '';
   String image =
       "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
 
   //------------------
+
+  void _openSelectionDialog(BuildContext context) async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (BuildContext context) {
+        return SelectionDialog();
+      },
+    );
+
+    if (result != null) {
+      if (result['additionalAddress'] == '') {
+        setState(() {
+          '${result['commune']!.name}, '
+              '${result['district']!.name}, '
+              '${result['province']!.name}';
+        });
+      } else {
+        setState(() {
+          addressUS = '${result['additionalAddress']}, '
+              '${result['commune']!.name}, '
+              '${result['district']!.name}, '
+              '${result['province']!.name}';
+        });
+      }
+    }
+  }
+
+  //--------------------
   @override
   void initState() {
     super.initState();
@@ -58,11 +88,12 @@ class _EditProfileState extends State<EditProfile> {
         if (mounted) {
           setState(() {
             name.text = userData['Username'] ?? '';
-            address.text = userData['Address'] ?? '';
+            //address.text = userData['Address'] ?? '';
             phone.text = userData['Phone'] ?? '';
             // roleController.text = userData['Role'] ?? '';
             image = userData['Image_Url'] ?? '';
             //  statusController.text = userData['Status'].toString() ?? '0';
+            addressUS = address.text = userData['Address'] ?? '';
           });
         }
       }
@@ -79,7 +110,7 @@ class _EditProfileState extends State<EditProfile> {
           .child(currentUser.uid);
       await userRef.update({
         'Username': name.text,
-        'Address': address.text,
+        'Address': addressUS,
         'Phone': phone.text,
         // 'Role': roleController.text,
         'Image_Url': image,
@@ -234,28 +265,6 @@ class _EditProfileState extends State<EditProfile> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextField(
-                      controller: address,
-                      style: TextStyle(
-                          color: Color.fromARGB(255, 104, 104, 104),
-                          fontSize: 20),
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        hintText: 'Address',
-                        hintStyle: TextStyle(
-                          color: Color.fromARGB(255, 104, 104, 104),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 1.3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       controller: phone,
@@ -267,6 +276,40 @@ class _EditProfileState extends State<EditProfile> {
                           hintText: 'Phone',
                           hintStyle: TextStyle(
                               color: Color.fromARGB(255, 104, 104, 104))),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 1.3,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        child: Text(
+                          addressUS,
+                          maxLines: 3, // Hiển thị tối đa 3 dòng
+                          overflow: TextOverflow
+                              .ellipsis, // Hiển thị dấu "..." nếu vượt quá 3 dòng
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 104, 104, 104),
+                            fontSize: 19,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => _openSelectionDialog(context),
+                      child: Text(
+                        'Change',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 58, 15, 79),
+                          fontSize: 18,
+                        ),
+                      ),
                     ),
                   ],
                 ),

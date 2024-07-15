@@ -1,5 +1,6 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
 import 'package:doan_tmdt/model/classes.dart';
+import 'package:doan_tmdt/model/dialog_address.dart';
 import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -22,9 +23,9 @@ class CartDetails extends StatefulWidget {
 }
 
 class _CartDetailState extends State<CartDetails> {
-  final TextEditingController nameUS = TextEditingController();
-  final TextEditingController addressUS = TextEditingController();
-  final TextEditingController phoneUS = TextEditingController();
+  //final TextEditingController nameUS = TextEditingController();
+  //final TextEditingController addressUS = TextEditingController();
+  //final TextEditingController phoneUS = TextEditingController();
   String _nameus = '';
   String _addressus = '';
   String _phongus = '';
@@ -39,6 +40,7 @@ class _CartDetailState extends State<CartDetails> {
       "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
   Map<String, Product> productCache = {};
   Map<String, ProductSize> sizeCache = {};
+  String addressUS = '';
 
   String getUserUID() {
     User? user = FirebaseAuth.instance.currentUser;
@@ -69,6 +71,23 @@ class _CartDetailState extends State<CartDetails> {
 
   List<CartDetail> _cartdetail = [];
   Users? currentUser;
+  void _openSelectionDialog(BuildContext context) async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (BuildContext context) {
+        return SelectionDialog();
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        addressUS = '${result['additionalAddress']}, '
+            '${result['commune']!.name}, '
+            '${result['district']!.name}, '
+            '${result['province']!.name}';
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -523,7 +542,7 @@ class _CartDetailState extends State<CartDetails> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: sizePrice,
+                                          text: '$sizePrice VND',
                                           style: TextStyle(
                                             color: Color.fromARGB(
                                                 255, 104, 104, 104),
@@ -650,41 +669,21 @@ class _CartDetailState extends State<CartDetails> {
                                                         _addressus,
                                                         _phongus,
                                                         (update) {
-                                                          if (_nameus == '' ||
-                                                              _addressus ==
-                                                                  '' ||
-                                                              _phongus == '') {
-                                                            MsgDialog.MSG(
-                                                                context,
-                                                                'Notification',
-                                                                'information order is invalid');
-                                                          } else if (isValidPhoneNumber(
-                                                                      _phongus) ==
-                                                                  false &&
-                                                              _phongus != '') {
-                                                            MsgDialog.MSG(
-                                                                context,
-                                                                'Notification',
-                                                                'Invalid phone number');
-                                                          } else if (isNonNegativeNumber(
-                                                                  _phongus) ==
-                                                              false) {
-                                                            MsgDialog.MSG(
-                                                                context,
-                                                                'Notification',
-                                                                'Invalid phone number');
-                                                          } else {
-                                                            setState(() {
-                                                              _nameus = update[
-                                                                  'name']!;
-                                                              _addressus = update[
-                                                                  'address']!;
-                                                              _phongus = update[
-                                                                  'phone']!;
-                                                            });
-                                                          }
+                                                          setState(() {
+                                                            print(
+                                                                '_____SSS+++++++++');
+                                                            print(update[
+                                                                'address']!);
+                                                            _nameus =
+                                                                update['name']!;
+                                                            _addressus = update[
+                                                                'address']!;
+                                                            _phongus = update[
+                                                                'phone']!;
+                                                          });
 
                                                           print(_nameus);
+                                                          print(_addressus);
                                                         },
                                                         () {
                                                           // handle cancel if needed
@@ -820,33 +819,39 @@ class _CartDetailState extends State<CartDetails> {
                                         payme = 'Cash';
                                       else if (selectedRadio == 2)
                                         payme == 'Momo';
-                                      //Thêm add order
-                                      NotiDialog.show(context, 'Notification',
-                                          'order confirmation', () {
-                                        addOrder(
-                                            _nameus == ''
-                                                ? currentUser!.Username
-                                                : _nameus,
-                                            //
-                                            _addressus == ''
-                                                ? currentUser!.Address
-                                                : _addressus,
-                                            //
-                                            _phongus == ''
-                                                ? currentUser!.Phone
-                                                : _phongus,
-                                            widget.Discount,
-                                            payme,
-                                            widget.TotalPrice - widget.Discount,
-                                            widget.idDiscount);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const BottomNavigation(
-                                                      index: 2)),
-                                        );
-                                      }, () {});
+                                      if (_addressus == '' || _phongus == '') {
+                                        MsgDialog.MSG(context, 'Notification',
+                                            'Invalid delivery information');
+                                      } else {
+                                        //Thêm add order
+                                        NotiDialog.show(context, 'Notification',
+                                            'order confirmation', () {
+                                          addOrder(
+                                              _nameus == ''
+                                                  ? currentUser!.Username
+                                                  : _nameus,
+                                              //
+                                              _addressus == ''
+                                                  ? currentUser!.Address
+                                                  : _addressus,
+                                              //
+                                              _phongus == ''
+                                                  ? currentUser!.Phone
+                                                  : _phongus,
+                                              widget.Discount,
+                                              payme,
+                                              widget.TotalPrice -
+                                                  widget.Discount,
+                                              widget.idDiscount);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const BottomNavigation(
+                                                        index: 2)),
+                                          );
+                                        }, () {});
+                                      }
                                     },
                                     child: Text(
                                       'Buy',

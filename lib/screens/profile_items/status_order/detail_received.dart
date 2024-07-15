@@ -1,4 +1,5 @@
 import 'package:doan_tmdt/model/classes.dart';
+import 'package:doan_tmdt/screens/detail_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -14,8 +15,11 @@ class DetailReceived extends StatefulWidget {
 class _DetailReceivedState extends State<DetailReceived> {
   String image =
       "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
-
+  DatabaseReference products_Ref =
+      FirebaseDatabase.instance.ref().child('Products');
   Map<String, Product> productCache = {};
+  List<Product> pro = [];
+  List<Product> filteredPro = [];
 
   Future<Product> getProInfo(String proID) async {
     DatabaseReference proRef =
@@ -51,6 +55,16 @@ class _DetailReceivedState extends State<DetailReceived> {
           });
         }
       }
+
+      products_Ref.onValue.listen((event) {
+        if (mounted) {
+          setState(() {
+            pro = event.snapshot.children.map((snapshot) {
+              return Product.fromSnapshot(snapshot);
+            }).toList();
+          });
+        }
+      });
     });
   }
 
@@ -61,10 +75,19 @@ class _DetailReceivedState extends State<DetailReceived> {
 
   @override
   Widget build(BuildContext context) {
+    for (var order in orderDetail) {
+      for (var product in pro) {
+        if (order.idProduct == product.ID_Product) {
+          filteredPro.add(product);
+          break;
+        }
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'order details',
+          'Order Details',
           textAlign: TextAlign.center,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -209,8 +232,8 @@ class _DetailReceivedState extends State<DetailReceived> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: formatCurrency(item.price)
-                                                .toString(),
+                                            text:
+                                                '${formatCurrency(item.price).toString()} VND',
                                             style: TextStyle(
                                               fontSize: 18.0,
                                             ),
@@ -252,15 +275,13 @@ class _DetailReceivedState extends State<DetailReceived> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //     builder: (context) =>
-                                      //         DetailReceived(
-                                      //             orderId: order[index]
-                                      //                 .ID_Order),
-                                      //   ),
-                                      // );
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => DetailScreen(
+                                              pro: filteredPro[index]),
+                                        ),
+                                      );
                                     },
                                     child: const Text(
                                       'reviews',

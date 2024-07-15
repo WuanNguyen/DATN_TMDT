@@ -89,25 +89,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      // SizedBox(
-                      //     width: MediaQuery.of(context).size.width / 1.3,
-                      //     child: const Column(
-                      //       crossAxisAlignment: CrossAxisAlignment.start,
-                      //       children: [
-                      //         TextField(
-                      //           //controller: password,
-                      //           controller: null,
-                      //           obscureText: false,
-                      //           decoration: InputDecoration(
-                      //               label: Text("Name",
-                      //                   style: TextStyle(
-                      //                       fontWeight: FontWeight.w500))),
-                      //         ),
-                      //       ],
-                      //     )),
-                      // const SizedBox(
-                      //   height: 10,
-                      // ),
                       SizedBox(
                           width: MediaQuery.of(context).size.width / 1.3,
                           child: Column(

@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class TitleConfirm extends StatefulWidget {
   const TitleConfirm({Key? key, required this.orderId}) : super(key: key);
@@ -26,14 +27,75 @@ class _TitleConfirmState extends State<TitleConfirm> {
     return Product.fromSnapshot(snapshot);
   }
 
-  void _updateStatus(String id) {
+  // lấy nhà phân phối
+  Future<Distributors> getDistributorInfo(String distributorId) async {
+    DatabaseReference distributorRef = FirebaseDatabase.instance
+        .ref()
+        .child('Distributors')
+        .child(distributorId);
+    DataSnapshot snapshot = await distributorRef.get();
+
+    if (snapshot.exists) {
+      return Distributors.fromSnapshot(snapshot);
+    } else {
+      throw Exception("Distributor not found");
+    }
+  }
+
+  //lấy size detail
+  Future<ProductSizeDetail> getSizeProductDetail(
+      String productId, String size) async {
+    DatabaseReference sizeProductRef =
+        FirebaseDatabase.instance.ref().child('ProductSizes').child(productId);
+    DataSnapshot snapshot = await sizeProductRef.get();
+    ProductSize productSize = ProductSize.fromSnapshot(snapshot);
+
+    switch (size) {
+      case 'L':
+        return productSize.L;
+      case 'M':
+        return productSize.M;
+      case 'S':
+        return productSize.S;
+      default:
+        throw Exception("Invalid size: $size");
+    }
+  }
+
+  void _updateStatus(String id) async {
     final DatabaseReference updateSTTOrder =
         FirebaseDatabase.instance.reference().child('Order');
-    updateSTTOrder.child(id).update({'Order_Status': 'danggiao'}).then((_) {
+
+    try {
+      await updateSTTOrder.child(id).update({'Order_Status': 'danggiao'});
       print("Successfully updated status");
-    }).catchError((error) {
+
+      for (var item in orderDetail) {
+        try {
+          var sizeDetail =
+              await getSizeProductDetail(item.idProduct!, item.idProductSize);
+          var distributorInfo = await getDistributorInfo(
+            productCache[item.idProduct]!.ID_Distributor,
+          );
+          await addInventory_out(
+            item.idProduct!,
+            productCache[item.idProduct]!.Product_Name,
+            productCache[item.idProduct]!.Category,
+            distributorInfo.Distributor_Name,
+            sizeDetail.ImportPrice,
+            sizeDetail.SellPrice,
+            item.quantity,
+            item.idProductSize,
+          );
+          print("Successfully added to inventory: ${item.idProductSize}");
+        } catch (e) {
+          print(
+              "Error updating inventory for product ${item.idProduct} with size ${item.idProductSize}: $e");
+        }
+      }
+    } catch (error) {
       print("Failed to update status: $error");
-    });
+    }
   }
 
   void _updateStatusCancel(String id) {
@@ -47,6 +109,50 @@ class _TitleConfirmState extends State<TitleConfirm> {
   }
 
   List<OrderDetail> orderDetail = [];
+  // Quản lý xuất kho------------------------------------
+  Future<void> addInventory_out(
+    String idpro,
+    String proname,
+    String cate,
+    String iddis,
+    int impr,
+    int selpr,
+    int qtity,
+    String siz,
+  ) async {
+    final DatabaseReference _databaseReference =
+        FirebaseDatabase.instance.reference();
+
+    DataSnapshot snapshot =
+        await _databaseReference.child('Max').child('MaxInventory_out').get();
+
+    int currentUID = snapshot.exists ? snapshot.value as int : 0;
+    int newUID = currentUID + 1;
+    String UIDC = 'out_$siz$newUID';
+    await _databaseReference
+        .child('Warehouse')
+        .child('Inventory_out')
+        .child(UIDC)
+        .set(
+      {
+        'ID_Product': idpro,
+        'Product_Name': proname,
+        'Date_In': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+        'Distributor_Name': iddis,
+        'Category': cate,
+        'Import_Price': impr,
+        'Sell_Price': selpr,
+        'Quantity': qtity,
+        'size': siz
+      },
+    );
+    await _databaseReference.child('Max').child('MaxInventory_out').set(newUID);
+  }
+
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
 
   @override
   void initState() {
@@ -231,7 +337,9 @@ class _TitleConfirmState extends State<TitleConfirm> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: item.price.toString(),
+                                            text:
+                                                '${formatCurrency(item.price)} VND'
+                                                    .toString(),
                                             style: TextStyle(
                                               fontSize: 18.0,
                                             ),

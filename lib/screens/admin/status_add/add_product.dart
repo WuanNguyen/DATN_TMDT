@@ -10,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({super.key});
@@ -46,6 +47,7 @@ class _AddProductState extends State<AddProduct> {
   int DiscountL = 0;
   //----------
   List<String> imageUrls = [];
+  int dem = 0;
   //-----------------------------------------------------------
   Future<void> getSizeS() async {
     DatabaseReference userRef =
@@ -111,8 +113,18 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
+  //get npp
+  Future<Distributors> getDisInfo(String disID) async {
+    DatabaseReference DisRef =
+        FirebaseDatabase.instance.ref().child('Distributors').child(disID);
+    DataSnapshot snapshot = await DisRef.get();
+    return Distributors.fromSnapshot(snapshot);
+  }
+
   //add product-------------------------------------------------------------------------------z
   Future<void> addProduct() async {
+    Distributors disadd = await getDisInfo(idDistributor);
+
     getSizeS();
     getSizeM();
     getSizeL();
@@ -162,6 +174,12 @@ class _AddProductState extends State<AddProduct> {
           'Stock': StockS,
         },
       );
+      // them quan ly kho
+      addInventory_in(UIDC, nameproductText.text, cate, disadd.Distributor_Name,
+          ImportPriceS, SellPriceS, StockS, 'S', 'in_S');
+      //them ton kho
+      addInventory(UIDC, nameproductText.text, cate, disadd.Distributor_Name,
+          ImportPriceS, SellPriceS, StockS, 'S', '$UIDC' '_S');
     }
 
     ////////////////////////////////////////////////////////////////////
@@ -187,6 +205,11 @@ class _AddProductState extends State<AddProduct> {
           'Stock': StockM,
         },
       );
+      // them quan ly kho
+      addInventory_in(UIDC, nameproductText.text, cate, disadd.Distributor_Name,
+          ImportPriceM, SellPriceM, StockM, 'M', 'in_M');
+      addInventory(UIDC, nameproductText.text, cate, disadd.Distributor_Name,
+          ImportPriceM, SellPriceM, StockM, 'M', '$UIDC' '_M');
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -212,6 +235,11 @@ class _AddProductState extends State<AddProduct> {
           'Stock': StockL,
         },
       );
+      // them quan ly kho
+      addInventory_in(UIDC, nameproductText.text, cate, disadd.Distributor_Name,
+          ImportPriceL, SellPriceL, StockL, 'L', 'in_L');
+      addInventory(UIDC, nameproductText.text, cate, disadd.Distributor_Name,
+          ImportPriceL, SellPriceL, StockL, 'L', '$UIDC' '_L');
     }
 
     //--------------------------------------------------------------------------
@@ -239,6 +267,102 @@ class _AddProductState extends State<AddProduct> {
 
   List<Dis> dis = [];
   Dis? selected;
+
+  // Quản lý kho nhập------------------------------------
+  Future<void> addInventory_in(
+      String idpro,
+      String proname,
+      String cate,
+      String iddis,
+      int impr,
+      int selpr,
+      int qtity,
+      String siz,
+      String maxinven) async {
+    final DatabaseReference _databaseReference =
+        FirebaseDatabase.instance.reference();
+
+    DataSnapshot snapshot = await _databaseReference
+        .child('Max')
+        .child('MaxInventory_in')
+        .child(maxinven)
+        .get();
+
+    int currentUID = snapshot.exists ? snapshot.value as int : 0;
+    int newUID = currentUID + 1;
+    String UIDC = 'in_$siz$newUID';
+    await _databaseReference
+        .child('Warehouse')
+        .child('Inventory_in')
+        .child(UIDC)
+        .set(
+      {
+        'ID_Product': idpro,
+        'Product_Name': proname,
+        'Date_In': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+        'Distributor_Name': iddis,
+        'Category': cate,
+        'Import_Price': impr,
+        'Sell_Price': selpr,
+        'Quantity': qtity,
+        'size': siz
+      },
+    );
+    await _databaseReference
+        .child('Max')
+        .child('MaxInventory_in')
+        .child(maxinven)
+        .set(newUID);
+  }
+
+  //------------------------------------tồn kho
+  Future<void> addInventory(
+      String idpro,
+      String proname,
+      String cate,
+      String iddis,
+      int impr,
+      int selpr,
+      int stock,
+      String siz,
+      String maxinven) async {
+    final DatabaseReference _databaseReference =
+        FirebaseDatabase.instance.reference();
+
+    DataSnapshot snapshot = await _databaseReference
+        .child('Max')
+        .child('MaxInventory')
+        .child(maxinven)
+        .get();
+
+    int currentUID = snapshot.exists ? snapshot.value as int : 0;
+    int newUID = currentUID + 1;
+
+    await _databaseReference
+        .child('Warehouse')
+        .child('Inventory')
+        .child(maxinven)
+        .set(
+      {
+        'ID_Product': idpro,
+        'Product_Name': proname,
+        'Distributor_Name': iddis,
+        'Category': cate,
+        'Import_Price': impr,
+        'Sell_Price': selpr,
+        'Quantity': stock,
+        'size': siz
+      },
+    );
+    await _databaseReference
+        .child('Max')
+        .child('MaxInventory')
+        .child(maxinven)
+        .set(newUID);
+    ;
+  }
+
+  //----------------------------------------------------
 
   @override
   void initState() {

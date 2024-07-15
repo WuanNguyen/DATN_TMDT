@@ -4,6 +4,7 @@ import 'package:doan_tmdt/screens/admin/admin_bottomnav.dart';
 import 'package:doan_tmdt/screens/admin/admin_profileitem/title_Confirm.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AdminConfirm extends StatefulWidget {
   const AdminConfirm({super.key});
@@ -69,6 +70,11 @@ class _AdminConfirmState extends State<AdminConfirm> {
         }
       }
     });
+  }
+
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
   }
 
   @override
@@ -163,15 +169,16 @@ class _AdminConfirmState extends State<AdminConfirm> {
                                     'https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a';
 
                                 return Container(
+                                  width: double.infinity,
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 10.0, vertical: 5.0),
                                   padding: const EdgeInsets.all(10.0),
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 233, 249, 255),
+                                    color:
+                                        const Color.fromARGB(59, 179, 177, 177),
                                     border: Border.all(
-                                        color: const Color.fromARGB(
-                                            255, 203, 202, 202)),
+                                        color:
+                                            Color.fromARGB(255, 131, 131, 131)),
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
                                   child: Row(
@@ -235,139 +242,148 @@ class _AdminConfirmState extends State<AdminConfirm> {
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          RichText(
-                                            text: TextSpan(
-                                              style:
-                                                  DefaultTextStyle.of(context)
-                                                      .style,
-                                              children: <TextSpan>[
-                                                const TextSpan(
-                                                  text: 'Name: ',
-                                                  style: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 0, 0, 0),
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            RichText(
+                                              text: TextSpan(
+                                                style:
+                                                    DefaultTextStyle.of(context)
+                                                        .style,
+                                                children: <TextSpan>[
+                                                  const TextSpan(
+                                                    text: 'Name: ',
+                                                    style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 0, 0, 0),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                                TextSpan(
-                                                  text: item.nameuser,
-                                                  style: const TextStyle(
-                                                    fontSize: 18.0,
+                                                  TextSpan(
+                                                    text: item.nameuser,
+                                                    style: const TextStyle(
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 5.0),
-                                          RichText(
-                                            text: TextSpan(
-                                              style:
-                                                  DefaultTextStyle.of(context)
-                                                      .style,
-                                              children: <TextSpan>[
-                                                const TextSpan(
-                                                  text: 'Address: ',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0,
+                                            const SizedBox(height: 5.0),
+                                            RichText(
+                                              text: TextSpan(
+                                                style:
+                                                    DefaultTextStyle.of(context)
+                                                        .style,
+                                                children: <TextSpan>[
+                                                  const TextSpan(
+                                                    text: 'Address: ',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                                TextSpan(
-                                                  text: item.addressuser,
-                                                  style: const TextStyle(
-                                                    fontSize: 18.0,
+                                                  TextSpan(
+                                                    text: item.addressuser,
+                                                    style: const TextStyle(
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 5.0),
-                                          RichText(
-                                            text: TextSpan(
-                                              style:
-                                                  DefaultTextStyle.of(context)
-                                                      .style,
-                                              children: <TextSpan>[
-                                                const TextSpan(
-                                                  text: 'Phone: ',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0,
+                                            const SizedBox(height: 5.0),
+                                            RichText(
+                                              text: TextSpan(
+                                                style:
+                                                    DefaultTextStyle.of(context)
+                                                        .style,
+                                                children: <TextSpan>[
+                                                  const TextSpan(
+                                                    text: 'Phone: ',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                                TextSpan(
-                                                  text: item.phoneuser,
-                                                  style: const TextStyle(
-                                                    fontSize: 18.0,
+                                                  TextSpan(
+                                                    text: item.phoneuser,
+                                                    style: const TextStyle(
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 5.0),
-                                          RichText(
-                                            text: TextSpan(
-                                              style:
-                                                  DefaultTextStyle.of(context)
-                                                      .style,
-                                              children: <TextSpan>[
-                                                const TextSpan(
-                                                  text: 'Total Price: ',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0,
+                                            const SizedBox(height: 5.0),
+                                            RichText(
+                                              text: TextSpan(
+                                                style:
+                                                    DefaultTextStyle.of(context)
+                                                        .style,
+                                                children: <TextSpan>[
+                                                  const TextSpan(
+                                                    text: 'Total Price: ',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                                TextSpan(
-                                                  text: item.Total_Price
-                                                      .toString(),
-                                                  style: const TextStyle(
-                                                    fontSize: 18.0,
+                                                  TextSpan(
+                                                    text:
+                                                        '${formatCurrency(item.Total_Price)} VND'
+                                                            .toString(),
+                                                    style: const TextStyle(
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 5.0),
-                                          RichText(
-                                            text: TextSpan(
-                                              style:
-                                                  DefaultTextStyle.of(context)
-                                                      .style,
-                                              children: <TextSpan>[
-                                                const TextSpan(
-                                                  text: 'Payment: ',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0,
+                                            const SizedBox(height: 5.0),
+                                            RichText(
+                                              text: TextSpan(
+                                                style:
+                                                    DefaultTextStyle.of(context)
+                                                        .style,
+                                                children: <TextSpan>[
+                                                  const TextSpan(
+                                                    text: 'Payment: ',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                                TextSpan(
-                                                  text: item.Payment.toString(),
-                                                  style: const TextStyle(
-                                                    fontSize: 18.0,
+                                                  TextSpan(
+                                                    text:
+                                                        item.Payment.toString(),
+                                                    style: const TextStyle(
+                                                      fontSize: 18.0,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(
-                                            height: 5.0,
-                                          ),
-                                          Text(
-                                            '                            ' +
-                                                item.Order_Date.toString(),
-                                            style: const TextStyle(
-                                              fontSize: 15.0,
+                                            const SizedBox(
+                                              height: 5.0,
                                             ),
-                                          ),
-                                          const SizedBox(height: 5.0),
-                                        ],
+                                            Text(
+                                              '                            ' +
+                                                  item.Order_Date.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 15.0,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5.0),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),

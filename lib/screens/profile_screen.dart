@@ -1,4 +1,5 @@
 import 'package:doan_tmdt/model/dialog_notification.dart';
+import 'package:doan_tmdt/screens/login/login_screen.dart';
 import 'package:doan_tmdt/screens/profile_items/edit_profile.dart';
 import 'package:doan_tmdt/screens/profile_items/favorites_list.dart';
 import 'package:doan_tmdt/screens/profile_items/order_history.dart';
@@ -22,11 +23,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   //------------------
   bool _isDisposed = false;
+  String idUs = '';
+  String getUserUID() {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) return user.uid.toString();
+    return "";
+  }
 
   @override
   void initState() {
     super.initState();
     getUserInfo();
+    idUs = getUserUID();
+    print(idUs);
   }
 
   @override
@@ -129,11 +138,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 40),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditProfile()),
-                        );
+                        print(idUs);
+                        if (idUs == 'HUBx2MvRuuSOTKQEGkk4tMQKpq92') {
+                          NotiDialog.show(context, 'Notification',
+                              'Please log in to edit account information', () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()));
+                          }, () {});
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditProfile()),
+                          );
+                        }
                       },
                       child: SizedBox(
                         height: 60,
@@ -214,31 +234,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: () {
-                        MsgDialog.MsgDeleteAccount(context, 'Notification',
-                            'Are you sure to delete your account ?');
-                      },
-                      child: SizedBox(
-                        height: 60,
-                        width: MediaQuery.of(context).size.width / 1.5,
-                        child: const Row(
-                          children: [
-                            Icon(
-                              Icons.lock,
-                              color: Color.fromARGB(255, 104, 104, 104),
+                    idUs == 'HUBx2MvRuuSOTKQEGkk4tMQKpq92'
+                        ? ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()));
+                            },
+                            child: SizedBox(
+                              height: 60,
+                              width: MediaQuery.of(context).size.width / 1.5,
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Log in',
+                                    style: TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 104, 104, 104),
+                                        fontSize: 20),
+                                  )
+                                ],
+                              ),
                             ),
-                            SizedBox(width: 50),
-                            Text(
-                              'Lock account',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 104, 104, 104),
-                                  fontSize: 20),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
+                          )
+                        : ElevatedButton(
+                            onPressed: () {
+                              MsgDialog.MsgDeleteAccount(
+                                  context,
+                                  'Notification',
+                                  'Are you sure to delete your account ?');
+                            },
+                            child: SizedBox(
+                              height: 60,
+                              width: MediaQuery.of(context).size.width / 1.5,
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.lock,
+                                    color: Color.fromARGB(255, 104, 104, 104),
+                                  ),
+                                  SizedBox(width: 50),
+                                  Text(
+                                    'Lock account',
+                                    style: TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 104, 104, 104),
+                                        fontSize: 20),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
                   ],
                 ),
               ),

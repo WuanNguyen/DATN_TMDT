@@ -240,15 +240,10 @@ class _AdminListproductState extends State<AdminListproduct> {
                           margin: EdgeInsets.all(10),
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 229, 249, 255),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                spreadRadius: 5,
-                              )
-                            ],
+                            color: const Color.fromARGB(59, 179, 177, 177),
+                            border: Border.all(
+                                color: Color.fromARGB(255, 131, 131, 131)),
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +279,10 @@ class _AdminListproductState extends State<AdminListproduct> {
                               Text('Category: ${product.Category}'),
                               Text('Distributor: $distributorName'),
                               Text('___________________________'),
-                              Text('Description: ${product.Description}'),
+                              Text(
+                                'Description: ${product.Description}',
+                                maxLines: 5,
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [

@@ -1,6 +1,8 @@
 import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_confirm.dart';
+import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_list_user.dart';
 import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_listproduct.dart';
 import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_statistics.dart';
+import 'package:doan_tmdt/screens/admin/admin_profileitem/admin_warehouse.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +97,7 @@ class _AdminProfileState extends State<AdminProfile> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: MediaQuery.of(context).size.height / 2.5,
+              height: MediaQuery.of(context).size.height / 1.9,
               width: double.infinity,
               decoration: const BoxDecoration(
                 color: Color.fromARGB(195, 199, 197, 197),
@@ -107,7 +109,7 @@ class _AdminProfileState extends State<AdminProfile> {
               child: Center(
                 child: Column(
                   children: [
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -135,7 +137,7 @@ class _AdminProfileState extends State<AdminProfile> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -164,7 +166,7 @@ class _AdminProfileState extends State<AdminProfile> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -185,6 +187,62 @@ class _AdminProfileState extends State<AdminProfile> {
                             SizedBox(width: 20),
                             Text(
                               'Product Management',
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 20),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AdminListUser()),
+                        );
+                      },
+                      child: SizedBox(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width / 1.5,
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.supervised_user_circle,
+                              color: Colors.black,
+                            ),
+                            SizedBox(width: 20),
+                            Text(
+                              'User Management',
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 20),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AdminWarehouse()),
+                        );
+                      },
+                      child: SizedBox(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width / 1.5,
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.warehouse,
+                              color: Colors.black,
+                            ),
+                            SizedBox(width: 20),
+                            Text(
+                              'Warehouse',
                               style:
                                   TextStyle(color: Colors.black, fontSize: 20),
                             )

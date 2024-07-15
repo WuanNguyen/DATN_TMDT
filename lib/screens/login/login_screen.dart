@@ -163,8 +163,57 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size(150, 50),
+                                  elevation: 8,
+                                  shadowColor: Colors.white),
+                              onPressed: () {
+                                try {
+                                  _fireauth.signIn(
+                                    'taikhoankhach@gmail.com',
+                                    'khach123@',
+                                    () async {
+                                      User? currentUser =
+                                          FirebaseAuth.instance.currentUser;
+                                      if (currentUser != null) {
+                                        // Lấy thông tin người dùng từ Firebase Realtime Database
+                                        DatabaseReference userRef =
+                                            FirebaseDatabase.instance
+                                                .reference()
+                                                .child('Users')
+                                                .child(currentUser.uid);
+                                        DataSnapshot snapshot = await userRef
+                                            .once()
+                                            .then((DatabaseEvent event) {
+                                          return event.snapshot;
+                                        });
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BottomNavigation(index: 0)),
+                                        );
+                                      }
+                                    },
+                                    (mss) {
+                                      MsgDialog.MSG(context, 'Sign-In', mss);
+                                    },
+                                  );
+                                } catch (err) {
+                                  print('Error during sign-in: $err');
+                                  MsgDialog.ShowDialog(context, 'Sign-In',
+                                      'Login failed. Please try again later');
+                                }
+                              },
+                              child: Text(
+                                'visitor account',
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 20),
+                              )),
+                          const SizedBox(width: 20),
+                          ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(150, 50),
+                                minimumSize: const Size(100, 50),
                                 elevation: 8,
                                 shadowColor: Colors.white),
                             child: const Text(

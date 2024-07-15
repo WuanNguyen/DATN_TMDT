@@ -226,8 +226,8 @@ class _DetailConfirmState extends State<DetailConfirm> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: formatCurrency(item.price)
-                                                .toString(),
+                                            text:
+                                                '${formatCurrency(item.price).toString()} VND',
                                             style: TextStyle(
                                               fontSize: 18.0,
                                             ),

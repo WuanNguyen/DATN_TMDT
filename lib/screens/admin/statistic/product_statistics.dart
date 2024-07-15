@@ -1,18 +1,16 @@
 import 'package:doan_tmdt/model/classes.dart';
-import 'package:doan_tmdt/screens/admin/statistic/product_statistics.dart';
-import 'package:doan_tmdt/screens/admin/statistic/revenue_statistics.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class AdminStatisticsScreen extends StatefulWidget {
-  const AdminStatisticsScreen({super.key});
+class ProductStatisticScreen extends StatefulWidget {
+  const ProductStatisticScreen({super.key});
 
   @override
-  _AdminStatisticsScreenState createState() => _AdminStatisticsScreenState();
+  _ProductStatisticScreenState createState() => _ProductStatisticScreenState();
 }
 
-class _AdminStatisticsScreenState extends State<AdminStatisticsScreen> {
+class _ProductStatisticScreenState extends State<ProductStatisticScreen> {
   bool isLoading = true;
   Map<String, dynamic> stats = {};
   List<Product> pro = [];
@@ -65,38 +63,128 @@ class _AdminStatisticsScreenState extends State<AdminStatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    for (int month = 1; month <= 12; month++) {
+      MonthlyRevenue[month - 1].setSale(double.parse(stats['monthlyRevenue']
+                  ?[month.toString().padLeft(2, '0')]
+              ?.toStringAsFixed(2) ??
+          '0.00'));
+      MonthlySold[month - 1].setSale(double.parse(stats['monthlySold']
+                  ?[month.toString().padLeft(2, '0')]
+              ?.toStringAsFixed(2) ??
+          '0.00'));
+    }
+    ;
+
+    SoldAndCancelData[0].setValueInt(
+        stats['totalSoldDamua'] ?? 0); //them data vao du lieu don hang da mua
+    SoldAndCancelData[1].setValueInt(
+        stats['totalSoldDahuy'] ?? 0); //them data vao du lieu don hang da huy
+
+    List<Map<String, int>> productSoldList = [];
+    List<Map<String, int>> topSellProduct = [];
+
+    if (stats['totalSold'] != null && stats['totalSold'].isNotEmpty) {
+      stats['totalSold'].entries.forEach((entry) {
+        for (var p in pro) {
+          if (p.ID_Product == entry.key)
+            productSoldList.add({p.Product_Name: entry.value});
+        }
+      });
+      productSoldList.sort((a, b) {
+        int aValue = a.values.first;
+        int bValue = b.values.first;
+        return bValue.compareTo(aValue);
+      });
+      productSoldList = productSoldList.sublist(0, 5);
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Statistics"),
-        backgroundColor: Color.fromRGBO(201, 241, 248, 1),
-      ),
-      body: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          body: Column(
-            children: [
-              Container(
-                color: const Color.fromRGBO(201, 241, 248, 1),
-                child: const TabBar(
-                  tabs: [
-                    Tab(text: 'Products'),
-                    Tab(text: 'Revenues'),
-                  ],
-                ),
+        body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0.1, 0.8, 1],
+                colors: <Color>[
+                  Color.fromRGBO(201, 241, 248, 1),
+                  Color.fromRGBO(231, 230, 233, 1),
+                  Color.fromRGBO(231, 227, 230, 1),
+                ],
+                tileMode: TileMode.mirror,
               ),
-              const Expanded(
-                child: TabBarView(
+            ),
+            child: SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                child: Column(
                   children: [
-                    ProductStatisticScreen(),
-                    RevenueStatisticScreen(),
+                    isLoading
+                        ? Center(
+                            heightFactor: 13,
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              child: const CircularProgressIndicator(),
+                            ))
+                        : Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  SfCircularChart(
+                                    title: ChartTitle(
+                                        text: 'Top 5 Most Sold Products'),
+                                    legend: Legend(isVisible: true),
+                                    series: <DoughnutSeries<Map<String, int>,
+                                        String>>[
+                                      DoughnutSeries<Map<String, int>, String>(
+                                        dataSource: productSoldList,
+                                        xValueMapper:
+                                            (Map<String, int> data, _) =>
+                                                data.keys.first,
+                                        yValueMapper:
+                                            (Map<String, int> data, _) =>
+                                                data.values.first,
+                                        dataLabelSettings:
+                                            DataLabelSettings(isVisible: true),
+                                      ),
+                                    ],
+                                    palette: [
+                                      Color(0xFFFF6384),
+                                      Color(0xFF36A2EB),
+                                      Color(0xFFFFCE56),
+                                      Color(0xFF4BC0C0),
+                                      Color(0xFF9966FF)
+                                    ],
+                                  ),
+                                  SfCircularChart(
+                                    title: ChartTitle(
+                                        text: 'Sold and Cancelled Comparison'),
+                                    legend: Legend(isVisible: true),
+                                    series: <DoughnutSeries<DoughtnutData,
+                                        String>>[
+                                      DoughnutSeries<DoughtnutData, String>(
+                                        dataSource: SoldAndCancelData,
+                                        xValueMapper: (DoughtnutData data, _) =>
+                                            data.category,
+                                        yValueMapper: (DoughtnutData data, _) =>
+                                            data.value,
+                                        dataLabelSettings:
+                                            DataLabelSettings(isVisible: true),
+                                      ),
+                                    ],
+                                    palette: [Colors.green, Colors.red],
+                                  ),
+                                  SizedBox(
+                                    height: 100,
+                                  )
+                                ],
+                              ),
+                            ))
                   ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+                ))));
   }
 }
 

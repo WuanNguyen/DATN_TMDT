@@ -1,6 +1,7 @@
 import 'package:doan_tmdt/model/bottom_navigation.dart';
 import 'package:doan_tmdt/screens/about_us.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
+import 'package:doan_tmdt/screens/login/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -18,12 +19,20 @@ class _MenuState extends State<Menu> {
   String image =
       "https://firebasestorage.googleapis.com/v0/b/datn-sporthuviz-bf24e.appspot.com/o/images%2Favatawhile.png?alt=media&token=8219377d-2c30-4a7f-8427-626993d78a3a";
   String name = "";
+  String idUs = '';
 
   //------------------
   @override
   void initState() {
     super.initState();
     getUserInfo();
+    idUs = getUserUID();
+  }
+
+  String getUserUID() {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) return user.uid.toString();
+    return "";
   }
 
   //------------------------
@@ -128,23 +137,43 @@ class _MenuState extends State<Menu> {
             },
           ),
           const Spacer(),
-          ListTile(
-            title: const Row(
-              children: [
-                Icon(Icons.logout_outlined),
-                SizedBox(width: 15),
-                Text('Log out')
-              ],
-            ),
-            onTap: () async {
-              //await FirebaseAuth.instance.signOut();
-              Navigator.pop(context);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const FirstappScreen()),
-              );
-            },
-          ),
+          idUs == 'HUBx2MvRuuSOTKQEGkk4tMQKpq92'
+              ? ListTile(
+                  title: const Row(
+                    children: [
+                      Icon(Icons.login),
+                      SizedBox(width: 15),
+                      Text('Log in')
+                    ],
+                  ),
+                  onTap: () async {
+                    //await FirebaseAuth.instance.signOut();
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                    );
+                  },
+                )
+              : ListTile(
+                  title: const Row(
+                    children: [
+                      Icon(Icons.logout_outlined),
+                      SizedBox(width: 15),
+                      Text('Log out')
+                    ],
+                  ),
+                  onTap: () async {
+                    //await FirebaseAuth.instance.signOut();
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const FirstappScreen()),
+                    );
+                  },
+                ),
           const SizedBox(
             height: 20,
           ),

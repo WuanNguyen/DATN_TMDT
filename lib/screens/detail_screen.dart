@@ -1,5 +1,7 @@
 import 'package:doan_tmdt/model/classes.dart';
+import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:doan_tmdt/screens/detail_items/rating.dart';
+import 'package:doan_tmdt/screens/login/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -16,6 +18,7 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+  String idUs = '';
   final TextEditingController Rev = TextEditingController();
   Future<Users>? _futureUser;
   bool check = false; // Khai báo biến check ở cấp độ lớp
@@ -61,6 +64,7 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   void initState() {
     super.initState();
+    idUs = getUserUID();
     _checkIfFavorite();
     ProductSizes_dbRef.onValue.listen((event) {
       if (this.mounted) {
@@ -1071,7 +1075,20 @@ class _DetailScreenState extends State<DetailScreen> {
                                   : Icon(Icons.image_not_supported)),
                           IconButton(
                               onPressed: () {
-                                addFavorite(widget.pro.ID_Product);
+                                print(idUs);
+                                if (idUs == 'HUBx2MvRuuSOTKQEGkk4tMQKpq92') {
+                                  NotiDialog.show(context, 'Notification',
+                                      'Please log in to add products to favorites',
+                                      () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginScreen()));
+                                  }, () {});
+                                } else {
+                                  addFavorite(widget.pro.ID_Product);
+                                }
                               },
                               icon: Icon(
                                 Icons.favorite,
@@ -1180,8 +1197,22 @@ class _DetailScreenState extends State<DetailScreen> {
                                         ),
                                         ElevatedButton(
                                           onPressed: () {
-                                            print("Added to cart");
-                                            addProductToCart();
+                                            if (idUs ==
+                                                'HUBx2MvRuuSOTKQEGkk4tMQKpq92') {
+                                              NotiDialog.show(
+                                                  context,
+                                                  'Notification',
+                                                  'Please log in to add products to cart',
+                                                  () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const LoginScreen()));
+                                              }, () {});
+                                            } else {
+                                              addProductToCart();
+                                            }
                                           },
                                           style: ElevatedButton.styleFrom(
                                             padding: EdgeInsets.symmetric(
@@ -1353,14 +1384,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                                   0, 0, 0, 0),
                                               padding: EdgeInsets.fromLTRB(
                                                   0, 0, 0, 15),
-                                              decoration: BoxDecoration(
-                                                  // border: Border(
-                                                  //   bottom: BorderSide(
-                                                  //     color: Color.fromARGB(255, 158, 158, 158),
-                                                  //     width: 2.5
-                                                  //   )
-                                                  // )
-                                                  ),
+                                              decoration: BoxDecoration(),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,

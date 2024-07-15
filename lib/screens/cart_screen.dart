@@ -260,7 +260,7 @@ class _CartScreenState extends State<CartScreen> {
                     child: Container(
                       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                       width: MediaQuery.of(context).size.width / 2 + 153,
-                      height: 130,
+                      height: 159,
                       decoration: BoxDecoration(
                           border: Border.all(
                               color: Color.fromARGB(255, 172, 170, 170)),
@@ -311,35 +311,53 @@ class _CartScreenState extends State<CartScreen> {
                                 Padding(
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
                                 ),
-                                Text(
-                                  carts[index].ID_ProductSize == "S"
-                                      ? formatCurrency(getPrice(
-                                              filteredSizes[index].S.SellPrice,
-                                              filteredSizes[index]
-                                                  .S
-                                                  .Discount)) +
-                                          " VND"
-                                      : carts[index].ID_ProductSize == "M"
-                                          ? formatCurrency(getPrice(
-                                                  filteredSizes[index]
-                                                      .M
-                                                      .SellPrice,
-                                                  filteredSizes[index]
-                                                      .M
-                                                      .Discount)) +
-                                              " VND"
-                                          : formatCurrency(getPrice(
-                                                  filteredSizes[index]
-                                                      .L
-                                                      .SellPrice,
-                                                  filteredSizes[index]
-                                                      .L
-                                                      .Discount)) +
-                                              " VND",
-                                  style: TextStyle(
-                                      color: Color.fromARGB(255, 104, 104, 104),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        carts[index].ID_ProductSize == "S"
+                                            ? formatCurrency(getPrice(
+                                                    filteredSizes[index]
+                                                        .S
+                                                        .SellPrice,
+                                                    filteredSizes[index]
+                                                        .S
+                                                        .Discount)) +
+                                                " VND"
+                                            : carts[index].ID_ProductSize == "M"
+                                                ? formatCurrency(getPrice(
+                                                        filteredSizes[index]
+                                                            .M
+                                                            .SellPrice,
+                                                        filteredSizes[index]
+                                                            .M
+                                                            .Discount)) +
+                                                    " VND"
+                                                : formatCurrency(getPrice(
+                                                        filteredSizes[index]
+                                                            .L
+                                                            .SellPrice,
+                                                        filteredSizes[index]
+                                                            .L
+                                                            .Discount)) +
+                                                    " VND",
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 104, 104, 104),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        updateCartQuantity(
+                                            carts[index].ID_Cart,
+                                            carts[index].Quantity -
+                                                carts[index].Quantity);
+                                      },
+                                      icon: Icon(Icons.delete),
+                                    ),
+                                  ],
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,

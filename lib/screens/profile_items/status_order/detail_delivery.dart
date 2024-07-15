@@ -209,8 +209,8 @@ class _DetailDeliveryState extends State<DetailDelivery> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: formatCurrency(item.price)
-                                                .toString(),
+                                            text:
+                                                '${formatCurrency(item.price).toString()} VND',
                                             style: TextStyle(
                                               fontSize: 18.0,
                                             ),

@@ -2,6 +2,7 @@ import 'package:doan_tmdt/model/classes.dart';
 import 'package:doan_tmdt/model/dialog_notification.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AddDiscount extends StatefulWidget {
   const AddDiscount({super.key});
@@ -40,6 +41,11 @@ class _AddDiscountState extends State<AddDiscount> {
     });
   }
 
+  String formatCurrency(int value) {
+    final formatter = NumberFormat.decimalPattern('vi');
+    return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -68,9 +74,9 @@ class _AddDiscountState extends State<AddDiscount> {
                       horizontal: 10.0, vertical: 5.0),
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 233, 249, 255),
-                    border: Border.all(
-                        color: const Color.fromARGB(255, 203, 202, 202)),
+                    color: const Color.fromARGB(59, 179, 177, 177),
+                    border:
+                        Border.all(color: Color.fromARGB(255, 131, 131, 131)),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: Row(
@@ -81,7 +87,7 @@ class _AddDiscountState extends State<AddDiscount> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              discount[index].Price.toString(),
+                              '${formatCurrency(discount[index].Price)} VND',
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,

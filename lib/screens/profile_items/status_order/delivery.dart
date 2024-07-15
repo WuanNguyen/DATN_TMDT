@@ -138,10 +138,10 @@ class _DeliveryState extends State<Delivery> {
                                 padding: const EdgeInsets.all(10.0),
                                 decoration: BoxDecoration(
                                   color:
-                                      const Color.fromARGB(255, 233, 249, 255),
+                                      const Color.fromARGB(59, 179, 177, 177),
                                   border: Border.all(
-                                      color: const Color.fromARGB(
-                                          255, 203, 202, 202)),
+                                      color:
+                                          Color.fromARGB(255, 131, 131, 131)),
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),
                                 child: Row(
@@ -245,10 +245,8 @@ class _DeliveryState extends State<Delivery> {
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: formatCurrency(
-                                                          order[index]
-                                                              .Total_Price)
-                                                      .toString(),
+                                                  text:
+                                                      '${formatCurrency(order[index].Total_Price).toString()} VND',
                                                   style: const TextStyle(
                                                     fontSize: 18.0,
                                                   ),

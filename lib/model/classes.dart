@@ -10,6 +10,7 @@ class Users {
   String Image_Url;
   String Username;
   String Phone;
+  String Role;
   int Status;
   Users({
     required this.ID_User,
@@ -17,6 +18,7 @@ class Users {
     required this.Image_Url,
     required this.Username,
     required this.Phone,
+    required this.Role,
     required this.Status,
   });
   factory Users.fromSnapshot(DataSnapshot snapshot) {
@@ -26,6 +28,7 @@ class Users {
       Image_Url: snapshot.child("Image_Url").value.toString(),
       Username: snapshot.child("Username").value.toString(),
       Phone: snapshot.child("Phone").value.toString(),
+      Role: snapshot.child("Role").value.toString(),
       Status: int.parse(snapshot.child("Status").value.toString()),
     );
   }
@@ -384,6 +387,108 @@ class Review {
       Comment: snapshot.child("Comment").value.toString(),
       Review_Date: snapshot.child("Review_Date").value.toString(),
       Status: int.parse(snapshot.child("Status").value.toString()),
+    );
+  }
+}
+
+class Inventorys {
+  String Category;
+  String Distributor_Name;
+  String ID_Product;
+  int Import_Price;
+  int Sell_Price;
+  String Product_Name;
+  int Quantity;
+  String Size;
+  Inventorys(
+      {required this.Category,
+      required this.Distributor_Name,
+      required this.ID_Product,
+      required this.Import_Price,
+      required this.Sell_Price,
+      required this.Product_Name,
+      required this.Quantity,
+      required this.Size});
+  factory Inventorys.fromSnapshot(DataSnapshot snapshot) {
+    return Inventorys(
+      Category: snapshot.child("Category").value.toString(),
+      Distributor_Name: snapshot.child("Distributor_Name").value.toString(),
+      ID_Product: snapshot.child("ID_Product").value.toString(),
+      Import_Price: int.parse(snapshot.child("Import_Price").value.toString()),
+      Sell_Price: int.parse(snapshot.child("Sell_Price").value.toString()),
+      Product_Name: snapshot.child("Product_Name").value.toString(),
+      Quantity: int.parse(snapshot.child("Quantity").value.toString()),
+      Size: snapshot.child("size").value.toString(),
+    );
+  }
+}
+
+class Inventorys_in {
+  String Date;
+  String Category;
+  String Distributor_Name;
+  String ID_Product;
+  int Import_Price;
+  int Sell_Price;
+  String Product_Name;
+  int Quantity;
+  String Size;
+  Inventorys_in(
+      {required this.Date,
+      required this.Category,
+      required this.Distributor_Name,
+      required this.ID_Product,
+      required this.Import_Price,
+      required this.Sell_Price,
+      required this.Product_Name,
+      required this.Quantity,
+      required this.Size});
+  factory Inventorys_in.fromSnapshot(DataSnapshot snapshot) {
+    return Inventorys_in(
+      Date: snapshot.child('Date_In').value.toString(),
+      Category: snapshot.child("Category").value.toString(),
+      Distributor_Name: snapshot.child("Distributor_Name").value.toString(),
+      ID_Product: snapshot.child("ID_Product").value.toString(),
+      Import_Price: int.parse(snapshot.child("Import_Price").value.toString()),
+      Sell_Price: int.parse(snapshot.child("Sell_Price").value.toString()),
+      Product_Name: snapshot.child("Product_Name").value.toString(),
+      Quantity: int.parse(snapshot.child("Quantity").value.toString()),
+      Size: snapshot.child("size").value.toString(),
+    );
+  }
+}
+
+class Inventorys_out {
+  String Date;
+  String Category;
+  String Distributor_Name;
+  String ID_Product;
+  int Import_Price;
+  int Sell_Price;
+  String Product_Name;
+  int Quantity;
+  String Size;
+  Inventorys_out(
+      {required this.Date,
+      required this.Category,
+      required this.Distributor_Name,
+      required this.ID_Product,
+      required this.Import_Price,
+      required this.Sell_Price,
+      required this.Product_Name,
+      required this.Quantity,
+      required this.Size});
+  factory Inventorys_out.fromSnapshot(DataSnapshot snapshot) {
+    return Inventorys_out(
+      Date: snapshot.child('Date_In').value.toString(),
+      Category: snapshot.child("Category").value.toString(),
+      Distributor_Name: snapshot.child("Distributor_Name").value.toString(),
+      ID_Product: snapshot.child("ID_Product").value.toString(),
+      Import_Price: int.parse(snapshot.child("Import_Price").value.toString()),
+      Sell_Price: int.parse(snapshot.child("Sell_Price").value.toString()),
+      Product_Name: snapshot.child("Product_Name").value.toString(),
+      Quantity: int.parse(snapshot.child("Quantity").value.toString()),
+      Size: snapshot.child("size").value.toString(),
     );
   }
 }

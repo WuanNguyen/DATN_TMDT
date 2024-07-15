@@ -1,4 +1,5 @@
 import 'package:doan_tmdt/model/classes.dart';
+import 'package:doan_tmdt/model/dialog_address.dart';
 import 'package:doan_tmdt/screens/admin/status_add/add_product.dart';
 import 'package:doan_tmdt/screens/login/firstapp_screen.dart';
 import 'package:doan_tmdt/screens/login/login_screen.dart';
@@ -29,8 +30,9 @@ class MsgDialog {
           ),
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
                 title,
@@ -927,6 +929,7 @@ class admin_addproduct {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
+                          keyboardType: TextInputType.number,
                           controller: importPriceText,
                           obscureText: false,
                           decoration: InputDecoration(
@@ -949,6 +952,7 @@ class admin_addproduct {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
+                          keyboardType: TextInputType.number,
                           controller: sellpriceText,
                           obscureText: false,
                           decoration: InputDecoration(
@@ -976,6 +980,7 @@ class admin_addproduct {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
+                          keyboardType: TextInputType.number,
                           controller: stockText,
                           obscureText: false,
                           decoration: InputDecoration(
@@ -998,6 +1003,7 @@ class admin_addproduct {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
+                          keyboardType: TextInputType.number,
                           controller: discountText,
                           obscureText: false,
                           decoration: InputDecoration(
@@ -1233,6 +1239,8 @@ class NotiDialog {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
                 title,
@@ -1241,6 +1249,7 @@ class NotiDialog {
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
+                textAlign: TextAlign.center, // Canh giữa văn bản
               ),
               const SizedBox(height: 15),
               Text(
@@ -1249,10 +1258,12 @@ class NotiDialog {
                   fontSize: 16,
                   color: Colors.white,
                 ),
+                textAlign: TextAlign.center, // Canh giữa văn bản
               ),
               const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: () {
@@ -1474,8 +1485,36 @@ class CartEdit {
       ValueChanged<Map<String, String>> onOkPressed,
       VoidCallback onCancelPressed) {
     TextEditingController nameUS = TextEditingController(text: name);
-    TextEditingController addressUS = TextEditingController(text: address);
+    //TextEditingController addressUS = TextEditingController(text: address);
     TextEditingController phoneUS = TextEditingController(text: phone);
+    String addressUS = '';
+    void _openSelectionDialog(BuildContext context) async {
+      final result = await showDialog<Map<String, dynamic>>(
+        context: context,
+        builder: (BuildContext context) {
+          return SelectionDialog();
+        },
+      );
+      if (result != null) {
+        if (result['additionalAddress'] == '') {
+          addressUS = '${result['additionalAddress']}'
+              '${result['commune']!.name}, '
+              '${result['district']!.name}, '
+              '${result['province']!.name}';
+        } else {
+          addressUS = '${result['additionalAddress']}, '
+              '${result['commune']!.name}, '
+              '${result['district']!.name}, '
+              '${result['province']!.name}';
+        }
+      }
+    }
+
+//kiểm tra sdt
+    bool isValidPhoneNumber(String input) {
+      final RegExp regex = RegExp(r'^0\d{9}$');
+      return regex.hasMatch(input);
+    }
 
     showDialog(
       context: context,
@@ -1531,21 +1570,6 @@ class CartEdit {
                 ),
                 const SizedBox(height: 16),
                 TextField(
-                  controller: addressUS,
-                  decoration: const InputDecoration(
-                    labelText: 'Delivery Address',
-                    labelStyle: TextStyle(color: Colors.white),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                  ),
-                  style: const TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 16),
-                TextField(
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   controller: phoneUS,
                   decoration: const InputDecoration(
@@ -1562,6 +1586,40 @@ class CartEdit {
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 1.3,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 100,
+                          child: Text(
+                            "  Address",
+                            maxLines: 3, // Hiển thị tối đa 3 dòng
+                            overflow: TextOverflow
+                                .ellipsis, // Hiển thị dấu "..." nếu vượt quá 3 dòng
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 104, 104, 104),
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => _openSelectionDialog(context),
+                        child: Text(
+                          'Change',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 58, 15, 79),
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 50),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1580,13 +1638,22 @@ class CartEdit {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        print('______');
+                        print(addressUS);
+
+                        //
                         if (onOkPressed != null) {
-                          onOkPressed({
-                            'name': nameUS.text,
-                            'address': addressUS.text,
-                            'phone': phoneUS.text,
-                          });
+                          if (isValidPhoneNumber(phoneUS.text) == false) {
+                            MsgDialog.MSG(context, 'Notification',
+                                'invalid phone number');
+                          } else {
+                            Navigator.of(context).pop();
+                            onOkPressed({
+                              'name': nameUS.text,
+                              'phone': phoneUS.text,
+                              'address': addressUS
+                            });
+                          }
                         }
                       },
                       child: const Text(

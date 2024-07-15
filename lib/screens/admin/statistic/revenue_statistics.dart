@@ -1,21 +1,21 @@
 import 'package:doan_tmdt/model/classes.dart';
-import 'package:doan_tmdt/screens/admin/statistic/product_statistics.dart';
-import 'package:doan_tmdt/screens/admin/statistic/revenue_statistics.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class AdminStatisticsScreen extends StatefulWidget {
-  const AdminStatisticsScreen({super.key});
+class RevenueStatisticScreen extends StatefulWidget {
+  const RevenueStatisticScreen({super.key});
 
   @override
-  _AdminStatisticsScreenState createState() => _AdminStatisticsScreenState();
+  _RevenueStatisticScreenState createState() => _RevenueStatisticScreenState();
 }
 
-class _AdminStatisticsScreenState extends State<AdminStatisticsScreen> {
+class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
   bool isLoading = true;
   Map<String, dynamic> stats = {};
   List<Product> pro = [];
+  List<Product> adultPro = [];
+  List<Product> childPro = [];
 
   @override
   void initState() {
@@ -54,6 +54,10 @@ class _AdminStatisticsScreenState extends State<AdminStatisticsScreen> {
                   .map((snapshot) => Product.fromSnapshot(snapshot))
                   .where((element) => element.Status == 0)
                   .toList();
+              adultPro =
+                  pro.where((element) => element.Category == 'Adult').toList();
+              childPro =
+                  pro.where((element) => element.Category == 'Child').toList();
             });
           }
         });
@@ -65,38 +69,125 @@ class _AdminStatisticsScreenState extends State<AdminStatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    for (int month = 1; month <= 12; month++) {
+      MonthlyRevenue[month - 1].setSale(double.parse(stats['monthlyRevenue']
+                  ?[month.toString().padLeft(2, '0')]
+              ?.toStringAsFixed(2) ??
+          '0.00'));
+      MonthlySold[month - 1].setSale(double.parse(stats['monthlySold']
+                  ?[month.toString().padLeft(2, '0')]
+              ?.toStringAsFixed(2) ??
+          '0.00'));
+    }
+    ;
+
+    SoldAndCancelData[0].setValueInt(
+        stats['totalSoldDamua'] ?? 0); //them data vao du lieu don hang da mua
+    SoldAndCancelData[1].setValueInt(
+        stats['totalSoldDahuy'] ?? 0); //them data vao du lieu don hang da huy
+
+    List<Map<String, int>> productSoldList = [];
+    List<Map<String, int>> topSellProduct = [];
+
+    if (stats['totalSold'] != null && stats['totalSold'].isNotEmpty) {
+      stats['totalSold'].entries.forEach((entry) {
+        for (var p in pro) {
+          if (p.ID_Product == entry.key)
+            productSoldList.add({p.Product_Name: entry.value});
+        }
+      });
+      productSoldList.sort((a, b) {
+        int aValue = a.values.first;
+        int bValue = b.values.first;
+        return bValue.compareTo(aValue);
+      });
+      productSoldList = productSoldList.sublist(0, 5);
+    }
+    print("sold list: " + productSoldList.length.toString());
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Statistics"),
-        backgroundColor: Color.fromRGBO(201, 241, 248, 1),
-      ),
-      body: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          body: Column(
-            children: [
-              Container(
-                color: const Color.fromRGBO(201, 241, 248, 1),
-                child: const TabBar(
-                  tabs: [
-                    Tab(text: 'Products'),
-                    Tab(text: 'Revenues'),
-                  ],
-                ),
+        body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0.1, 0.8, 1],
+                colors: <Color>[
+                  Color.fromRGBO(201, 241, 248, 1),
+                  Color.fromRGBO(231, 230, 233, 1),
+                  Color.fromRGBO(231, 227, 230, 1),
+                ],
+                tileMode: TileMode.mirror,
               ),
-              const Expanded(
-                child: TabBarView(
+            ),
+            child: SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                child: Column(
                   children: [
-                    ProductStatisticScreen(),
-                    RevenueStatisticScreen(),
+                    isLoading
+                        ? Center(
+                            heightFactor: 13,
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              child: const CircularProgressIndicator(),
+                            ))
+                        : Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  SfCartesianChart(
+                                    primaryXAxis: CategoryAxis(),
+                                    title: ChartTitle(text: 'Products Sold'),
+                                    legend: Legend(isVisible: true),
+                                    tooltipBehavior:
+                                        TooltipBehavior(enable: true),
+                                    series: <ChartSeries<SalesData, String>>[
+                                      ColumnSeries<SalesData, String>(
+                                        dataSource: MonthlySold,
+                                        xValueMapper: (SalesData sales, _) =>
+                                            sales.month,
+                                        yValueMapper: (SalesData sales, _) =>
+                                            sales.sales,
+                                        name: 'Monthly \nSold',
+                                        color: Colors.blue,
+                                        dataLabelSettings:
+                                            DataLabelSettings(isVisible: false),
+                                      ),
+                                    ],
+                                  ),
+                                  SfCartesianChart(
+                                    primaryXAxis: CategoryAxis(),
+                                    title: ChartTitle(text: 'Revenue'),
+                                    legend: Legend(isVisible: true),
+                                    tooltipBehavior:
+                                        TooltipBehavior(enable: true),
+                                    series: <ChartSeries<SalesData, String>>[
+                                      ColumnSeries<SalesData, String>(
+                                        dataSource: MonthlyRevenue,
+                                        xValueMapper: (SalesData sales, _) =>
+                                            sales.month,
+                                        yValueMapper: (SalesData sales, _) =>
+                                            sales.sales,
+                                        name: 'Monthly \nRevenue',
+                                        color: Colors.blue,
+                                        dataLabelSettings:
+                                            DataLabelSettings(isVisible: false),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 100,
+                                  )
+                                ],
+                              ),
+                            ))
                   ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+                ))));
   }
 }
 

@@ -112,9 +112,9 @@ class _AddDistributorState extends State<AddDistributor> {
                   margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
                   padding: EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 233, 249, 255),
-                    border: Border.all(
-                        color: const Color.fromARGB(255, 203, 202, 202)),
+                    color: const Color.fromARGB(59, 179, 177, 177),
+                    border:
+                        Border.all(color: Color.fromARGB(255, 131, 131, 131)),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: Row(
